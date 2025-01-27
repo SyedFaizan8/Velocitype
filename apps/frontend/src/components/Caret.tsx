@@ -8,7 +8,7 @@ const Caret = () => {
       animate={{ opacity: 0 }}
       exit={{ opacity: 1 }}
       transition={{ repeat: Infinity, duration: 0.8, ease: "easeInOut" }}
-      className="inline-block bg-yellow-500 w-0.5 h-7"
+      className="inline-block bg-yellow-500 w-0.5 md:h-7 h-5"
     />
   );
 };

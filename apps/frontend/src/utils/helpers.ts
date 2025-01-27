@@ -1,5 +1,5 @@
 export const isKeyboardCodeAllowed = (code: string) => {
-    const allowedCodes = ["Backspace", "Space", "Minus", "Comma", "Period", "Quote", "Semicolon", "Colon"];
+    const allowedCodes = ["Backspace", "Space", "Minus", "Comma", "Period", "Quote", "Semicolon", "Colon", "Quote", "Slash", "Digit1", "Digit2"];
     return code.startsWith("Key") || code.startsWith("Digit") || allowedCodes.includes(code);
 };
 
