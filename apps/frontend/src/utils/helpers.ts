@@ -13,7 +13,7 @@ export const countErrors = (actual: string, expected: string) => {
     }, 0);
 };
 
-export const calculateAccuracyPercentage = (errors: number, total: number) => {
+export const calculateAccuracyPercentage = (errors: number, total: number): number => {
     if (total > 0) {
         const corrects = total - errors;
         return (corrects / total) * 100;
@@ -22,5 +22,11 @@ export const calculateAccuracyPercentage = (errors: number, total: number) => {
 };
 
 export const formatPercentage = (percentage: number) => {
+    if (percentage === 0) return 0;
     return percentage.toFixed(0) + "%";
+
 };
+
+export const wordsPerMinute = (totalWords: string): number => {
+    return totalWords.split(" ").length * 4;
+}

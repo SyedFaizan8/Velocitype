@@ -1,16 +1,30 @@
 "use client"
 
+import { useEffect, useRef, useState } from 'react'
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { motion, AnimatePresence } from 'framer-motion';
+
 import Caret from '@/components/Caret';
 import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import useEngine from '@/hooks/useEngine';
 import useIsMobile from '@/hooks/useIsMobile';
-import Link from 'next/link';
-import { useEffect, useRef, useState } from 'react'
-import { MdRefresh } from 'react-icons/md';
+import { Mute, Refresh, Speaker } from '@/components/Icons';
+
+import { useAppDispatch } from "@/store/reduxHooks";
+import { setTypingStats } from "@/store/typingSlice";
+import { calculateAccuracyPercentage, wordsPerMinute } from '@/utils/helpers';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store/store';
+import { changeSound } from "@/store/soundSlice"
+import { CoolMode } from '@/components/ui/cool-mode';
 
 const Home = () => {
   const isMobile = useIsMobile();
+  const router = useRouter();
+  const dispatch = useAppDispatch();
+  const sound = useSelector((state: RootState) => state.sound.sound);
 
   const { words, typed, timeLeft, errors, state, restart, totalTyped, totalWords } = useEngine();
   const [isCapsLockOn, setIsCapsLockOn] = useState(false);
@@ -36,24 +50,51 @@ const Home = () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
   }, []);
-  //grid place-items-center
+
+  useEffect(() => {
+    if (state === "finish") {
+
+      dispatch(
+        setTypingStats({
+          cpm: totalTyped <= 0 ? 0 : totalTyped * 4,
+          wpm: wordsPerMinute(totalWords),
+          accuracy: calculateAccuracyPercentage(errors, totalTyped),
+          totalLetters: totalTyped <= 0 ? 0 : totalTyped,
+          totalWords: totalWords.split(" ").length,
+          errors: errors,
+        })
+      );
+
+      router.push("/velocity/result");
+    }
+  }, [state]);
+
   return (
-    <div className="bg-slate-800 text-slate-50 md:py-10	py-2 px-6 md:px-32 min-h-screen max-h-screen tracking-wider font-mono ">
-
-      {timeLeft === 0 || timeLeft === 15 ?
+    <div>
+      {state !== "run" ?
         <Header />
-        : <Link href="/">
-          <div className="text-white font-bold cursor-pointer md:text-3xl text-lg ">VelociType</div>
-        </Link>}
-
-      < div className="w-full md:px-10 px-6 h-[80vh] flex flex-col justify-center items-center">
+        : <div
+          className="flex justify-between">
+          <CoolMode>
+            <Link href="/">
+              <div className="text-slate-500 font-bold cursor-pointer md:text-3xl text-lg ">VelociType</div>
+            </Link>
+          </CoolMode>
+          <div
+            className={`hover:text-slate-200 cursor-pointer pt-2 md:text-2xl text-md ${sound ? "text-yellow-200" : "text-slate-500"}`}
+            onClick={() => { dispatch(changeSound()) }}
+          >
+            {sound ? <Speaker /> : <Mute />}
+          </div>
+        </div >
+      }
+      <div className="w-full md:px-10 px-6 h-[80vh] flex flex-col justify-center items-center">
         <div className="w-full flex justify-between items-center h-10">
-          <h2 className="text-yellow-400 font-medium text-lg">{timeLeft > 0 && timeLeft < 15 ? "Time " + timeLeft : ""}</h2>
+          <h2 className="text-yellow-400 font-medium text-lg">{state === "run" ? "Time " + timeLeft : ""}</h2>
           <h2 className="text-yellow-400 font-medium text-lg">
-            {timeLeft > 0 && timeLeft < 15 ? "Wpm " + totalWords.split(" ").length * 4 : ""}
+            {state === "run" ? "Wpm " + totalWords.split(" ").length * 4 : ""}
           </h2>
         </div>
-
         <div className="relative md:text-3xl text-lg leading-relaxed h-56">
           <div className="text-slate-500">{words}</div>
           {/* User typed characters will be overlayed over the generated words */}
@@ -68,7 +109,7 @@ const Home = () => {
                 {words[index]}
               </span>
             ))}
-            <Caret />
+            <Caret state={state} />
           </div>
         </div>
         <button
@@ -77,31 +118,44 @@ const Home = () => {
           className="block rounded px-8 py-2 hover:text-white mx-auto mt-10 text-slate-500 text-xl"
           onClick={handleClick}
         >
-          <MdRefresh />
+          <Refresh />
         </button>
+
         {isCapsLockOn && (
-          <div className="text-red-500 text-xl mt-2">
+          <motion.div
+            key="caps"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            className="text-red-500 text-xl mt-2">
             Caps Lock is on!
-          </div>
+          </motion.div>
         )}
       </div>
 
-
-      {/* <Results
-        className="mt-10"
-        state={state}
-        errors={errors}
-        accuracyPercentage={calculateAccuracyPercentage(errors, totalTyped)}
-        total={totalTyped}
-        totalWords={totalWords}
-      /> */}
-      {!isMobile &&
-        <div className='w-full hidden md:flex justify-center items-center space-x-2 text-xs text-slate-50 '>
-          <span className="bg-slate-500 rounded-sm px-1 ">tab</span>
+      {
+        !isMobile &&
+        <div className='w-full hidden md:flex justify-center items-center space-x-2 text-xs text-slate-500 '>
+          <span className="bg-slate-500 rounded-sm px-1 text-white">tab</span>
           <span>- Restart</span>
-        </div>}
+        </div>
+      }
 
-      {(timeLeft === 0 || timeLeft === 15) && <Footer />}
+      <AnimatePresence>
+        {state !== "run" ? (
+          <motion.div
+            key="footer"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+          >
+            <Footer />
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
+
     </div >
   )
 }

@@ -1,17 +1,21 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { isKeyboardCodeAllowed } from "../utils/helpers";
+import { playSound } from "@/utils/soundEffects";
+import { useSelector } from "react-redux";
+import { RootState } from "@/store/store";
 
 const useTypings = (enabled: boolean) => {
   const [cursor, setCursor] = useState(0);
   const [typed, setTyped] = useState<string>("");
   const totalTyped = useRef(0);
   const totalWords = useRef("");
+  const sound = useSelector((state: RootState) => state.sound.sound);
 
 
   const keydownHandler = useCallback(
     ({ key, code }: KeyboardEvent) => {
       if (!enabled || !isKeyboardCodeAllowed(code)) return;
-
+      if (sound) playSound(key);
       switch (key) {
         case "Backspace":
           setTyped((prev) => prev.slice(0, -1));
@@ -26,7 +30,7 @@ const useTypings = (enabled: boolean) => {
           totalWords.current += key;
       }
     },
-    [enabled]
+    [enabled, sound]
   );
 
   const clearTyped = useCallback(() => {
