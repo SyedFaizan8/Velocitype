@@ -1,12 +1,11 @@
 import Link from "next/link";
-import { Info, Keyboard, LeaderBoard, Mute, Speaker, User } from "./Icons";
+import { Info, Keyboard, LeaderBoard, Mute, Settings, Speaker, User } from "./Icons";
 import { AnimatePresence, motion } from "framer-motion";
 import { useAppDispatch } from "@/store/reduxHooks";
 import { changeSound } from "@/store/soundSlice"
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
 import TooltipIcon from "./TooltipIcon";
-import { CoolMode } from "./ui/cool-mode";
 import useIsMobile from "@/hooks/useIsMobile";
 
 const Header = () => {
@@ -16,13 +15,13 @@ const Header = () => {
 
     return (
         <div className="z-10 relative w-full flex justify-between md:text-3xl text-lg text-slate-500 ">
-            <div className="flex space-x-5">
+            <div className="flex md:space-x-5 space-x-3">
                 <div>
-                    <CoolMode>
-                        <Link href="/">
-                            <div className="text-white font-bold cursor-pointer ">VelociType</div>
-                        </Link>
-                    </CoolMode>
+                    <Link href="/">
+                        <div className="text-white font-bold cursor-pointer ">
+                            VelociType
+                        </div>
+                    </Link>
                 </div>
                 <AnimatePresence>
                     <motion.div
@@ -31,7 +30,7 @@ const Header = () => {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 20 }}
                         transition={{ duration: 0.3, ease: "easeInOut" }}
-                        className="flex space-x-5">
+                        className="flex md:space-x-5 space-x-3">
                         <Link href="/">
                             <div className="hover:text-slate-200 cursor-pointer pt-2 md:text-2xl text-md">
                                 <TooltipIcon icon={<Keyboard />} tooltipText="home" />
@@ -47,7 +46,12 @@ const Header = () => {
                                 <TooltipIcon icon={<LeaderBoard />} tooltipText="leaderboard" />
                             </div>
                         </Link>
-                        {isMobile && <div className="flex space-x-5">
+                        <Link href="/velocity/settings">
+                            <div className="hover:text-slate-200 cursor-pointer pt-2 md:text-2xl text-md">
+                                <TooltipIcon icon={<Settings />} tooltipText="settings" />
+                            </div>
+                        </Link>
+                        {isMobile && <div className="flex space-x-3">
                             <div className="hover:text-slate-200 cursor-pointer pt-2 md:text-2xl text-sm">
                                 <TooltipIcon icon={<User />} tooltipText="profile" />
                             </div>
@@ -64,7 +68,8 @@ const Header = () => {
                     </motion.div>
                 </AnimatePresence>
             </div >
-            {!isMobile &&
+            {
+                !isMobile &&
                 <AnimatePresence>
                     <motion.div
                         key="header"
@@ -73,9 +78,11 @@ const Header = () => {
                         exit={{ opacity: 0, y: 20 }}
                         transition={{ duration: 0.5, ease: "easeInOut" }}
                         className="flex space-x-5 px-2 md:pl-0">
-                        <div className="hover:text-slate-200 cursor-pointer pt-2 md:text-2xl text-sm">
-                            <TooltipIcon icon={<User />} tooltipText="profile" />
-                        </div>
+                        <Link href="/velocity/profile">
+                            <div className="hover:text-slate-200 cursor-pointer pt-2 md:text-2xl text-sm">
+                                <TooltipIcon icon={<User />} tooltipText="profile" />
+                            </div>
+                        </Link>
                         <div
                             className={`hover:text-slate-200 cursor-pointer pt-2 md:text-2xl text-md ${sound ? "text-yellow-200" : "text-slate-500"}`}
                             onClick={() => { dispatch(changeSound()) }}

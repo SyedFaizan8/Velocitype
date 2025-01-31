@@ -18,7 +18,6 @@ import { calculateAccuracyPercentage, wordsPerMinute } from '@/utils/helpers';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
 import { changeSound } from "@/store/soundSlice"
-import { CoolMode } from '@/components/ui/cool-mode';
 
 const Home = () => {
   const isMobile = useIsMobile();
@@ -75,11 +74,9 @@ const Home = () => {
         <Header />
         : <div
           className="flex justify-between">
-          <CoolMode>
-            <Link href="/">
-              <div className="text-slate-500 font-bold cursor-pointer md:text-3xl text-lg ">VelociType</div>
-            </Link>
-          </CoolMode>
+          <Link href="/">
+            <div className="text-slate-500 font-bold cursor-pointer md:text-3xl text-lg ">VelociType</div>
+          </Link>
           <div
             className={`hover:text-slate-200 cursor-pointer pt-2 md:text-2xl text-md ${sound ? "text-yellow-200" : "text-slate-500"}`}
             onClick={() => { dispatch(changeSound()) }}

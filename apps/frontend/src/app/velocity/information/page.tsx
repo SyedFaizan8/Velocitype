@@ -1,8 +1,10 @@
+import TooltipIcon from '@/components/TooltipIcon';
+import Link from 'next/link';
 import React from 'react';
 
 const InformationPage: React.FC = () => {
     return (
-        <div className="p-5 font-sans">
+        <div className="p-5">
             <h1 className="text-2xl font-bold mb-4">Welcome to Velocity Typing</h1>
             <p className="mb-4">
                 Velocity Typing is a platform designed to help you improve your typing speed and accuracy. Inspired by websites like Monkeytype, our tools and resources are here to help you achieve your goals.
@@ -20,18 +22,22 @@ const InformationPage: React.FC = () => {
             </ul>
 
             <h2 className="text-xl font-semibold mb-2">Contact Us</h2>
-            <p className="mb-4">
+            <div className="mb-4">
                 We would love to hear from you! If you have any questions, suggestions, or feedback, please feel free to contact us at:
-            </p>
-            <p className="mb-2">Email: <a href="mailto:contact@velocitytyping.com" className="text-blue-500">contact@velocitytyping.com</a></p>
-            <p>Phone: (123) 456-7890</p>
+                <span className='cursor-pointer'>
+                    <TooltipIcon icon=" contact@syedfaizan.in" tooltipText="double click to copy" />
+                </span>
+            </div>
 
             <h2 className="text-xl font-semibold mb-2">Contribute</h2>
             <p className="mb-4">
-                We welcome contributions from the community! If you are interested in contributing to Velocity Typing, please visit our <a href="https://github.com/velocitytyping" className="text-blue-500">GitHub repository</a> for more information on how to get started.
+                We welcome contributions from the community! If you are interested in contributing to Velocity Typing, please visit our <Link href="https://github.com/syedfaizan8/velocitype" target="_blank" rel="noopener noreferrer" className="text-blue-500">GitHub repository</Link> for more information on how to get started.
             </p>
         </div>
     );
 };
 
 export default InformationPage;
+
+
+// make it responsive

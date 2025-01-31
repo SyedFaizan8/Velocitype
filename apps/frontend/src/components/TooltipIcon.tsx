@@ -1,10 +1,15 @@
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
 
-const TooltipIcon = ({ icon, tooltipText }: { icon: React.ReactNode, tooltipText: string }) => (
+interface TooltipIconProps {
+    icon?: React.ReactNode | string;
+    tooltipText: string;
+}
+
+const TooltipIcon: React.FC<TooltipIconProps> = ({ icon, tooltipText }) => (
     <TooltipProvider>
         <Tooltip delayDuration={400} skipDelayDuration={0}>
             <TooltipTrigger asChild>
-                {icon}
+                {typeof icon === 'string' ? <span>{icon}</span> : icon ?? <span>?</span>}
             </TooltipTrigger>
             <TooltipContent>
                 <p>{tooltipText}</p>
@@ -13,4 +18,4 @@ const TooltipIcon = ({ icon, tooltipText }: { icon: React.ReactNode, tooltipText
     </TooltipProvider>
 );
 
-export default TooltipIcon
+export default TooltipIcon;

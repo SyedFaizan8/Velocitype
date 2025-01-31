@@ -45,8 +45,8 @@ const page = () => {
             {!isMobile &&
                 <div className="fixed inset-0 z-0">
                     <FlickeringGrid
-                        className="absolute inset-0 z-[-1] [mask-image:radial-gradient(450px_circle_at_center,white,transparent)]"
-                        squareSize={4}
+                        className="absolute inset-0 z-[-1] [mask-image:radial-gradient(650px_circle_at_center,white,transparent)]"
+                        squareSize={5}
                         gridGap={6}
                         color="#60A5FA"
                         maxOpacity={0.5}
@@ -66,12 +66,11 @@ const page = () => {
                     <p><strong>Errors:</strong>{errors}</p>
                     <p><strong>ALL in 15 Seconds</strong></p>
                 </div>
-                : <div className="w-full text-3xl h-full p-10  space-x-2 rounded-md text-slate-300 z-10">
-                    <div className="text-center flex justify-center items-center space-x-10 p-3">
+                : <div className="w-full  h-full p-10  space-x-2 rounded-md text-slate-300 z-10">
+                    <div className="text-center text-3xl flex justify-center items-center space-x-10 p-3">
                         {[
                             { label: "WPM", value: wpm, size: "text-8xl" },
-                            { label: "Accuracy", value: formatPercentage(accuracy), size: "text-5xl" },
-                            { label: "CPM", value: cpm, size: "text-3xl" }
+                            { label: "Accuracy", value: formatPercentage(accuracy), size: "text-5xl" }
                         ].map(({ label, value, size }) => (
                             <div key={label}>
                                 <strong>{label}</strong>
