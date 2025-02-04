@@ -1,0 +1,53 @@
+import { useState, useEffect, useCallback } from "react";
+import axios from "axios";
+import debounce from "lodash.debounce";
+
+const useCheckUsername = () => {
+  const [username, setUsername] = useState<string>("");
+  const [available, setAvailable] = useState<boolean | null>(null);
+
+  // Debounced API call
+  const checkAvailability = useCallback(
+    debounce(async (username: string) => {
+      if (!username) return;
+      try {
+        const { data } = await axios.get<{ available: boolean }>(`/api/check-username?username=${username}`);
+        setAvailable(data.available);
+      } catch {
+        setAvailable(null);
+      }
+    }, 500), // Wait 500ms after user stops typing
+    []
+  );
+
+  // Trigger API call when username changes
+  useEffect(() => {
+    checkAvailability(username);
+    return () => checkAvailability.cancel(); // Cleanup debounce on unmount
+  }, [username, checkAvailability]);
+
+  return { username, setUsername, available };
+};
+
+export default useCheckUsername;
+
+
+raw--------------------------
+const debounce = <T extends (...args: any[]) => void>(func: T, delay: number) => {
+  let timer: NodeJS.Timeout;
+  return (...args: Parameters<T>) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => func(...args), delay);
+  };
+};
+
+// Usage
+const checkAvailability = debounce(async (username: string) => {
+  if (!username) return;
+  try {
+    const { data } = await axios.get<{ available: boolean }>(`/api/check-username?username=${username}`);
+    console.log("Available:", data.available);
+  } catch {
+    console.log("Error checking username");
+  }
+}, 500);
