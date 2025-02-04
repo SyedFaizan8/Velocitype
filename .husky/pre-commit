@@ -1,4 +1,4 @@
-echo '🏗️👷 Styling, testing before committing'
+echo '🏗️ 👷 Styling, testing before committing'
 
 # Check Prettier standards
 npm --prefix apps/backend run format ||
