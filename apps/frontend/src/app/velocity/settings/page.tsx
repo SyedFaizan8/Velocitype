@@ -1,11 +1,21 @@
-import { User, UserLeaderboard } from "@/components/Icons"
+import { Edit, UserLeaderboard } from "@/components/Icons"
 
 const page = () => {
     return (
-        <div className=" border border-white w-full h-full grid">
-            <div className="flex justify-center items-center py-2 w-full space-x-2">
-                <div className="text-8xl"><UserLeaderboard /></div><button className="bg-slate-950 rounded-md px-2">Upload</button>
-
+        <div className=" w-full h-full grid relative">
+            <button className="bg-slate-900 px-2 rounded absolute top-2 -right-9 text-yellow-500">
+                Logout
+            </button>
+            <div className="flex flex-col h-auto justify-center items-center py-2 w-full">
+                <div className="space-y-2">
+                    <span className="text-8xl">
+                        <UserLeaderboard />
+                    </span>
+                    <div className="bg-slate-900 flex justify-center rounded-md items-center space-x-2 relative text-end">
+                        <Edit />
+                        <span>Upload</span>
+                    </div>
+                </div>
             </div>
             <div className="grid grid-cols-4">
                 <div className="col-span-2 space-y-3 text-end">
@@ -56,7 +66,6 @@ const page = () => {
                         <button className="bg-slate-950 rounded-md px-2">Update</button>
                     </div>
                     <div className=" space-x-2 ">
-                        <button className="bg-slate-900 px-2 rounded">Logout</button>
                         <button className="bg-slate-900 px-2 rounded">Logout from all devices</button>
                     </div>
                     <div className="space-x-2">

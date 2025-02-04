@@ -12,6 +12,7 @@ const Header = () => {
     const sound = useSelector((state: RootState) => state.sound.sound);
     const isMobile = useIsMobile();
     const dispatch = useAppDispatch();
+    const example = "example"
 
     return (
         <div className="z-10 relative w-full flex justify-between md:text-3xl text-lg text-slate-500 ">
@@ -78,7 +79,7 @@ const Header = () => {
                         exit={{ opacity: 0, y: 20 }}
                         transition={{ duration: 0.5, ease: "easeInOut" }}
                         className="flex space-x-5 px-2 md:pl-0">
-                        <Link href="/velocity/profile">
+                        <Link href={`/velocity/${example}`}>
                             <div className="hover:text-slate-200 cursor-pointer pt-2 md:text-2xl text-sm">
                                 <TooltipIcon icon={<User />} tooltipText="profile" />
                             </div>

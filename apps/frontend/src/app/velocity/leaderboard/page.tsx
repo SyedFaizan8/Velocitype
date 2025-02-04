@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 import leaderboardData from './leaderboard.json';
 import Image from 'next/image';
 import { Crown, UserLeaderboard } from '@/components/Icons';
+import Link from 'next/link';
 
 const USERS_PER_PAGE = 10;
 
@@ -50,18 +51,27 @@ const Page = () => {
                     </div>
                     <div className='overflow-auto h-80 scrollbar-thin scrollbar-thumb-slate-500 scrollbar-track-transparent'>
                         {displayedUsers.map(({ rank, dp, userName, wpm, accuracy, timeDate }) => (
-                            <div key={rank} className={`md:py-2 flex text-left text-slate-100 ${rank % 2 !== 0 ? "bg-slate-500" : ""} rounded-md mb-2`}>
+                            <div key={rank} className={`md:py-2 flex text-left text-slate-100 ${rank % 2 !== 0 && "bg-slate-500"} rounded-md mb-2`}>
                                 <div className="p-1 flex justify-center items-center w-2/12 md:w-1/12">
                                     {rank === 1 ? <div className='items-center flex justify-center text-xl'><Crown /></div> : <span>{rank}</span>}
                                 </div>
                                 <div className="p-1 space-x-2 w-8/12 md:w-4/12 flex items-center">
-                                    {dp ?
-                                        <Image width={24} height={24} src={dp} alt={userName} className="inline rounded-full w-6 h-6" />
-                                        : <div className="rounded-full text-2xl">
+                                    {typeof dp === "string" && dp.length > 0 ? (
+                                        <Image
+                                            width={24}
+                                            height={24}
+                                            src={dp}
+                                            alt={userName}
+                                            className="inline rounded-full w-6 h-6"
+                                        />
+                                    ) : (
+                                        <div className="rounded-full text-2xl">
                                             <UserLeaderboard />
                                         </div>
-                                    }
-                                    <span>{userName}</span>
+                                    )}
+                                    <Link href={`/velocity/${userName}`}>
+                                        <span>{userName}</span>
+                                    </Link>
                                 </div>
                                 <div className="p-1 w-2/12 flex items-center">{wpm}</div>
                                 <div className="hidden md:flex p-1 w-2/12 items-center">{accuracy}%</div>

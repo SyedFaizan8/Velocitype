@@ -5,7 +5,9 @@ import TooltipIcon from "@/components/TooltipIcon";
 import { Chart } from "@/components/Chart";
 import { HyperText } from "@/components/ui/hyper-text";
 
-const page = () => {
+export default async function Page({ params }: {
+    params: Promise<{ profile: string }>
+}) {
     const user = users[0];
     const {
         all_time_ranking,
@@ -21,6 +23,8 @@ const page = () => {
         total_words_typed,
         unique_name
     } = user;
+    const slug = (await params).profile
+    console.log(slug + "thhis is slug")
 
     return (
         <div className="w-full h-full space-y-2 py-2 flex flex-col  justify-center">
@@ -34,7 +38,7 @@ const page = () => {
                                 <UserLeaderboard />
                             </div>
                             <div className="">
-                                <p className="text-xl">{name}</p>
+                                <p className="text-xl">{slug ? slug : "hello"}</p>
                                 <p className="text-md">{unique_name}</p>
                                 <p className="text-sm">joined {date_joined}</p>
                             </div>
@@ -44,9 +48,9 @@ const page = () => {
                         </div>
                         <div className="pl-5">
                             <div className="flex space-x-2" >
-                                <TooltipIcon icon={<X />} tooltipText="Twitter/X" />
-                                <TooltipIcon icon={<Instagram />} tooltipText="Instagram" />
-                                <TooltipIcon icon={<Site />} tooltipText="Webite" />
+                                <span className="cursor-pointer"><TooltipIcon icon={<X />} tooltipText="Twitter/X" /></span>
+                                <span className="cursor-pointer"><TooltipIcon icon={<Instagram />} tooltipText="Instagram" /></span>
+                                <span className="cursor-pointer"><TooltipIcon icon={<Site />} tooltipText="Webite" /></span>
                             </div>
                         </div>
                     </div>
@@ -108,8 +112,12 @@ const page = () => {
                         </div>
                     </div>
                     <div className=" col-span-1 flex flex-col text-center items-center justify-evenly p-2  text-xl space-y-3">
-                        <TooltipIcon icon={<Link />} tooltipText="Share Profile" />
-                        <TooltipIcon icon={<Report />} tooltipText="Report User" />
+                        <span className="cursor-pointer">
+                            <TooltipIcon icon={<Link />} tooltipText="Share Profile" />
+                        </span>
+                        <span className="cursor-pointer">
+                            <TooltipIcon icon={<Report />} tooltipText="Report User" />
+                        </span>
                     </div>
                 </div>
                 <div className="w-full">
@@ -119,5 +127,3 @@ const page = () => {
         </div >
     )
 }
-
-export default page
