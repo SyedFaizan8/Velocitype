@@ -1,0 +1,39 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+# Read commit message
+commit_msg_file="$1"
+commit_msg=$(cat "$commit_msg_file")
+
+# ✅ Rule 1: Enforce Conventional Commits (feat, fix, chore, etc.)
+commit_regex="^(feat|fix|chore|docs|style|refactor|test|ci|build|perf)(\(.+\))?: .{1,50}"
+if ! echo "$commit_msg" | grep -Eq "$commit_regex"; then
+  echo "❌ Commit message must follow Conventional Commit format:"
+  echo "   e.g., 'feat: add login button' or 'fix(auth): resolve bug'"
+  exit 1
+fi
+
+# ✅ Rule 2: Prevent empty or too short commit messages
+if [ -z "$commit_msg" ] || [ ${#commit_msg} -lt 10 ]; then
+  echo "❌ Commit message is too short! Use at least 10 characters."
+  exit 1
+fi
+
+# ✅ Rule 3: Block bad words or 'WIP'
+blocked_words="WIP|fixup|temp|debug"
+if echo "$commit_msg" | grep -Eiq "$blocked_words"; then
+  echo "❌ Commit message contains blocked words (WIP, fixup, temp, debug)"
+  exit 1
+fi
+
+# ✅ Rule 4: Auto-capitalize first letter if it's lowercase
+first_char=$(echo "$commit_msg" | cut -c1)
+if [[ "$first_char" =~ [a-z] ]]; then
+  capitalized_msg="$(echo "$commit_msg" | sed -E 's/^([a-z])/\U\1/')"
+  echo "$capitalized_msg" > "$commit_msg_file"
+  echo "✅ Auto-capitalized first letter: '$capitalized_msg'"
+fi
+
+exit 0
+
+# git commit -m "..." -n # Skips Git hooks

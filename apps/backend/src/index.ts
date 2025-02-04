@@ -1,6 +1,6 @@
-import express, { Request, Response, NextFunction } from 'express';
-import dotenv from 'dotenv';
-import cors from 'cors';
+import express, { Request, Response, NextFunction } from "express";
+import dotenv from "dotenv";
+import cors from "cors";
 
 dotenv.config();
 
@@ -11,14 +11,16 @@ app.use(cors());
 app.use(express.json());
 
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-    console.error(err.stack);
-    res.status(500).send('Something went wrong!');
+
+
+  console.error(err.stack);
+  res.status(500).send("Something went wrong!");
 });
 
-app.get('/', (req: Request, res: Response) => {
-    res.send('Hello, world!');
+app.get("/", (req: Request, res: Response) => {
+  res.send("Hello, world!");
 });
 
 app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+  console.log(`Server is running on port ${PORT}`);
 });

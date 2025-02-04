@@ -1,0 +1,9 @@
+echo '🏗️👷 Styling, testing and building your project before committing'
+
+# Check Prettier standards
+npm --prefix apps/backend run format ||
+(
+    echo '🤢🤮🤢🤮 Its FOKING RAW - Your styling looks disgusting. 🤢🤮🤢🤮
+            Prettier Check Failed. Run npm run format, add changes and try commit again.';
+    false;
+)
