@@ -3,7 +3,6 @@ echo '🏗️👷 Styling, testing and building your project before committing'
 # Check Prettier standards
 npm --prefix apps/backend run format ||
 (
-    echo '🤢🤮🤢🤮 Its FOKING RAW - Your styling looks disgusting. 🤢🤮🤢🤮
-            Prettier Check Failed. Run npm run format, add changes and try commit again.';
+    echo 'Prettier Check Failed. Run "npm run format" in apps/backend, add changes and save then try commit again.';
     false;
 )
