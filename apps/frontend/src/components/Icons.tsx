@@ -14,7 +14,10 @@ import {
     FaUserCircle as UserLeaderboard,
     FaGlobe as Site,
     FaLink as Link,
-    FaGoogle as Google
+    FaGoogle as Google,
+    FaEye as Show,
+    FaEyeSlash as Hide
+
 } from "react-icons/fa";
 import { HiSpeakerXMark as Mute, HiSpeakerWave as Speaker } from "react-icons/hi2";
 import { GrInstagram as Instagram } from "react-icons/gr";
@@ -43,5 +46,7 @@ export {
     Edit,
     Register,
     Google,
-    Login
+    Login,
+    Show,
+    Hide
 };
