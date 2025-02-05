@@ -1,0 +1,242 @@
+Here's an expanded and complete implementation that includes **fetching** user profiles, leaderboard, and history, with full **type safety** using Mongoose and TypeScript.
+
+### Step-by-Step with Fetching
+
+1. **User Model** (`models/User.ts`):
+   - This model defines the structure of the user document and relationships to history, statistics, and leaderboard.
+
+```typescript
+import mongoose, { Schema, Document, Types } from 'mongoose';
+
+interface IUser extends Document {
+  full_name: string;
+  unique_name: string;
+  email: string;
+  bio?: string;
+  password: string;
+  twitter?: string;
+  instagram?: string;
+  website?: string;
+  created_at: Date;
+  history: Types.ObjectId[];
+  stats: Types.ObjectId;
+  leaderboard: Types.ObjectId;
+}
+
+const userSchema = new Schema<IUser>({
+  full_name: { type: String, required: true },
+  unique_name: { type: String, unique: true, required: true },
+  email: { type: String, unique: true, required: true },
+  bio: { type: String, default: '' },
+  password: { type: String, required: true },
+  twitter: { type: String, default: '' },
+  instagram: { type: String, default: '' },
+  website: { type: String, default: '' },
+  created_at: { type: Date, default: Date.now },
+  history: [{ type: Schema.Types.ObjectId, ref: 'History' }],
+  stats: { type: Schema.Types.ObjectId, ref: 'TotalStatistics' },
+  leaderboard: { type: Schema.Types.ObjectId, ref: 'Leaderboard' }
+});
+
+const User = mongoose.model<IUser>('User', userSchema);
+export default User;
+```
+
+2. **History Model** (`models/History.ts`):
+   - Records each test result like WPM, accuracy, and test date.
+
+```typescript
+import mongoose, { Schema, Document, Types } from 'mongoose';
+
+interface IHistory extends Document {
+  user_id: Types.ObjectId;
+  wpm: number;
+  accuracy: number;
+  date: Date;
+}
+
+const historySchema = new Schema<IHistory>({
+  user_id: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+  wpm: { type: Number, required: true },
+  accuracy: { type: Schema.Types.Decimal128, required: true },
+  date: { type: Date, default: Date.now }
+});
+
+const History = mongoose.model<IHistory>('History', historySchema);
+export default History;
+```
+
+3. **TotalStatistics Model** (`models/TotalStatistics.ts`):
+   - Stores the aggregated statistics like total tests completed, total letters typed, and total words typed.
+
+```typescript
+import mongoose, { Schema, Document, Types } from 'mongoose';
+
+interface ITotalStatistics extends Document {
+  user_id: Types.ObjectId;
+  total_tests_taken: number;
+  total_letters_typed: number;
+  total_words_typed: number;
+}
+
+const totalStatisticsSchema = new Schema<ITotalStatistics>({
+  user_id: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+  total_tests_taken: { type: Number, default: 0 },
+  total_letters_typed: { type: Number, default: 0 },
+  total_words_typed: { type: Number, default: 0 }
+});
+
+const TotalStatistics = mongoose.model<ITotalStatistics>('TotalStatistics', totalStatisticsSchema);
+export default TotalStatistics;
+```
+
+4. **Leaderboard Model** (`models/Leaderboard.ts`):
+   - Tracks the user's highest WPM and accuracy, including the time it was achieved.
+
+```typescript
+import mongoose, { Schema, Document, Types } from 'mongoose';
+
+interface ILeaderboard extends Document {
+  user_id: Types.ObjectId;
+  highest_wpm: number;
+  highest_accuracy: number;
+  achieved_at: Date;
+}
+
+const leaderboardSchema = new Schema<ILeaderboard>({
+  user_id: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+  highest_wpm: { type: Number, required: true },
+  highest_accuracy: { type: Schema.Types.Decimal128, required: true },
+  achieved_at: { type: Date, default: Date.now }
+});
+
+const Leaderboard = mongoose.model<ILeaderboard>('Leaderboard', leaderboardSchema);
+export default Leaderboard;
+```
+
+### 5. **Fetching Data**:
+
+Here’s how you can fetch the **Leaderboard**, **User Profile**, and **Test History** in a **type-safe manner** using TypeScript and Mongoose.
+
+#### Fetch the Leaderboard (Top 10 users by highest WPM):
+
+```typescript
+import Leaderboard from './models/Leaderboard';
+import { ILeaderboard } from './models/Leaderboard';
+
+async function fetchLeaderboard(): Promise<ILeaderboard[]> {
+  const leaderboard = await Leaderboard.find()
+    .sort({ highest_wpm: -1 })  // Sort by highest WPM
+    .limit(10)  // Fetch the top 10 users
+    .populate('user_id', 'unique_name highest_wpm highest_accuracy achieved_at');  // Populate user info
+  
+  return leaderboard;
+}
+```
+
+#### Fetch User Profile:
+
+```typescript
+import User from './models/User';
+import { IUser } from './models/User';
+import { Types } from 'mongoose';
+
+async function fetchUserProfile(userId: Types.ObjectId): Promise<IUser | null> {
+  const user = await User.findById(userId)
+    .populate('history', 'wpm accuracy date')  // Populate history
+    .populate('stats', 'total_tests_taken total_letters_typed total_words_typed')  // Populate stats
+    .populate('leaderboard', 'highest_wpm highest_accuracy achieved_at')  // Populate leaderboard
+    .select('full_name unique_name email bio twitter instagram website created_at');
+  
+  return user;
+}
+```
+
+#### Fetch User’s Test History (last 100 tests):
+
+```typescript
+import History from './models/History';
+import { IHistory } from './models/History';
+import { Types } from 'mongoose';
+
+async function fetchUserHistory(userId: Types.ObjectId): Promise<IHistory[]> {
+  const history = await History.find({ user_id: userId })
+    .sort({ date: -1 })  // Sort by latest date first
+    .limit(100)  // Fetch last 100 tests
+    .select('wpm accuracy date');
+  
+  return history;
+}
+```
+
+### 6. **Update Stats after Test Completion**:
+
+```typescript
+import User from './models/User';
+import History from './models/History';
+import Leaderboard from './models/Leaderboard';
+import TotalStatistics from './models/TotalStatistics';
+import { Types } from 'mongoose';
+
+async function updateStatsAfterTest(
+  userId: Types.ObjectId,
+  wpm: number,
+  accuracy: number,
+  charsTyped: number,
+  wordsTyped: number
+): Promise<void> {
+  // Create a new History record
+  const history = new History({ user_id: userId, wpm, accuracy, date: new Date() });
+  await history.save();
+
+  // Update Total Statistics
+  const stats = await TotalStatistics.findOneAndUpdate(
+    { user_id: userId },
+    {
+      $inc: {
+        total_tests_taken: 1,
+        total_letters_typed: charsTyped,
+        total_words_typed: wordsTyped
+      }
+    },
+    { new: true }
+  );
+
+  // Check if the new WPM is higher than the leaderboard
+  const leaderboard = await Leaderboard.findOne({ user_id: userId });
+
+  if (!leaderboard || wpm > leaderboard.highest_wpm) {
+    // Update leaderboard if new WPM is higher
+    if (leaderboard) {
+      leaderboard.highest_wpm = wpm;
+      leaderboard.highest_accuracy = accuracy;
+      leaderboard.achieved_at = new Date();
+      await leaderboard.save();
+    } else {
+      // If no leaderboard entry, create a new one
+      const newLeaderboard = new Leaderboard({
+        user_id: userId,
+        highest_wpm: wpm,
+        highest_accuracy: accuracy,
+        achieved_at: new Date()
+      });
+      await newLeaderboard.save();
+    }
+  }
+}
+```
+
+### Explanation of **Type Safety** in Mongoose:
+
+- **Interfaces**: We define TypeScript interfaces (`IUser`, `IHistory`, `ITotalStatistics`, `ILeaderboard`) for each model to ensure that the properties are strongly typed.
+- **Model Methods**: TypeScript will infer types when querying the database using Mongoose, ensuring that your queries return the correct type of data.
+- **`populate`**: The `populate` method allows you to fetch related documents (like `history`, `stats`, `leaderboard`) in a type-safe manner.
+- **`Types.ObjectId`**: Since we are using MongoDB’s ObjectId as the foreign key, we define relationships using `Types.ObjectId` for strict typing.
+- **Query Types**: When performing queries (like `find`, `findById`, etc.), TypeScript will ensure that the results match the expected type, preventing errors like accessing non-existent fields.
+
+---
+
+### Summary:
+This implementation provides a **type-safe** approach to interacting with MongoDB using **TypeScript** and **Mongoose**. By defining the model interfaces and ensuring all queries are correctly typed, you gain the benefits of **intellisense**, **autocomplete**, and **type checking**, all of which make it easier to manage and maintain your codebase.
+
+Let me know if you need more details or if anything is unclear!

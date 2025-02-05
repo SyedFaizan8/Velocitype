@@ -1,8 +1,4 @@
-// This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
   provider = "prisma-client-js"
@@ -14,17 +10,52 @@ datasource db {
 }
 
 model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
-  posts Post[]
+  user_id     Int     @id @default(autoincrement())
+  full_name   String
+  unique_name String  @unique
+  email       String  @unique
+  bio         String?
+  password    String
+  twitter     String?
+  instagram   String?
+  website     String?
+  created_at  DateTime @default(now())
+
+  history     History[]        
+  stats       TotalStatistics? 
+  leaderboard Leaderboard?    
 }
 
-model Post {
-  id        Int     @id @default(autoincrement())
-  title     String
-  content   String?
-  published Boolean @default(false)
-  author    User    @relation(fields: [authorId], references: [id])
-  authorId  Int
+model History {
+  history_id       Int     @id @default(autoincrement())
+  user_id          Int
+  wpm              Int
+  accuracy         Decimal @db.Decimal(5,2) // Corrected this line
+  date             DateTime @default(now())
+
+  user User @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+
+  @@index([user_id]) 
+}
+
+model TotalStatistics {
+  user_id         Int @id
+  total_tests_taken Int
+  total_letters_typed Int
+  total_words_typed Int
+
+  user User @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+
+  @@index([user_id])
+}
+
+model Leaderboard {
+  user_id          Int @id
+  highest_wpm      Int
+  highest_accuracy Decimal @db.Decimal(5,2) // Corrected this line
+  achieved_at      DateTime @default(now())
+
+  user User @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+
+  @@index([user_id]) 
 }

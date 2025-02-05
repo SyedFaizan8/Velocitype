@@ -1,0 +1,457 @@
+docker run --name postgres-temp -e POSTGRES_USER=faizan -e POSTGRES_PASSWORD=faizan -e POSTGRES_DB=mydb -p 5432:5432 -d postgres:13
+
+-----------------------------------------------------------------------------
+### 2. **User Registration**
+
+This code handles user registration and stores the necessary information.
+
+```javascript
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
+
+async function registerUser(userData) {
+  const { full_name, unique_name, email, password } = userData;
+
+  // Create the user
+  const newUser = await prisma.user.create({
+    data: {
+      full_name,
+      unique_name,
+      email,
+      password, // Make sure to hash the password before storing
+    },
+  });
+
+  // Create initial statistics and leaderboard entry for the user
+  await prisma.totalStatistics.create({
+    data: {
+      user_id: newUser.user_id,
+      total_tests_taken: 0,
+      total_letters_typed: 0,
+      total_words_typed: 0,
+    },
+  });
+
+  await prisma.leaderboard.create({
+    data: {
+      user_id: newUser.user_id,
+      highest_wpm: 0,
+      highest_accuracy: 0,
+    },
+  });
+
+  return newUser;
+}
+
+// Example usage
+registerUser({
+  full_name: 'John Doe',
+  unique_name: 'john_doe',
+  email: 'johndoe@example.com',
+  password: 'hashed_password_here', // Ensure password is hashed
+}).then(user => console.log('User registered:', user)).catch(console.error);
+```
+
+### 3. **Test Completion Logic**
+
+After the user completes a test, update their statistics, add the test data to history, and update the leaderboard if necessary.
+
+```javascript
+async function handleTestCompletion(userId, { wpm, accuracy, totalChars, totalWords }) {
+  const result = await prisma.$transaction(async (prisma) => {
+    // 1. Increment Total Tests Completed and Update Statistics
+    const stats = await prisma.totalStatistics.upsert({
+      where: { user_id: userId },
+      update: {
+        total_tests_taken: { increment: 1 },
+        total_letters_typed: { increment: totalChars },
+        total_words_typed: { increment: totalWords },
+      },
+      create: {
+        user_id: userId,
+        total_tests_taken: 1,
+        total_letters_typed: totalChars,
+        total_words_typed: totalWords,
+      },
+    });
+
+    // 2. Push Test Data to History
+    const newHistory = await prisma.history.create({
+      data: {
+        user_id: userId,
+        wpm,
+        accuracy,
+        characters_typed: totalChars,
+      },
+    });
+
+    // 3. Check if this test is a new high score and Update Leaderboard if necessary
+    const userLeaderboard = await prisma.leaderboard.findUnique({
+      where: { user_id: userId },
+    });
+
+    let leaderboardUpdate = null;
+
+    // If the new score is better than the user's current leaderboard entry, update the leaderboard
+    if (!userLeaderboard || wpm > userLeaderboard.highest_wpm || accuracy > userLeaderboard.highest_accuracy) {
+      leaderboardUpdate = await prisma.leaderboard.upsert({
+        where: { user_id: userId },
+        update: {
+          highest_wpm: Math.max(wpm, userLeaderboard?.highest_wpm || 0),
+          highest_accuracy: Math.max(accuracy, userLeaderboard?.highest_accuracy || 0),
+          achieved_at: new Date(),
+        },
+        create: {
+          user_id: userId,
+          highest_wpm: wpm,
+          highest_accuracy: accuracy,
+          achieved_at: new Date(),
+        },
+      });
+    }
+
+    return {
+      newHistory,
+      leaderboardUpdate,
+      stats,
+    };
+  });
+
+  return result;
+}
+
+// Example usage
+handleTestCompletion(123, {
+  wpm: 150, 
+  accuracy: 98.5, 
+  totalChars: 1200, 
+  totalWords: 250 
+}).then(result => console.log(result)).catch(console.error);
+```
+
+### 4. **User Deletion**
+
+When a user deletes their account, all their data is removed from the database (test history, stats, leaderboard).
+
+```javascript
+async function handleUserDeletion(userId) {
+  const result = await prisma.$transaction(async (prisma) => {
+    // Delete user's test history
+    await prisma.history.deleteMany({
+      where: { user_id: userId },
+    });
+
+    // Delete user's statistics
+    await prisma.totalStatistics.delete({
+      where: { user_id: userId },
+    });
+
+    // Delete user's leaderboard entry
+    await prisma.leaderboard.delete({
+      where: { user_id: userId },
+    });
+
+    // Delete user record
+    const deletedUser = await prisma.user.delete({
+      where: { user_id: userId },
+    });
+
+    return deletedUser;
+  });
+
+  return result;
+}
+
+// Example usage
+handleUserDeletion(123).then(deletedUser => {
+  console.log('User deleted and data cleaned up:', deletedUser);
+}).catch(console.error);
+```
+
+### 5. **Initialization and Database Setup**
+
+1. **Set Up Prisma**: After defining your schema, run the following commands to generate the Prisma client and apply the migrations.
+
+   ```bash
+   npx prisma migrate dev --name init
+   npx prisma generate
+   ```
+
+2. **Set Up Database**: Make sure your `DATABASE_URL` is correctly set in your `.env` file.
+
+   Example `.env`:
+
+   ```env
+   DATABASE_URL="postgresql://username:password@localhost:5432/speedtyping?schema=public"
+   ```
+
+### 6. **Hashing Passwords**
+
+Ensure that user passwords are securely hashed before storing them. You can use a library like `bcryptjs` for this:
+
+```javascript
+const bcrypt = require('bcryptjs');
+
+// Hash a password before saving it
+async function hashPassword(password) {
+  const salt = await bcrypt.genSalt(10);
+  const hashedPassword = await bcrypt.hash(password, salt);
+  return hashedPassword;
+}
+
+// Example usage
+hashPassword('user_password_here').then(hashedPassword => {
+  console.log('Hashed password:', hashedPassword);
+});
+```
+
+### 7. **Complete Flow Recap:**
+
+1. **User Registration**: `registerUser` creates a new user and initializes statistics and leaderboard.
+2. **Test Completion**: After each test, `handleTestCompletion` updates the user's statistics and history, and checks if the leaderboard needs to be updated.
+3. **User Deletion**: `handleUserDeletion` deletes all user-related data (history, stats, leaderboard, and user).
+
+With this complete setup, you should be able to manage user registrations, handle test data, update the leaderboard, and clean up user data upon account deletion effectively.
+
+Here’s how you can fetch the **leaderboard**, **user profile**, and handle **test completion** with appropriate updates, based on your Prisma schema.
+
+### 1. **Fetching Leaderboard**
+You want to fetch the leaderboard, which shows the user’s highest WPM, accuracy, and the time they achieved it. To get the leaderboard, you can order the users by `highest_wpm` or `highest_accuracy` and limit the result to the top N users.
+
+```javascript
+// Fetch the leaderboard with the top N users
+async function fetchLeaderboard(limit = 10) {
+  const leaderboard = await prisma.leaderboard.findMany({
+    orderBy: {
+      highest_wpm: 'desc',  // Or 'highest_accuracy', depending on what you want to rank by
+    },
+    take: limit,
+    include: {
+      user: {
+        select: {
+          unique_name: true,
+          full_name: true,
+        },
+      },
+    },
+  });
+
+  return leaderboard;
+}
+
+// Example usage
+fetchLeaderboard().then(leaderboard => console.log(leaderboard)).catch(console.error);
+```
+
+### 2. **Fetching User Profile**
+
+To fetch a user’s profile with all the required data (including social media links, test statistics, leaderboard ranking, etc.), we can use Prisma to query the user’s details, their statistics, and history.
+
+```javascript
+// Fetch a user's profile
+async function fetchUserProfile(userId) {
+  const userProfile = await prisma.user.findUnique({
+    where: { user_id: userId },
+    include: {
+      history: {
+        orderBy: { date: 'desc' },
+        take: 100, // Limit to last 100 tests
+      },
+      stats: true, // Total statistics (total tests, total chars, total words, etc.)
+      leaderboard: true, // Leaderboard (highest WPM, highest accuracy)
+    },
+  });
+
+  if (!userProfile) {
+    throw new Error('User not found');
+  }
+
+  // Prepare profile data to return
+  const { full_name, unique_name, email, bio, twitter, instagram, website, created_at } = userProfile;
+  const history = userProfile.history.map((test) => ({
+    wpm: test.wpm,
+    accuracy: test.accuracy,
+    date: test.date,
+  }));
+
+  const { total_tests_taken, total_letters_typed, total_words_typed } = userProfile.stats || {};
+  const leaderboard = userProfile.leaderboard || {};
+
+  return {
+    full_name,
+    unique_name,
+    email,
+    bio,
+    twitter,
+    instagram,
+    website,
+    created_at,
+    history,
+    total_tests_taken,
+    total_letters_typed,
+    total_words_typed,
+    leaderboard,
+  };
+}
+
+// Example usage
+fetchUserProfile(123).then(profile => console.log(profile)).catch(console.error);
+```
+
+### 3. **After Test Completes: Incrementing Statistics and Updating Leaderboard**
+
+When a user completes a test, you need to update their statistics, history, and leaderboard (if applicable). If the user’s latest WPM or accuracy is better than their previous high score, you will update the leaderboard.
+
+```javascript
+async function handleTestCompletion(userId, { wpm, accuracy, totalChars, totalWords }) {
+  const result = await prisma.$transaction(async (prisma) => {
+    // 1. Increment Total Tests Completed and Update Statistics
+    const stats = await prisma.totalStatistics.upsert({
+      where: { user_id: userId },
+      update: {
+        total_tests_taken: { increment: 1 },
+        total_letters_typed: { increment: totalChars },
+        total_words_typed: { increment: totalWords },
+      },
+      create: {
+        user_id: userId,
+        total_tests_taken: 1,
+        total_letters_typed: totalChars,
+        total_words_typed: totalWords,
+      },
+    });
+
+    // 2. Push Test Data to History
+    const newHistory = await prisma.history.create({
+      data: {
+        user_id: userId,
+        wpm,
+        accuracy,
+        characters_typed: totalChars,
+      },
+    });
+
+    // 3. Check if this test is a new high score and Update Leaderboard if necessary
+    const userLeaderboard = await prisma.leaderboard.findUnique({
+      where: { user_id: userId },
+    });
+
+    let leaderboardUpdate = null;
+
+    // If the new score is better than the user's current leaderboard entry, update the leaderboard
+    if (!userLeaderboard || wpm > userLeaderboard.highest_wpm || accuracy > userLeaderboard.highest_accuracy) {
+      leaderboardUpdate = await prisma.leaderboard.upsert({
+        where: { user_id: userId },
+        update: {
+          highest_wpm: Math.max(wpm, userLeaderboard?.highest_wpm || 0),
+          highest_accuracy: Math.max(accuracy, userLeaderboard?.highest_accuracy || 0),
+          achieved_at: new Date(),
+        },
+        create: {
+          user_id: userId,
+          highest_wpm: wpm,
+          highest_accuracy: accuracy,
+          achieved_at: new Date(),
+        },
+      });
+    }
+
+    return {
+      newHistory,
+      leaderboardUpdate,
+      stats,
+    };
+  });
+
+  return result;
+}
+
+// Example usage
+handleTestCompletion(123, {
+  wpm: 150, 
+  accuracy: 98.5, 
+  totalChars: 1200, 
+  totalWords: 250 
+}).then(result => console.log(result)).catch(console.error);
+```
+
+### 4. **How This Works**
+
+1. **Leaderboard**:
+   - The `fetchLeaderboard` function fetches the leaderboard sorted by highest WPM (or accuracy).
+   - You can specify a limit to the number of users in the leaderboard (e.g., top 10).
+   
+2. **User Profile**:
+   - `fetchUserProfile` retrieves the user's profile information, their test history (last 100 tests), and their overall statistics.
+   - This includes their test completion data (total tests, total characters typed, total words typed) and any social media links they’ve provided.
+
+3. **Test Completion**:
+   - When a test is completed, `handleTestCompletion` updates the user’s total statistics, adds a new entry to their test history, and checks if their latest score is better than their previous high score in the leaderboard.
+   - If the new score is better, it updates their leaderboard entry.
+
+### Final Thoughts:
+
+- **Database Efficiency**: Using Prisma’s `$transaction` ensures that the operations (statistics update, leaderboard update, history addition) happen atomically.
+- **Scalability**: The approach handles the leaderboard and profile efficiently. The `history` table is indexed on `user_id` to speed up operations.
+- **Security**: Ensure that passwords are hashed and never stored in plain text. Use `bcrypt` or another secure hashing algorithm for password storage.
+
+With this setup, your speed typing website will be able to efficiently fetch leaderboard data, user profiles, and handle test completion updates and rankings.
+--------------------------------------
+To optimize the query for checking if a username is available or if the email is already taken, you can use Prisma's `findFirst` with a `where` clause and limit the query to return only the necessary fields. This way, you avoid unnecessary overhead by not fetching extra data. You can also run both checks in parallel to minimize the response time.
+
+Here's an optimized way to check if a username is available and if the email already exists:
+
+### Optimized Code for Checking Username and Email
+
+```javascript
+// Check if username is available and email is already taken
+async function checkUsernameAndEmail(username, email) {
+  const result = await prisma.$transaction([
+    prisma.user.findFirst({
+      where: { unique_name: username },
+      select: { unique_name: true }, // Only select the unique_name field
+    }),
+    prisma.user.findFirst({
+      where: { email },
+      select: { email: true }, // Only select the email field
+    }),
+  ]);
+
+  const usernameTaken = result[0];  // If username is taken, result[0] will be truthy
+  const emailTaken = result[1];     // If email is taken, result[1] will be truthy
+
+  return {
+    usernameAvailable: !usernameTaken,
+    emailAvailable: !emailTaken,
+  };
+}
+
+// Example usage
+checkUsernameAndEmail('testuser', 'testuser@example.com')
+  .then(result => {
+    console.log('Username available:', result.usernameAvailable);
+    console.log('Email available:', result.emailAvailable);
+  })
+  .catch(console.error);
+```
+
+### Explanation:
+
+1. **Prisma `$transaction`**:
+   - We are using Prisma's `$transaction` to run two queries simultaneously. This ensures that both checks (username and email) are performed at the same time, reducing the total response time.
+   
+2. **Optimized Fields**:
+   - The `select` field in the query ensures that only the necessary fields (`unique_name` and `email`) are returned. This minimizes the amount of data transferred from the database and improves performance.
+
+3. **Parallel Queries**:
+   - Both the username and email checks are executed in parallel, which avoids waiting for one to complete before starting the other, making the process faster.
+
+4. **Result Handling**:
+   - After the transaction, we check whether the `username` and `email` already exist based on the result. If `usernameTaken` or `emailTaken` are truthy, it means those fields are already in use.
+
+### Advantages:
+- **Faster Execution**: Both checks are executed simultaneously.
+- **Reduced Data Fetching**: Only the necessary fields are selected, reducing overhead.
+- **Atomic Operation**: Using `$transaction` ensures that both queries are handled together, which can be useful for consistency.
+
+This approach ensures that your queries are optimized and run efficiently while checking the availability of the username and email.

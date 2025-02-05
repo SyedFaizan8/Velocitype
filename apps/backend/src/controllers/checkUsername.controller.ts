@@ -3,7 +3,7 @@ import { prisma } from "../utils/db";
 import { asyncHandler } from "src/utils/asyncHandler";
 import { ApiError } from "src/utils/ApiError";
 
-const registerUser = asyncHandler(async (req: Request, res: Response) => {
+const checkUsername = asyncHandler(async (req: Request, res: Response) => {
   try {
     const username = req.query.username as string;
 
@@ -21,4 +21,4 @@ const registerUser = asyncHandler(async (req: Request, res: Response) => {
   }
 });
 
-export default registerUser;
+export default checkUsername;

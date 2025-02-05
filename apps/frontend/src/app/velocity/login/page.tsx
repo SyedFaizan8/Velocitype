@@ -128,7 +128,6 @@ const page = () => {
                     <Register /> Sign Up</button>
             </form >
 
-
             <form onSubmit={handleSubmitLogin(onLogin)} className="flex flex-col justify-center items-center space-y-3">
                 <div className="flex gap-2 w-2/5 text-xl"><span className="pt-1"><Login /></span>login</div>
                 <button className="py-1 flex bg-slate-500 text-black font-extrabold rounded-md gap-2 w-2/5 justify-center items-center hover:bg-slate-900 hover:text-white transition">

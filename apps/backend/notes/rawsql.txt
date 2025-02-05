@@ -1,0 +1,92 @@
+postgres 
+CREATE TABLE "User" (
+  "user_id" SERIAL PRIMARY KEY,
+  "full_name" VARCHAR(255) NOT NULL,
+  "unique_name" VARCHAR(255) UNIQUE NOT NULL,
+  "email" VARCHAR(255) UNIQUE NOT NULL,
+  "bio" TEXT,
+  "password" VARCHAR(255) NOT NULL,
+  "twitter" VARCHAR(255),
+  "instagram" VARCHAR(255),
+  "website" VARCHAR(255),
+  "created_at" TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE "History" (
+  "history_id" SERIAL PRIMARY KEY,
+  "user_id" INT NOT NULL,
+  "wpm" INT NOT NULL,
+  "accuracy" DECIMAL(5, 2) NOT NULL,
+  "date" TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY ("user_id") REFERENCES "User"("user_id") ON DELETE CASCADE
+);
+
+CREATE INDEX idx_history_user_id ON "History"("user_id");
+
+CREATE TABLE "TotalStatistics" (
+  "user_id" INT PRIMARY KEY,
+  "total_tests_taken" INT NOT NULL,
+  "total_letters_typed" INT NOT NULL,
+  "total_words_typed" INT NOT NULL,
+  FOREIGN KEY ("user_id") REFERENCES "User"("user_id") ON DELETE CASCADE
+);
+
+CREATE INDEX idx_total_stats_user_id ON "TotalStatistics"("user_id");
+
+CREATE TABLE "Leaderboard" (
+  "user_id" INT PRIMARY KEY,
+  "highest_wpm" INT NOT NULL,
+  "highest_accuracy" DECIMAL(5, 2) NOT NULL,
+  "achieved_at" TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY ("user_id") REFERENCES "User"("user_id") ON DELETE CASCADE
+);
+
+CREATE INDEX idx_leaderboard_user_id ON "Leaderboard"("user_id");
+----------------------------------------------------------------------------------------------------------
+
+mysql
+
+CREATE TABLE `User` (
+  `user_id` INT AUTO_INCREMENT PRIMARY KEY,
+  `full_name` VARCHAR(255) NOT NULL,
+  `unique_name` VARCHAR(255) UNIQUE NOT NULL,
+  `email` VARCHAR(255) UNIQUE NOT NULL,
+  `bio` TEXT,
+  `password` VARCHAR(255) NOT NULL,
+  `twitter` VARCHAR(255),
+  `instagram` VARCHAR(255),
+  `website` VARCHAR(255),
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE `History` (
+  `history_id` INT AUTO_INCREMENT PRIMARY KEY,
+  `user_id` INT NOT NULL,
+  `wpm` INT NOT NULL,
+  `accuracy` DECIMAL(5, 2) NOT NULL,
+  `date` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (`user_id`) REFERENCES `User`(`user_id`) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_history_user_id ON `History`(`user_id`);
+
+CREATE TABLE `TotalStatistics` (
+  `user_id` INT PRIMARY KEY,
+  `total_tests_taken` INT NOT NULL,
+  `total_letters_typed` INT NOT NULL,
+  `total_words_typed` INT NOT NULL,
+  FOREIGN KEY (`user_id`) REFERENCES `User`(`user_id`) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_total_stats_user_id ON `TotalStatistics`(`user_id`);
+
+CREATE TABLE `Leaderboard` (
+  `user_id` INT PRIMARY KEY,
+  `highest_wpm` INT NOT NULL,
+  `highest_accuracy` DECIMAL(5, 2) NOT NULL,
+  `achieved_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (`user_id`) REFERENCES `User`(`user_id`) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_leaderboard_user_id ON `Leaderboard`(`user_id`);
+
