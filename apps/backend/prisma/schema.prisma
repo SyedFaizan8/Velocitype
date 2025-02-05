@@ -11,8 +11,8 @@ datasource db {
 
 model User {
   user_id     Int     @id @default(autoincrement())
-  full_name   String
-  unique_name String  @unique
+  fullname    String
+  username    String  @unique
   email       String  @unique
   bio         String?
   password    String
@@ -27,10 +27,10 @@ model User {
 }
 
 model History {
-  history_id       Int     @id @default(autoincrement())
+  history_id       Int      @id @default(autoincrement())
   user_id          Int
   wpm              Int
-  accuracy         Decimal @db.Decimal(5,2) // Corrected this line
+  accuracy         Decimal  @db.Decimal(5,2) // Corrected this line
   date             DateTime @default(now())
 
   user User @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
@@ -39,10 +39,10 @@ model History {
 }
 
 model TotalStatistics {
-  user_id         Int @id
-  total_tests_taken Int
+  user_id             Int @id
+  total_tests_taken   Int
   total_letters_typed Int
-  total_words_typed Int
+  total_words_typed   Int
 
   user User @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
 
@@ -50,9 +50,9 @@ model TotalStatistics {
 }
 
 model Leaderboard {
-  user_id          Int @id
+  user_id          Int      @id
   highest_wpm      Int
-  highest_accuracy Decimal @db.Decimal(5,2) // Corrected this line
+  highest_accuracy Decimal  @db.Decimal(5,2) 
   achieved_at      DateTime @default(now())
 
   user User @relation(fields: [user_id], references: [user_id], onDelete: Cascade)

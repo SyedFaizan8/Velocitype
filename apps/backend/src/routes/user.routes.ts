@@ -10,12 +10,12 @@ import refreshAccessToken from "@/controllers/refreshAccessToken.controller";
 const router = Router();
 
 router.route("/check-username").get(checkUsername); // GET /api/check-username?username=johndoe
-router.route("/check-email").get(checkEmail);   // GET /api/check-${field} //email?email=syejkd@gmail.com
-router.route("/register").post(registerUser)
+router.route("/check-email").get(checkEmail); // GET /api/check-${field} //email?email=syejkd@gmail.com
+router.route("/register").post(registerUser);
 router.route("/login").post(loginUser);
 
 // secured routes
-router.route("/logout").post(verifyJWT, logoutUser)
-router.route("/refresh-token").post(refreshAccessToken)
+router.route("/logout").post(verifyJWT, logoutUser);
+router.route("/refresh-token").post(refreshAccessToken);
 
 export default router;
