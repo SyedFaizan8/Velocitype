@@ -1,24 +1,24 @@
-import express, { Request, Response } from "express";
+import { Request, Response } from "express";
 import { prisma } from "../utils/db";
-import { asyncHandler } from "src/utils/asyncHandler";
-import { ApiError } from "src/utils/ApiError";
+import asyncHandler from "../utils/asyncHandler";
+import { ApiError } from "../utils/ApiError";
+import { usernameSchema } from "@repo/zod";
+import { ApiResponse } from "../utils/ApiResponse";
 
-const checkUsername = asyncHandler(async (req: Request, res: Response) => {
+export const checkUsername = asyncHandler(async (req: Request, res: Response) => {
+
+  const validation = usernameSchema.safeParse(req.query);
+
+  if (!validation.success) throw new ApiError(400, 'Validation failed')
+
+  const { username } = validation.data;
+
   try {
-    const username = req.query.username as string;
+    const user = await prisma.user.findUnique({ where: { username } }); //user is null
+    return res.status(200).json(new ApiResponse(200, { available: user === null }, 'Username availability check successful'));
 
-    if (!username)
-      return res.status(400).json({ message: "Username is required" });
-    // throw new ApiError(400, "Username is required");
-
-    // const existingUser = await prisma.user.findUnique({
-    //     where: { username },
-    // });
-
-    // res.json({ available: !existingUser });
   } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
+    throw new ApiError(500, 'Internal server error while checking username');
   }
-});
 
-export default checkUsername;
+});

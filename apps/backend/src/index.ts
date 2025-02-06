@@ -26,7 +26,7 @@ import userRouter from "./routes/user.routes";
 import errorHandler from "./utils/errorHandler";
 
 //routes declaration
-app.use("/api/", userRouter);
+app.use("/api", userRouter);
 app.use(errorHandler);
 
 app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));

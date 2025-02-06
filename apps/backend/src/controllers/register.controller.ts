@@ -1,59 +1,56 @@
 import { Request, Response } from "express";
-import { ApiError } from "src/utils/ApiError";
-import asyncHandler from "src/utils/asyncHandler";
+import { ApiError } from "../utils/ApiError";
+import asyncHandler from "../utils/asyncHandler";
 import { registerSchema } from "@repo/zod";
-import { ApiResponse } from "@/utils/ApiResponse";
+import { ApiResponse } from "../utils/ApiResponse";
+import { prisma } from "../utils/db"
+import bcrypt from "bcryptjs";
+import { SALT_ROUNDS } from "../utils/constants";
+import { hashPassword } from "../utils/userAuth";
 
-const registerUser = asyncHandler(async (req: Request, res: Response) => {
-  // check if user already exists: username, email
-  // check for images, check for avatar
-  // upload them to cloudinary, avatar
-  // create user object - create entry in db
-  // remove password and refresh token field from response
-  // check for user creation
-  // return res
+export const registerUser = asyncHandler(async (req: Request, res: Response) => {
 
-  const validationResult = registerSchema.safeParse(req.body);
-  if (!validationResult.success)
-    return new ApiError(400, validationResult.error.errors[0].message);
-  console.log(`validationResult in registerUser route ${validationResult}`);
+  try {
+    const validationResult = registerSchema.safeParse(req.body);
+    if (!validationResult.success) throw new ApiError(400, validationResult.error.errors[0].message);
 
-  const { fullname, username, email, password, confirmPassword } =
-    validationResult.data;
+    const { fullname, username, email, password, confirmPassword } = validationResult.data;
+    if (password !== confirmPassword) throw new ApiError(400, "Passwords do not match");
 
-  // TODO: check if user already exists and username
-  // const existedUser = await User.findOne({
-  //     $or: [{ username }, { email }]
-  // })
-  // if (existedUser) throw new ApiError(409, "User with email or username already exists")
+    const existingUser = await prisma.user.findUnique({ where: { email } });
+    if (existingUser) throw new ApiError(409, "User with email already exists");
 
-  // TODO: hash to password
-  //
-  // TODO: push to the database
-  // const user = await User.create({
-  //     fullName,
-  //     avatar: avatar.url,
-  //     coverImage: coverImage?.url || "",
-  //     email,
-  //     password,
-  //     username: username.toLowerCase()
-  // })
 
-  // TODO: find user
-  // const createdUser = await User.findById(user._id).select(
-  //     "-password -refreshToken"
-  // )
+    const hashedPassword = await hashPassword(password);
 
-  // TODO: if not found
-  // if (!createdUser) {
-  //     throw new ApiError(500, "Something went wrong while registering the user")
-  // }
-  const createdUser = 1; //TODO: just for no errors remove this later
+    const newUser = await prisma.user.create({
+      data: {
+        fullname,
+        username,
+        email,
+        password: hashedPassword
+      },
+      select: {
+        user_id: true,
+        fullname: true,
+        username: true,
+        email: true,
+        bio: true,
+        twitter: true,
+        instagram: true,
+        website: true,
+        created_at: true,
+      },
+    })
 
-  // all went successfull
-  return res
-    .status(201)
-    .json(new ApiResponse(200, createdUser, "User registered Successfully"));
+    if (!newUser) throw new ApiError(500, "Something went wrong while registering the user");
+
+    return res
+      .status(201)
+      .json(new ApiResponse(200, newUser, "User registered Successfully"));
+
+  } catch (error) {
+    if (error instanceof ApiError) throw error;
+    throw new ApiError(500, "Internal server error during user registration");
+  }
 });
-
-export default registerUser;

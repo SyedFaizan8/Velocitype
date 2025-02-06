@@ -1,59 +1,68 @@
-import { ApiError } from "@/utils/ApiError";
-import { ApiResponse } from "@/utils/ApiResponse";
-import asyncHandler from "@/utils/asyncHandler";
+import { Request, Response } from "express";
+import { loginSchema } from "@repo/zod";
+
+import { ApiError } from "../utils/ApiError";
+import { ApiResponse } from "../utils/ApiResponse";
+import asyncHandler from "../utils/asyncHandler";
+import { prisma } from "../utils/db";
+import { options } from "../utils/constants";
+
 import {
   comparePassword,
   generateAccessAndRefereshTokens,
-} from "@/utils/userAuth";
-import { loginSchema } from "@repo/zod";
-import { Request, Response } from "express";
+} from "../utils/userAuth";
 
-const loginUser = asyncHandler(async (req: Request, res: Response) => {
-  //send cookie
+export const loginUser = asyncHandler(async (req: Request, res: Response) => {
 
-  const validationResult = loginSchema.safeParse(req.body);
-  if (!validationResult.success)
-    return new ApiError(400, "email and password must be required");
-  console.log(`validationResult in loginUser route ${validationResult}`);
+  try {
+    const validationResult = loginSchema.safeParse(req.body);
+    if (!validationResult.success) throw new ApiError(400, "email and password must be required");
 
-  const { email, password } = validationResult.data;
+    const { email, password } = validationResult.data;
 
-  // TODO: find User and take userID and password out to compare
-  // const user = await User.findOne({
-  //   $or: [{ username }, { email }]
-  // })
-  // if (!user) {
-  //   throw new ApiError(404, "User does not exist")
-  // }
+    const user = await prisma.user.findUnique({
+      where: { email },
+      select: {
+        user_id: true,
+        password: true,
+        fullname: true,
+        username: true,
+        email: true,
+        bio: true,
+        twitter: true,
+        instagram: true,
+        website: true,
+        created_at: true
+      }
+    });
+    if (!user) throw new ApiError(404, "User not found");
 
-  const hashedPassword = "lskfj"; // remove this later, this is came after searching user and taking its password out
-  const isMatch = await comparePassword(password, hashedPassword);
-  if (!isMatch) throw new ApiError(401, "Invalid user credentials");
+    const isPasswordValid = await comparePassword(password, user.password); ``
+    if (!isPasswordValid) throw new ApiError(401, "Invalid credentials");
 
-  const userId = "alsfd"; // remove this later
-  const { accessToken, refreshToken } =
-    await generateAccessAndRefereshTokens(userId);
+    const { accessToken, refreshToken } = await generateAccessAndRefereshTokens(user.user_id);
+    const { password: _, ...userWithoutPassword } = user;
 
-  // TODO: find user without password and refresh token
-  // const loggedInUser = await User.findById(user._id).select("-password -refreshToken")
+    return res
+      .status(200)
+      .cookie("user_id", userWithoutPassword.user_id, {
+        ...options,
+        sameSite: "strict",
+      })
+      .cookie("accessToken", accessToken, options)
+      .cookie("refreshToken", refreshToken, options)
+      .json(
+        new ApiResponse(
+          200,
+          { user: userWithoutPassword, accessToken, refreshToken },
+          "User logged in successfully"
+        )
+      )
 
-  const options = {
-    httpOnly: true,
-    secure: true,
-  };
+  } catch (error) {
+    if (error instanceof ApiError) throw error;
+    throw new ApiError(500, "Internal server error during login");
+  }
 
-  const logedInUser = "dfskljf"; // TODO: remove this later
-  return res
-    .status(200)
-    .cookie("accessToken", accessToken, options)
-    .cookie("refreshToken", refreshToken, options)
-    .json(
-      new ApiResponse(
-        200,
-        { user: logedInUser, accessToken, refreshToken },
-        "User Logged In successfully",
-      ),
-    );
 });
 
-export default loginUser;

@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "ts-node src/index.ts",
+    "dev": "nodemon",
     "build": "npx prisma generate && tsc",
     "start": "node dist/index.js",
     "format": "npx prettier . --check --write"
@@ -19,13 +19,14 @@
     "@types/express": "^5.0.0",
     "@types/jsonwebtoken": "^9.0.8",
     "@types/node": "^22.10.6",
+    "nodemon": "^3.1.9",
     "prettier": "^3.4.2",
-    "prisma": "^6.3.0",
+    "prisma": "^6.3.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.3"
   },
   "dependencies": {
-    "@prisma/client": "^6.3.0",
+    "@prisma/client": "^6.3.1",
     "@repo/zod": "^1.0.0",
     "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.7",
