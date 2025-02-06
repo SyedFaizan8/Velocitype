@@ -6,7 +6,7 @@ const errorHandler = (
   err: unknown,
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ): void => {
   if (err instanceof ApiError) {
     const response = new ApiResponse(err.statusCode, null, err.message);

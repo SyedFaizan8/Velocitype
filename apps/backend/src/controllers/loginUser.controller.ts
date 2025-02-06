@@ -13,10 +13,10 @@ import {
 } from "../utils/userAuth";
 
 export const loginUser = asyncHandler(async (req: Request, res: Response) => {
-
   try {
     const validationResult = loginSchema.safeParse(req.body);
-    if (!validationResult.success) throw new ApiError(400, "email and password must be required");
+    if (!validationResult.success)
+      throw new ApiError(400, "email and password must be required");
 
     const { email, password } = validationResult.data;
 
@@ -32,15 +32,18 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
         twitter: true,
         instagram: true,
         website: true,
-        created_at: true
-      }
+        created_at: true,
+      },
     });
     if (!user) throw new ApiError(404, "User not found");
 
-    const isPasswordValid = await comparePassword(password, user.password); ``
+    const isPasswordValid = await comparePassword(password, user.password);
+    ``;
     if (!isPasswordValid) throw new ApiError(401, "Invalid credentials");
 
-    const { accessToken, refreshToken } = await generateAccessAndRefereshTokens(user.user_id);
+    const { accessToken, refreshToken } = await generateAccessAndRefereshTokens(
+      user.user_id,
+    );
     const { password: _, ...userWithoutPassword } = user;
 
     return res
@@ -55,14 +58,11 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
         new ApiResponse(
           200,
           { user: userWithoutPassword, accessToken, refreshToken },
-          "User logged in successfully"
-        )
-      )
-
+          "User logged in successfully",
+        ),
+      );
   } catch (error) {
     if (error instanceof ApiError) throw error;
     throw new ApiError(500, "Internal server error during login");
   }
-
 });
-

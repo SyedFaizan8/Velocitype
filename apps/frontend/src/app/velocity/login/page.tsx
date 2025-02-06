@@ -41,35 +41,26 @@ const page = () => {
         resolver: zodResolver(loginSchema)
     });
 
-    const [availability, setAvailability] = useState({
-        username: null as boolean | null,
-        email: null as boolean | null
-    });
+    const [availability, setAvailability] = useState<boolean | null>(null);
 
-    const checkAvailability = async (field: string, value: string) => {
+    const checkAvailability = async (value: string) => {
         try {
-            const { data } = await axios.get(`http://localhost:4000/api/check-${field}`, {
-                params: { [field]: value },
+            const { data } = await axios.get(`http://localhost:4000/api/check-username?username:${value}`, {
+                params: { value },
             });
-            setAvailability(prev => ({
-                ...prev,
-                [field]: data.available
-            }));
+            setAvailability(data.available);
         } catch (error) {
-            console.error(`Error checking ${field}:`, error);
-            setAvailability(prev => ({
-                ...prev,
-                [field]: null
-            }));
+            console.error(`Error checking:`, error);
+            setAvailability(false);
         }
     };
 
-    const debouncedCheck = useDebouncedCallback((field: string, value: string) => {
-        checkAvailability(field, value);
+    const debouncedCheck = useDebouncedCallback((value: string) => {
+        checkAvailability(value);
     }, 500);
 
     const onSubmit = (data: FormValues) => {
-        if (!availability.username || !availability.email) {
+        if (!availability) {
             // Handle feedback: username or email is unavailable
             return;
         }
@@ -97,7 +88,7 @@ const page = () => {
                     name="username"
                     placeholder="username"
                     errors={errorsRegister}
-                    onChange={(e) => debouncedCheck("username", e.target.value)}
+                    onChange={(e) => debouncedCheck(e.target.value)}
                 />
                 {/* {availability.username !== null && (
                         <p>{availability.username ? '✅ Username available' : '❌ Username taken'}</p>
@@ -107,11 +98,7 @@ const page = () => {
                     name="email"
                     placeholder="email"
                     errors={errorsRegister}
-                    onChange={(e) => debouncedCheck("email", e.target.value)}
                 />
-                {/* {availability.email !== null && (
-                        <p>{availability.email ? '✅ Email available' : '❌ Email already registered'}</p>
-                    )} */}
                 <PasswordInput<FormValues>
                     register={registerRegister}
                     name="password"

@@ -5,7 +5,6 @@ export const REFRESH_SECRET = process.env.REFRESH_TOKEN_SECRET as string;
 export const SALT_ROUNDS = 10;
 
 export const options = {
-    httpOnly: true,
-    secure: true,
+  httpOnly: true,
+  secure: true,
 };
-

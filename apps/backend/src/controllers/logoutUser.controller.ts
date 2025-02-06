@@ -2,10 +2,9 @@ import { ApiError } from "../utils/ApiError";
 import { ApiResponse } from "../utils/ApiResponse";
 import asyncHandler from "../utils/asyncHandler";
 import { options } from "../utils/constants";
-import { prisma } from "../utils/db"
+import { prisma } from "../utils/db";
 
 export const logoutUser = asyncHandler(async (req, res) => {
-
   try {
     const user_id = req.cookies?.user_id;
     if (user_id) throw new ApiError(401, "Unauthorized");
@@ -23,7 +22,6 @@ export const logoutUser = asyncHandler(async (req, res) => {
       .json(new ApiResponse(200, {}, "User Loged Out"));
   } catch (error) {
     if (error instanceof ApiError) throw error;
-    throw new ApiError(500, "Internal server error during logout")
+    throw new ApiError(500, "Internal server error during logout");
   }
 });
-
