@@ -1,6 +1,12 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
-import { prisma, ApiError, ACCESS_SECRET, REFRESH_SECRET, SALT_ROUNDS } from "./index";
+import {
+  prisma,
+  ApiError,
+  ACCESS_SECRET,
+  REFRESH_SECRET,
+  SALT_ROUNDS,
+} from "./index";
 
 export const hashPassword = async (password: string): Promise<string> => {
   return await bcrypt.hash(password, SALT_ROUNDS);
@@ -34,6 +40,9 @@ export const generateAccessAndRefereshTokens = async (user_id: string) => {
 
     return { accessToken, refreshToken };
   } catch (error) {
-    throw new ApiError(500, "Something went wrong while generating referesh and access token");
+    throw new ApiError(
+      500,
+      "Something went wrong while generating referesh and access token",
+    );
   }
 };

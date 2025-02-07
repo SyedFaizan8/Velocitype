@@ -1,4 +1,10 @@
-import { prisma, ApiError, ApiResponse, asyncHandler, options } from "../utils/index";
+import {
+  prisma,
+  ApiError,
+  ApiResponse,
+  asyncHandler,
+  options,
+} from "../utils/index";
 
 export const logoutUser = asyncHandler(async (req, res) => {
   try {
@@ -17,7 +23,8 @@ export const logoutUser = asyncHandler(async (req, res) => {
       .clearCookie("refreshToken", options)
       .json(new ApiResponse(200, {}, "User Loged Out"));
   } catch (error) {
-    throw (error instanceof ApiError) ? error
+    throw error instanceof ApiError
+      ? error
       : new ApiError(500, "Something went wrong while logout");
   }
 });

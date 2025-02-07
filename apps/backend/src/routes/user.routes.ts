@@ -1,15 +1,15 @@
 import { Router } from "express";
 import verifyJWT from "../middlewares/auth.middleware";
 import {
-    loginUser,
-    checkUsername,
-    registerUser,
-    logoutUser,
-    refreshAccessToken,
-    result,
-    profile,
-    leaderboard,
-} from "../controllers/index"
+  loginUser,
+  checkUsername,
+  registerUser,
+  logoutUser,
+  refreshAccessToken,
+  result,
+  profile,
+  leaderboard,
+} from "../controllers/index";
 
 const router = Router();
 
@@ -24,6 +24,5 @@ router.route("/profile/:username").get(profile);
 router.route("/logout").post(verifyJWT, logoutUser);
 router.route("/refresh-token").post(refreshAccessToken);
 router.route("/result").post(verifyJWT, result);
-
 
 export default router;

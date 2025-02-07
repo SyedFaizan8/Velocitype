@@ -1,18 +1,18 @@
 import { Router } from "express";
 import verifyJWT from "../middlewares/auth.middleware";
 import {
-    updateFullname,
-    updateUsername,
-    updateEmail,
-    updateBio,
-    updatePassword,
-    updateTwitter,
-    updateInstagram,
-    updateWebsite,
-    updateDp,
-    resetAccount,
-    deleteAccount
-} from "../controllers/index"
+  updateFullname,
+  updateUsername,
+  updateEmail,
+  updateBio,
+  updatePassword,
+  updateTwitter,
+  updateInstagram,
+  updateWebsite,
+  updateDp,
+  resetAccount,
+  deleteAccount,
+} from "../controllers/index";
 
 const router = Router();
 
@@ -31,4 +31,4 @@ router.route("/user/dp").post(updateDp); // fix this
 router.route("/user/reset").post(resetAccount);
 router.route("/user/delete").post(deleteAccount);
 
-export default router
+export default router;
