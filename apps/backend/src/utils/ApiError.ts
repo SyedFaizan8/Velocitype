@@ -17,14 +17,6 @@ class ApiError extends Error {
     if (stack) this.stack = stack;
     else Error.captureStackTrace(this, this.constructor);
   }
-
-  formatResponse() {
-    return {
-      success: this.success,
-      message: this.message,
-      errors: this.errors,
-    };
-  }
 }
 
 export { ApiError };

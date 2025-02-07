@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 
-const asyncHandler = (
+export const asyncHandler = (
   requestHandler: (
     req: Request,
     res: Response,
@@ -11,5 +11,3 @@ const asyncHandler = (
     Promise.resolve(requestHandler(req, res, next)).catch(next);
   };
 };
-
-export default asyncHandler;

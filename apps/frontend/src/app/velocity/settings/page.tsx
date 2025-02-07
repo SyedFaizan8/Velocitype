@@ -20,14 +20,13 @@ const page = () => {
             <div className="grid grid-cols-4">
                 <div className="col-span-2 space-y-3 text-end">
                     <div>Full Name :</div>
-                    <div><span className="text-xs">(Velocity_ID) </span>Unique Name :</div>
+                    <div><span className="text-xs">(Velocity_ID) </span>User Name :</div>
                     <div>Email :</div>
                     <div>Status :</div>
                     <div>Password :</div>
                     <div>(Socials) Twitter :</div>
                     <div>(Socials) Instagram :</div>
                     <div>(Socials) Website :</div>
-                    <div>(Authentication) Logout :</div>
                     <div>(Authentication) Google :</div>
                     <div>(Authentication) Danger :</div>
                 </div>
@@ -37,7 +36,7 @@ const page = () => {
                         <button className="bg-slate-950 rounded-md px-2">Update</button>
                     </div >
                     <div className="space-x-2">
-                        <input type="text" className="rounded bg-neutral-900 px-2" placeholder="unique_name" />
+                        <input type="text" className="rounded bg-neutral-900 px-2" placeholder="username" />
                         <button className="bg-slate-950 rounded-md px-2">Update</button>
                     </div>
                     <div className="space-x-2">
@@ -49,8 +48,8 @@ const page = () => {
                         <button className="bg-slate-950 rounded-md px-2">Update</button>
                     </div>
                     <div className="space-x-2">
+                        <input type="text" className="rounded bg-neutral-900 px-2" placeholder="old password" />
                         <input type="text" className="rounded bg-neutral-900 px-2" placeholder="new password" />
-                        <input type="text" className="rounded bg-neutral-900 px-2" placeholder="confirm password" />
                         <button className="bg-slate-950 rounded-md px-2">Update</button>
                     </div>
                     <div className="space-x-2 ">
@@ -64,9 +63,6 @@ const page = () => {
                     <div className="space-x-2 ">
                         <input type="text" className="rounded bg-neutral-900 px-2" placeholder="website" />
                         <button className="bg-slate-950 rounded-md px-2">Update</button>
-                    </div>
-                    <div className=" space-x-2 ">
-                        <button className="bg-slate-900 px-2 rounded">Logout from all devices</button>
                     </div>
                     <div className="space-x-2">
                         <button className="bg-slate-900 px-2 rounded">Google authentication</button>

@@ -1,9 +1,6 @@
 import { Request, Response } from "express";
-import { prisma } from "../utils/db";
-import asyncHandler from "../utils/asyncHandler";
-import { ApiError } from "../utils/ApiError";
+import { prisma, asyncHandler, ApiError, ApiResponse } from "../utils/index";
 import { usernameSchema } from "@repo/zod";
-import { ApiResponse } from "../utils/ApiResponse";
 
 export const checkUsername = asyncHandler(
   async (req: Request, res: Response) => {
@@ -14,7 +11,7 @@ export const checkUsername = asyncHandler(
     const { username } = validation.data;
 
     try {
-      const user = await prisma.user.findUnique({ where: { username } }); //user is null
+      const user = await prisma.user.findUnique({ where: { username } });
       return res
         .status(200)
         .json(

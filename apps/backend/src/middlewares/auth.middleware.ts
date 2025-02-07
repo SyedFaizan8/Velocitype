@@ -1,9 +1,6 @@
-import { ApiError } from "../utils/ApiError";
-import asyncHandler from "../utils/asyncHandler";
-import { ACCESS_SECRET } from "../utils/constants";
 import { NextFunction, Request } from "express";
 import jwt from "jsonwebtoken";
-import { prisma } from "../utils/db";
+import { prisma, ApiError, asyncHandler, ACCESS_SECRET } from "../utils/index";
 
 const verifyJWT = asyncHandler(async (req: Request, _, next: NextFunction) => {
   try {
