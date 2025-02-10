@@ -11,7 +11,7 @@ import {
   resetAccount,
   deleteAccount,
   getProfile,
-  updateSocials
+  updateSocials,
 } from "../controllers/index";
 
 const router = Router();

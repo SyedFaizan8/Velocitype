@@ -23,7 +23,7 @@ app.use(express.static("public"));
 app.use(cookieParser());
 
 import userRouter from "./routes/user.routes";
-import userUpdate from "./routes/update.routes"
+import userUpdate from "./routes/update.routes";
 import errorHandler from "./middlewares/errorHandler";
 
 app.use("/api", userRouter);

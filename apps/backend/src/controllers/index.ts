@@ -1,4 +1,4 @@
-import { getUser } from "./getUser.controller"
+import { getUser } from "./getUser.controller";
 import { checkUsername } from "./checkUsername.controller";
 import { checkEmail } from "./checkEmail.controller";
 import { leaderboard } from "./leaderboard.controller";
@@ -43,5 +43,5 @@ export {
   updateDp,
   resetAccount,
   deleteAccount,
-  getProfile
+  getProfile,
 };
