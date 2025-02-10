@@ -1,11 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
 import typingReducer from "@/store/typingSlice";
-import soundReducer from "@/store/soundSlice"
+import soundReducer from "@/store/soundSlice";
+import authReducer from "@/store/authSlice"
 
 export const store = configureStore({
     reducer: {
         typing: typingReducer,
         sound: soundReducer,
+        auth: authReducer
     },
 });
 

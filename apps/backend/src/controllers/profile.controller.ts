@@ -7,12 +7,11 @@ export const profile = asyncHandler(async (req, res) => {
     const user = await prisma.user.findUnique({
       where: { username },
       select: {
+        imageUrl: true,
         fullname: true,
         username: true,
         created_at: true,
         bio: true,
-        twitter: true,
-        instagram: true,
         website: true,
         stats: {
           select: {
@@ -43,8 +42,8 @@ export const profile = asyncHandler(async (req, res) => {
 
     const userRank = user.leaderboard
       ? (await prisma.leaderboard.count({
-          where: { highest_wpm: { gt: user.leaderboard?.highest_wpm } },
-        })) + 1
+        where: { highest_wpm: { gt: user.leaderboard?.highest_wpm } },
+      })) + 1
       : null;
 
     return res

@@ -17,9 +17,8 @@ model User {
   bio           String?
   password      String
   refreshToken  String?
-  twitter       String?
-  instagram     String?
   website       String?
+  imageUrl      String?
   created_at    DateTime @default(now())
 
   history       History[]        

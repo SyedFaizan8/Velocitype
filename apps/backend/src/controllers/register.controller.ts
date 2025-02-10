@@ -34,17 +34,7 @@ export const registerUser = asyncHandler(
           email,
           password: hashedPassword,
         },
-        select: {
-          user_id: true,
-          fullname: true,
-          username: true,
-          email: true,
-          bio: true,
-          twitter: true,
-          instagram: true,
-          website: true,
-          created_at: true,
-        },
+        select: { user_id: true },
       });
 
       if (!newUser)
@@ -70,7 +60,7 @@ export const registerUser = asyncHandler(
 
       return res
         .status(201)
-        .json(new ApiResponse(200, newUser, "User registered Successfully"));
+        .json(new ApiResponse(200, "User registered Successfully"));
     } catch (error) {
       throw error instanceof ApiError
         ? error

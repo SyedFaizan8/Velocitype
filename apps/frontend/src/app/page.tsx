@@ -12,18 +12,16 @@ import useEngine from '@/hooks/useEngine';
 import useIsMobile from '@/hooks/useIsMobile';
 import { Mute, Refresh, Speaker } from '@/components/Icons';
 
-import { useAppDispatch } from "@/store/reduxHooks";
+import { useAppDispatch, useAppSelector } from "@/store/reduxHooks";
 import { setTypingStats } from "@/store/typingSlice";
 import { calculateAccuracyPercentage, wordsPerMinute } from '@/utils/helpers';
-import { useSelector } from 'react-redux';
-import { RootState } from '@/store/store';
 import { changeSound } from "@/store/soundSlice"
 
 const Home = () => {
   const isMobile = useIsMobile();
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const sound = useSelector((state: RootState) => state.sound.sound);
+  const { sound } = useAppSelector(state => state.sound);
 
   const { words, typed, timeLeft, errors, state, restart, totalTyped, totalWords } = useEngine();
   const [isCapsLockOn, setIsCapsLockOn] = useState(false);

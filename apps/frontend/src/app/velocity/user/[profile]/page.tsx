@@ -1,14 +1,32 @@
+"use client"
 import Image from "next/image"
 import users from "./users.json"
 import { Instagram, Link, Report, Site, UserLeaderboard, X } from "@/components/Icons";
 import TooltipIcon from "@/components/TooltipIcon";
 import { Chart } from "@/components/Chart";
 import { HyperText } from "@/components/ui/hyper-text";
+import { useEffect } from "react";
+import { useAppDispatch, useAppSelector } from "@/store/reduxHooks";
+import { useRouter } from "next/navigation";
+import { fetchUser } from "@/store/authSlice";
 
 export default async function Page({ params }: {
     params: Promise<{ profile: string }>
 }) {
-    const user = users[0];
+
+    const { user } = useAppSelector(state => state.auth)
+    const dispatch = useAppDispatch();
+    const router = useRouter();
+
+    useEffect(() => {
+        if (!user) dispatch(fetchUser())
+    }, [dispatch, user])
+
+    useEffect(() => {
+        if (!user) router.push("/velocity/login")
+    }, [user, router])
+
+    const user_mc = users[0];
     const {
         all_time_ranking,
         bio,
@@ -22,9 +40,11 @@ export default async function Page({ params }: {
         total_characters_typed,
         total_words_typed,
         unique_name
-    } = user;
+    } = user_mc;
     const slug = (await params).profile
     console.log(slug + "thhis is slug")
+
+    if (!user) return null
 
     return (
         <div className="w-full h-full space-y-2 py-2 flex flex-col  justify-center">

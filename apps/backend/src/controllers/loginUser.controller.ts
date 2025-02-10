@@ -24,42 +24,24 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
       select: {
         user_id: true,
         password: true,
-        fullname: true,
         username: true,
-        email: true,
-        bio: true,
-        twitter: true,
-        instagram: true,
-        website: true,
-        created_at: true,
+        imageUrl: true
       },
     });
     if (!user) throw new ApiError(404, "User not found");
 
     const isPasswordValid = await comparePassword(password, user.password);
-    ``;
+
     if (!isPasswordValid) throw new ApiError(401, "Invalid credentials");
 
-    const { accessToken, refreshToken } = await generateAccessAndRefereshTokens(
-      user.user_id,
-    );
-    const { password: _, ...userWithoutPassword } = user;
+    const { accessToken, refreshToken } = await generateAccessAndRefereshTokens(user.user_id);
+    const { password: _, ...userIdFullname } = user
 
     return res
       .status(200)
-      .cookie("user_id", userWithoutPassword.user_id, {
-        ...options,
-        sameSite: "strict",
-      })
       .cookie("accessToken", accessToken, options)
       .cookie("refreshToken", refreshToken, options)
-      .json(
-        new ApiResponse(
-          200,
-          { user: userWithoutPassword, accessToken, refreshToken },
-          "User logged in successfully",
-        ),
-      );
+      .json(new ApiResponse(200, userIdFullname, "User logged in successfully",));
   } catch (error) {
     throw error instanceof ApiError
       ? error

@@ -1,3 +1,4 @@
+import { AuthRequest } from "../middlewares/auth.middleware";
 import {
   prisma,
   ApiError,
@@ -6,9 +7,9 @@ import {
   options,
 } from "../utils/index";
 
-export const logoutUser = asyncHandler(async (req, res) => {
+export const logoutUser = asyncHandler(async (req: AuthRequest, res) => {
   try {
-    const user_id = req.cookies?.user_id;
+    const user_id = req.user?.user_id;
     if (!user_id) throw new ApiError(401, "Unauthorized");
 
     await prisma.user.update({
@@ -18,10 +19,9 @@ export const logoutUser = asyncHandler(async (req, res) => {
 
     return res
       .status(200)
-      .clearCookie("user_id", options)
       .clearCookie("accessToken", options)
       .clearCookie("refreshToken", options)
-      .json(new ApiResponse(200, {}, "User Loged Out"));
+      .json(new ApiResponse(200, "User Loged Out"));
   } catch (error) {
     throw error instanceof ApiError
       ? error

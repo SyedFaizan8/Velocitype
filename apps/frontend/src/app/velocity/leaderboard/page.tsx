@@ -69,7 +69,7 @@ const Page = () => {
                                             <UserLeaderboard />
                                         </div>
                                     )}
-                                    <Link href={`/velocity/${userName}`}>
+                                    <Link href={`/velocity/user/${userName}`}>
                                         <span>{userName}</span>
                                     </Link>
                                 </div>

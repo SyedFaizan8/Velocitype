@@ -23,6 +23,7 @@ import { HiSpeakerXMark as Mute, HiSpeakerWave as Speaker } from "react-icons/hi
 import { GrInstagram as Instagram } from "react-icons/gr";
 import { FaXTwitter as X, FaFlag as Report, FaUserPlus as Register } from "react-icons/fa6";
 import { BiLogIn as Login } from "react-icons/bi";
+import { AiOutlineLoading3Quarters as Loading } from "react-icons/ai";
 
 export {
     Info,
@@ -48,5 +49,6 @@ export {
     Google,
     Login,
     Show,
-    Hide
+    Hide,
+    Loading
 };

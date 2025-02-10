@@ -12,11 +12,11 @@
   "author": "",
   "license": "ISC",
   "description": "",
-  "dependencies": {
-    "zod": "^1.11.17"
-  },
   "devDependencies": {
     "@types/node": "^22.13.1",
     "typescript": "^5.7.3"
+  },
+  "dependencies": {
+    "zod": "^3.24.1"
   }
 }

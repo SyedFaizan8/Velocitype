@@ -1,7 +1,7 @@
 "use client"
 
 import { Google, Login, Register } from "@/components/Icons"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useForm } from "react-hook-form";
 import { zodResolver } from '@hookform/resolvers/zod';
 import { loginSchema, registerSchema } from "@repo/zod";
@@ -9,6 +9,9 @@ import { useDebouncedCallback } from "use-debounce";
 import axios from "axios";
 import PasswordInput from "@/components/form/PasswordInput";
 import InputField from "@/components/form/InputField";
+import { useAppDispatch, useAppSelector } from "@/store/reduxHooks";
+import { useRouter } from "next/navigation";
+import { fetchUser, loginUser } from "@/store/authSlice";
 
 interface FormValues {
     fullname: string;
@@ -24,6 +27,18 @@ interface LoginValues {
 }
 
 const page = () => {
+    const dispatch = useAppDispatch();
+    const { user, error } = useAppSelector((state) => state.auth);
+    const router = useRouter();
+
+    useEffect(() => {
+        if (!user) dispatch(fetchUser())
+    }, [user, router])
+
+    useEffect(() => {
+        if (user) router.push("/")
+    }, [user, router])
+
 
     const {
         register: registerRegister,
@@ -45,12 +60,11 @@ const page = () => {
 
     const checkAvailability = async (value: string) => {
         try {
-            const { data } = await axios.get(`http://localhost:4000/api/check-username?username:${value}`, {
-                params: { value },
+            const { data } = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/check-username`, {
+                params: { username: value },
             });
-            setAvailability(data.available);
+            setAvailability(data.data.available);
         } catch (error) {
-            console.error(`Error checking:`, error);
             setAvailability(false);
         }
     };
@@ -59,19 +73,29 @@ const page = () => {
         checkAvailability(value);
     }, 500);
 
-    const onSubmit = (data: FormValues) => {
-        if (!availability) {
-            // Handle feedback: username or email is unavailable
-            return;
-        }
+    const onSubmit = async (data: FormValues) => {
+        if (!availability) return;
         console.log("submitted registration data ", data);
-        // Send registration data to your backend
+        try {
+            const responce = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/register`, data);
+            console.log(responce.data)
+            if (responce.data) onLogin({ email: data.email, password: data.password });
+        } catch (error) {
+            console.log("something went wrong while registering the user");
+        }
     }
 
-    const onLogin = (data: LoginValues) => {
-        console.log("user loged in", data);
-        // login the user 
-    }
+    const onLogin = async (data: LoginValues) => {
+        try {
+            const resultAction = await dispatch(loginUser(data)).unwrap();
+            console.log("User logged in", resultAction);
+            router.push("/");
+        } catch (error) {
+            console.error("Login failed", error);
+        }
+    };
+
+    if (user) return null;
 
     return (
         <div className="grid grid-cols-2 h-full w-full">
@@ -90,9 +114,7 @@ const page = () => {
                     errors={errorsRegister}
                     onChange={(e) => debouncedCheck(e.target.value)}
                 />
-                {/* {availability.username !== null && (
-                        <p>{availability.username ? '✅ Username available' : '❌ Username taken'}</p>
-                    )} */}
+                {availability !== null && (availability ? <span>✅</span> : <span>❌</span>)}
                 <InputField
                     register={registerRegister}
                     name="email"
