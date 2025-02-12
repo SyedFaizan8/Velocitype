@@ -66,22 +66,34 @@ const Home = () => {
     }
   }, [state]);
 
+  const progressPercentage = ((15 - timeLeft) / 15) * 100;
+
   return (
     <div>
-      {state !== "run" ?
-        <Header />
-        : <div
-          className="flex justify-between">
-          <Link href="/">
-            <div className="text-slate-500 font-bold cursor-pointer md:text-3xl text-lg ">VelociType</div>
-          </Link>
-          <div
-            className={`hover:text-slate-200 cursor-pointer pt-2 md:text-2xl text-md ${sound ? "text-yellow-200" : "text-slate-500"}`}
-            onClick={() => { dispatch(changeSound()) }}
-          >
-            {sound ? <Speaker /> : <Mute />}
-          </div>
-        </div >
+      {timeLeft > 0 && <div
+        className="h-1 bg-slate-500 transition-all duration-1000 fixed top-0 left-0 rounded-br-full"
+        style={{
+          width: `${progressPercentage}%`,
+          // background: "linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet)"
+        }}
+      >
+      </div>
+      }
+      {
+        state !== "run" ?
+          <Header />
+          : <div
+            className="flex justify-between">
+            <Link href="/">
+              <div className="text-slate-500 font-bold cursor-pointer md:text-3xl text-lg ">VelociType</div>
+            </Link>
+            <div
+              className={`hover:text-slate-200 cursor-pointer pt-2 md:text-2xl text-md ${sound ? "text-yellow-200" : "text-slate-500"}`}
+              onClick={() => { dispatch(changeSound()) }}
+            >
+              {sound ? <Speaker /> : <Mute />}
+            </div>
+          </div >
       }
       <div className="w-full md:px-10 px-6 h-[80vh] flex flex-col justify-center items-center">
         <div className="w-full flex justify-between items-center h-10">

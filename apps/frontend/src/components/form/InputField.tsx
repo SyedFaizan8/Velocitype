@@ -19,10 +19,10 @@ const InputField = <T extends FieldValues>({
     onChange,
 }: InputFieldProps<T>) => {
     return (
-        <div className="w-full text-center">
+        <div className="w-full">
             <input
                 {...register(name)}
-                className="rounded py-1 px-2 w-2/5 bg-slate-900"
+                className="rounded py-1 px-2 w-full bg-slate-900"
                 type={type}
                 placeholder={placeholder}
                 onChange={onChange}

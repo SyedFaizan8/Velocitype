@@ -12,6 +12,7 @@ import InputField from "@/components/form/InputField";
 import { useAppDispatch, useAppSelector } from "@/store/reduxHooks";
 import { useRouter } from "next/navigation";
 import { fetchUser, loginUser } from "@/store/authSlice";
+import { toast } from "@/hooks/use-toast";
 
 interface FormValues {
     fullname: string;
@@ -35,11 +36,6 @@ const page = () => {
         if (!user) dispatch(fetchUser())
     }, [user, router])
 
-    useEffect(() => {
-        if (user) router.push("/")
-    }, [user, router])
-
-
     const {
         register: registerRegister,
         handleSubmit: handleSubmitRegister,
@@ -56,51 +52,76 @@ const page = () => {
         resolver: zodResolver(loginSchema)
     });
 
-    const [availability, setAvailability] = useState<boolean | null>(null);
+    const [usernameAvailability, setUsernameAvailability] = useState<boolean | null>(null);
+    const [emailAvailability, setEmailAvailability] = useState<boolean | null>(null);
 
-    const checkAvailability = async (value: string) => {
+    const checkAvailability = async (type: string, value: string) => {
         try {
-            const { data } = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/check-username`, {
-                params: { username: value },
+            const { data } = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/check-${type}`, {
+                params: { [type]: value },
             });
-            setAvailability(data.data.available);
+            if (type === "username") setUsernameAvailability(data.data.available);
+            else setEmailAvailability(data.data.available)
         } catch (error) {
-            setAvailability(false);
+            if (type === "username") setUsernameAvailability(false);
+            else setEmailAvailability(false)
         }
     };
 
-    const debouncedCheck = useDebouncedCallback((value: string) => {
-        checkAvailability(value);
+    const usernameAvailableCheck = useDebouncedCallback((type: string, value: string) => {
+        checkAvailability(type, value);
     }, 500);
 
+    const emailAvailableCheck = useDebouncedCallback((type: string, value: string) => {
+        checkAvailability(type, value);
+    }, 500)
+
     const onSubmit = async (data: FormValues) => {
-        if (!availability) return;
-        console.log("submitted registration data ", data);
+        if (!usernameAvailability) {
+            toast({
+                variant: "destructive",
+                title: "username is taken",
+                description: "try different username"
+            })
+        };
+        if (!emailAvailability) {
+            toast({
+                variant: "destructive",
+                title: "user already exists with this email",
+                description: "try different email"
+            })
+        }
         try {
             const responce = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/register`, data);
-            console.log(responce.data)
             if (responce.data) onLogin({ email: data.email, password: data.password });
         } catch (error) {
-            console.log("something went wrong while registering the user");
+            toast({
+                variant: "destructive",
+                title: "Something went wrong while registering user",
+            })
         }
     }
 
     const onLogin = async (data: LoginValues) => {
-        try {
-            const resultAction = await dispatch(loginUser(data)).unwrap();
-            console.log("User logged in", resultAction);
-            router.push("/");
-        } catch (error) {
-            console.error("Login failed", error);
-        }
+        dispatch(loginUser(data))
     };
+
+    useEffect(() => {
+        if (!error && user?.username) router.push("/")
+        if (error) {
+            toast({
+                variant: "destructive",
+                title: error,
+            })
+        }
+    }, [error, user, onLogin, router])
 
     if (user) return null;
 
     return (
         <div className="grid grid-cols-2 h-full w-full">
-            <form onSubmit={handleSubmitRegister(onSubmit)} className="w-full flex flex-col justify-center items-center space-y-3">
-                <div className="flex gap-2 w-2/5 text-xl"><span className="pt-1"><Register /></span>register</div>
+            {/* <form onSubmit={handleSubmitRegister(onSubmit)} className="w-full flex flex-col justify-center items-center space-y-3">
+                <div className="flex gap-2 w-1/2 text-xl"><span className="pt-1"><Register /></span>register</div>
                 <InputField
                     register={registerRegister}
                     name="fullname"
@@ -112,15 +133,17 @@ const page = () => {
                     name="username"
                     placeholder="username"
                     errors={errorsRegister}
-                    onChange={(e) => debouncedCheck(e.target.value)}
+                    onChange={(e) => usernameAvailableCheck("username", e.target.value)}
                 />
-                {availability !== null && (availability ? <span>✅</span> : <span>❌</span>)}
+                {usernameAvailability !== null && (usernameAvailability ? <span className="">✅</span> : <span>❌</span>)}
                 <InputField
                     register={registerRegister}
                     name="email"
                     placeholder="email"
                     errors={errorsRegister}
+                    onChange={(e) => emailAvailableCheck("email", e.target.value)}
                 />
+                {emailAvailability !== null && (emailAvailability ? <span>✅</span> : <span>❌</span>)}
                 <PasswordInput<FormValues>
                     register={registerRegister}
                     name="password"
@@ -133,29 +156,98 @@ const page = () => {
                     placeholder="retype password"
                     errors={errorsRegister}
                 />
-                <button type="submit" className="py-1 flex bg-slate-500 text-black font-extrabold rounded-md gap-2 w-2/5 justify-center items-center hover:bg-slate-900 hover:text-white transition">
+                <button type="submit" className="py-1 flex bg-slate-500 text-black font-extrabold rounded-md gap-2 w-1/2 justify-center items-center hover:bg-slate-900 hover:text-white transition">
                     <Register /> Sign Up</button>
-            </form >
+            </form > */}
+
+            <form onSubmit={handleSubmitRegister(onSubmit)} className="w-full flex flex-col justify-center items-center space-y-3">
+                <div className="flex gap-2 w-1/2 text-xl">
+                    <span className="pt-1"><Register /></span>register
+                </div>
+
+                <div className="w-1/2">
+                    <InputField
+                        register={registerRegister}
+                        name="fullname"
+                        placeholder="full name"
+                        errors={errorsRegister}
+                    />
+                </div>
+
+                {/* Username Input with Availability Check */}
+                <div className="flex items-center w-1/2">
+                    <InputField
+                        register={registerRegister}
+                        name="username"
+                        placeholder="username"
+                        errors={errorsRegister}
+                        onChange={(e) => usernameAvailableCheck("username", e.target.value)}
+                    // Ensures input takes full width inside flex container
+                    />
+                    {usernameAvailability !== null && (
+                        <span className="ml-2 text-lg w-8 flex justify-center">
+                            {usernameAvailability ? "✅" : "❌"}
+                        </span>
+                    )}
+                </div>
+
+                {/* Email Input with Availability Check */}
+                <div className="flex items-center w-1/2">
+                    <InputField
+                        register={registerRegister}
+                        name="email"
+                        placeholder="email"
+                        errors={errorsRegister}
+                        onChange={(e) => emailAvailableCheck("email", e.target.value)}
+
+                    />
+                    {emailAvailability !== null && (
+                        <span className="ml-2 text-lg w-8 flex justify-center">
+                            {emailAvailability ? "✅" : "❌"}
+                        </span>
+                    )}
+                </div>
+
+                <PasswordInput<FormValues>
+                    register={registerRegister}
+                    name="password"
+                    placeholder="password"
+                    errors={errorsRegister}
+                />
+                <PasswordInput<FormValues>
+                    register={registerRegister}
+                    name="confirmPassword"
+                    placeholder="retype password"
+                    errors={errorsRegister}
+                />
+
+                <button type="submit" className="py-1 flex bg-slate-500 text-black font-extrabold rounded-md gap-2 w-1/2 justify-center items-center hover:bg-slate-900 hover:text-white transition">
+                    <Register /> Sign Up
+                </button>
+            </form>
+
 
             <form onSubmit={handleSubmitLogin(onLogin)} className="flex flex-col justify-center items-center space-y-3">
-                <div className="flex gap-2 w-2/5 text-xl"><span className="pt-1"><Login /></span>login</div>
-                <button className="py-1 flex bg-slate-500 text-black font-extrabold rounded-md gap-2 w-2/5 justify-center items-center hover:bg-slate-900 hover:text-white transition">
-                    <span className="p-1"><Google /></span>
+                <div className="flex gap-2 w-1/2 text-xl"><span className="pt-1"><Login /></span>login</div>
+                <button className="py-1 flex bg-slate-500 text-black font-extrabold rounded-md gap-2 w-1/2 justify-center items-center hover:bg-slate-900 hover:text-white transition">
+                    <span className="p-1 flex "><Google /></span>
                 </button>
                 <div className="w-2/5 text-center">or</div>
-                <InputField
-                    register={registerLogin}
-                    name="email"
-                    placeholder="email"
-                    errors={errorsLogin}
-                />
+                <div className="w-1/2">
+                    <InputField
+                        register={registerLogin}
+                        name="email"
+                        placeholder="email"
+                        errors={errorsLogin}
+                    />
+                </div>
                 <PasswordInput<LoginValues>
                     register={registerLogin}
                     name="password"
                     placeholder="password"
                     errors={errorsLogin}
                 />
-                <button type="submit" className="py-1 flex bg-slate-500 text-black font-extrabold rounded-md gap-2 w-2/5 justify-center items-center hover:bg-slate-900 hover:text-white transition">
+                <button type="submit" className="py-1 flex bg-slate-500 text-black font-extrabold rounded-md gap-2 w-1/2 justify-center items-center hover:bg-slate-900 hover:text-white transition">
                     <Login /> Sign In</button>
             </form>
         </div >

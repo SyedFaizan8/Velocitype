@@ -13,11 +13,11 @@ export const updateFullname = asyncHandler(async (req: AuthRequest, res) => {
   const user_id = req.user?.user_id;
   const { fullname } = req.body;
 
-  if (!fullname) throw new ApiError(400, `fullname is required`);
+  if (!fullname.trim()) throw new ApiError(400, `fullname is required`);
 
   const updatedFullname = await prisma.user.update({
     where: { user_id },
-    data: { fullname },
+    data: { fullname: fullname.trim() },
     select: { fullname: true },
   });
 
@@ -32,16 +32,16 @@ export const updateUsername = asyncHandler(async (req: AuthRequest, res) => {
   const user_id = req.user?.user_id;
   const { username } = req.body;
 
-  if (!username) throw new ApiError(400, `username is required`);
+  if (!username.trim()) throw new ApiError(400, `username is required`);
 
   const existingUsername = await prisma.user.findUnique({
-    where: { username },
+    where: { username: username.trim() },
   });
   if (existingUsername) throw new ApiError(400, "Username already exists");
 
   const updatedUsername = await prisma.user.update({
     where: { user_id },
-    data: { username },
+    data: { username: username.trim() },
     select: { username: true },
   });
 
@@ -56,16 +56,16 @@ export const updateEmail = asyncHandler(async (req: AuthRequest, res) => {
   const user_id = req.user?.user_id;
   const { email } = req.body;
 
-  if (!email) throw new ApiError(400, `email is required`);
+  if (!email.trim()) throw new ApiError(400, `email is required`);
 
   const existingEmail = await prisma.user.findUnique({
-    where: { email },
+    where: { email: email.trim() },
   });
   if (existingEmail) throw new ApiError(400, "Email already exists");
 
   const updatedEmail = await prisma.user.update({
     where: { user_id },
-    data: { email },
+    data: { email: email.trim() },
     select: { email: true },
   });
 
@@ -78,11 +78,11 @@ export const updateBio = asyncHandler(async (req: AuthRequest, res) => {
   const user_id = req.user?.user_id;
   const { bio } = req.body;
 
-  if (!bio) throw new ApiError(400, `bio is required`);
+  if (!bio.trim()) throw new ApiError(400, `bio is required`);
 
   const updatedBio = await prisma.user.update({
     where: { user_id },
-    data: { bio },
+    data: { bio: bio.trim() },
     select: { bio: true },
   });
 
@@ -94,7 +94,9 @@ export const updateBio = asyncHandler(async (req: AuthRequest, res) => {
 export const updatePassword = asyncHandler(async (req: AuthRequest, res) => {
   const user_id = req.user?.user_id;
   const { oldPassword, newPassword } = req.body;
-  if (!oldPassword || !newPassword)
+  const oldPass = oldPassword.trim();
+  const newPass = newPassword.trim();
+  if (!oldPass || !newPass)
     throw new ApiError(400, "password is required");
 
   const user = await prisma.user.findUnique({
@@ -103,10 +105,10 @@ export const updatePassword = asyncHandler(async (req: AuthRequest, res) => {
   });
   if (!user) throw new ApiError(404, "User not found");
 
-  const isPasswordValid = await comparePassword(oldPassword, user.password);
+  const isPasswordValid = await comparePassword(oldPass, user.password);
   if (!isPasswordValid) throw new ApiError(401, "Incorrect old password");
 
-  const hashedPassword = await hashPassword(newPassword);
+  const hashedPassword = await hashPassword(newPass);
 
   await prisma.user.update({
     where: { user_id },
@@ -121,10 +123,11 @@ export const updatePassword = asyncHandler(async (req: AuthRequest, res) => {
 export const updateSocials = asyncHandler(async (req: AuthRequest, res) => {
   const user_id = req.user?.user_id;
   const { website } = req.body;
+  if (website.trim()) throw new ApiError(400, `website is required`);
 
   const updatedSocials = await prisma.user.update({
     where: { user_id },
-    data: { website },
+    data: { website: website.trim() },
     select: { website: true },
   });
 
@@ -137,10 +140,10 @@ export const updateDp = asyncHandler(async (req: AuthRequest, res) => {
   const user_id = req.user?.user_id;
   const { imageUrl } = req.body; //zod fix
 
-  if (!imageUrl) throw new ApiError(400, "imageUrl is required");
+  if (!imageUrl.trim()) throw new ApiError(400, "imageUrl is required");
   const updatedImageUrl = await prisma.user.update({
     where: { user_id },
-    data: { imageUrl },
+    data: { imageUrl: imageUrl.trim() },
     select: { imageUrl: true },
   });
 

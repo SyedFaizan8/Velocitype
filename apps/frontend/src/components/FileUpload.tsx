@@ -37,7 +37,6 @@ const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
                 useUniqueFileName
                 validateFile={validateFile}
                 onError={(err) => {
-                    console.log("Error:", err);
                     setError(err.message);
                     setUploading(false);
                 }}

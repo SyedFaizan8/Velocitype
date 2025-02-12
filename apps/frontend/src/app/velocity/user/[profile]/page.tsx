@@ -12,6 +12,7 @@ import { fetchUser } from "@/store/authSlice";
 import axios from "axios";
 import Link from "next/link";
 import { formatTime } from "@/utils/helpers";
+import { toast } from "@/hooks/use-toast";
 
 interface UserStats {
     total_tests_taken: number;
@@ -62,10 +63,12 @@ export default function Page() {
                 `${process.env.NEXT_PUBLIC_BACKEND_URL}/profile/${slug}`,
                 { withCredentials: true }
             );
-            console.log("Fetched profile:", response.data.data);
             setUserData(response.data.data);
         } catch (error) {
-            console.error("Error fetching profile:", error);
+            toast({
+                variant: "destructive",
+                title: "something went while fetching profile"
+            })
         }
     };
 
@@ -73,6 +76,10 @@ export default function Page() {
         const fetchProfile = async () => {
             if (initialized && !loading && !user) {
                 router.push("/velocity/login");
+                toast({
+                    variant: "destructive",
+                    title: "Please login to visit the profile"
+                })
             } else if (user) {
                 await bringProfile();
             }

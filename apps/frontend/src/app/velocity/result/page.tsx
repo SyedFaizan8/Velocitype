@@ -13,6 +13,7 @@ import { fetchUser } from "@/store/authSlice";
 import { AuroraText } from "@/components/magicui/aurora-text";
 import axios from "axios";
 import confetti from "canvas-confetti";
+import { toast } from "@/hooks/use-toast";
 
 const page = () => {
     const { wpm, cpm, accuracy, totalLetters, totalWords, errors } = useAppSelector((state) => state.typing);
@@ -36,12 +37,14 @@ const page = () => {
                     },
                     { withCredentials: true }
                 );
-                console.log("Send Data:", response.data.data);
                 const { newHighscore } = response.data.data
                 setnewHighscore(newHighscore)
             }
         } catch (error) {
-            console.error("Error sending data:", error);
+            toast({
+                variant: "destructive",
+                title: "something went wrong while registering data"
+            })
         }
     };
 

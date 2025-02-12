@@ -21,28 +21,23 @@ const initialState: AuthState = {
     initialized: false
 };
 
-// Login User
 export const loginUser = createAsyncThunk("auth/login",
     async (data: { email: string; password: string }, { rejectWithValue }) => {
         try {
             const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/login`, data, { withCredentials: true });
-            console.log("login data" + response.data)
             return response.data.data;
         } catch (error: any) {
-            console.log(error.response?.data?.message)
             return rejectWithValue(error.response?.data?.message || "Login failed");
         }
     });
 
-// Fetch Current User
+
 export const fetchUser = createAsyncThunk("auth/fetchUser",
     async (_, { rejectWithValue }) => {
         try {
             const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/user/me`, { withCredentials: true });
-            console.log("fetching data", response.data.data)
             return response.data.data;
         } catch (error: any) {
-            console.log(error.response?.data?.message)
             return rejectWithValue(error.response?.data?.message || "User not found");
         }
     });
