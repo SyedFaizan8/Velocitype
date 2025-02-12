@@ -20,8 +20,7 @@ import {
 
 } from "react-icons/fa";
 import { HiSpeakerXMark as Mute, HiSpeakerWave as Speaker } from "react-icons/hi2";
-import { GrInstagram as Instagram } from "react-icons/gr";
-import { FaXTwitter as X, FaFlag as Report, FaUserPlus as Register } from "react-icons/fa6";
+import { FaFlag as Report, FaUserPlus as Register } from "react-icons/fa6";
 import { BiLogIn as Login } from "react-icons/bi";
 import { AiOutlineLoading3Quarters as Loading } from "react-icons/ai";
 
@@ -39,9 +38,7 @@ export {
     Crown,
     UserLeaderboard,
     Settings,
-    Instagram,
     Site,
-    X,
     Link,
     Report,
     Edit,

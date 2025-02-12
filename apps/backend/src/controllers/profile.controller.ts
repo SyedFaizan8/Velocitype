@@ -37,13 +37,12 @@ export const profile = asyncHandler(async (req, res) => {
         },
       },
     });
-    if (!user)
-      throw new ApiError(404, "User not found while fetching for profile");
+    if (!user) throw new ApiError(404, "User not found while fetching for profile");
 
     const userRank = user.leaderboard
       ? (await prisma.leaderboard.count({
-          where: { highest_wpm: { gt: user.leaderboard?.highest_wpm } },
-        })) + 1
+        where: { highest_wpm: { gt: user.leaderboard?.highest_wpm } },
+      })) + 1
       : null;
 
     return res

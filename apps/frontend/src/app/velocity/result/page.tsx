@@ -1,24 +1,60 @@
 "use client";
 
-import { useSelector } from "react-redux";
-import { RootState } from "@/store/store";
 import { useRouter } from "next/navigation";
-import { useAppDispatch } from "@/store/reduxHooks";
+import { useAppDispatch, useAppSelector } from "@/store/reduxHooks";
 import { resetStats } from "@/store/typingSlice";
 import { formatPercentage } from "@/utils/helpers";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Refresh } from "@/components/Icons";
 import useIsMobile from "@/hooks/useIsMobile";
 import { FlickeringGrid } from "@/components/ui/flickering-grid";
 import { HyperText } from "@/components/ui/hyper-text";
+import { fetchUser } from "@/store/authSlice";
+import { AuroraText } from "@/components/magicui/aurora-text";
+import axios from "axios";
+import confetti from "canvas-confetti";
 
 const page = () => {
-    const { wpm, cpm, accuracy, totalLetters, totalWords, errors } = useSelector((state: RootState) => state.typing);
+    const { wpm, cpm, accuracy, totalLetters, totalWords, errors } = useAppSelector((state) => state.typing);
+    const { user, loading, initialized } = useAppSelector(state => state.auth)
     const dispatch = useAppDispatch();
     const router = useRouter();
     const isMobile = useIsMobile();
     const buttonRef = useRef<HTMLButtonElement>(null);
+    const [newHighscore, setnewHighscore] = useState<boolean>(false)
 
+    const sendData = async () => {
+        try {
+            if (wpm !== 0) {
+                const response = await axios.post(
+                    `${process.env.NEXT_PUBLIC_BACKEND_URL}/result`,
+                    {
+                        wpm,
+                        accuracy,
+                        totalChars: totalLetters,
+                        totalWords,
+                    },
+                    { withCredentials: true }
+                );
+                console.log("Send Data:", response.data.data);
+                const { newHighscore } = response.data.data
+                setnewHighscore(newHighscore)
+            }
+        } catch (error) {
+            console.error("Error sending data:", error);
+        }
+    };
+
+    useEffect(() => {
+        const handleSendData = async () => {
+            if (user?.username) await sendData()
+            else if (!initialized) {
+                const result = await dispatch(fetchUser());
+                if (result.payload?.username) await sendData()
+            }
+        };
+        if (!loading) handleSendData()
+    }, [user, initialized, loading, dispatch]);
 
     const handleKeyDown = (event: KeyboardEvent) => {
         if (event.key === "Tab") {
@@ -40,8 +76,44 @@ const page = () => {
         };
     }, []);
 
+    useEffect(() => {
+        if (wpm === 0) router.push("/")
+    }, [wpm])
+
+    const handleClick = () => {
+        const end = Date.now() + 3 * 1000;
+        const colors = ["#a786ff", "#fd8bbc", "#eca184", "#f8deb1"];
+
+        const frame = () => {
+            if (Date.now() > end) return;
+            confetti({
+                particleCount: 2,
+                angle: 60,
+                spread: 55,
+                startVelocity: 60,
+                origin: { x: 0, y: 0.5 },
+                colors,
+            });
+            confetti({
+                particleCount: 2,
+                angle: 120,
+                spread: 55,
+                startVelocity: 60,
+                origin: { x: 1, y: 0.5 },
+                colors,
+            });
+            requestAnimationFrame(frame);
+        };
+        frame();
+    };
+
+    useEffect(() => {
+        if (newHighscore) handleClick()
+    }, [newHighscore]);
+
+    if (wpm === 0) return null
     return (
-        <div className="p-6 flex flex-col items-center">
+        <div className=" p-6 flex flex-col items-center">
             {!isMobile &&
                 <div className="fixed inset-0 z-0">
                     <FlickeringGrid
@@ -57,7 +129,8 @@ const page = () => {
                 </div>
             }
             {isMobile ?
-                <div className="w-full max-w-md p-4 border rounded bg-gray-50 text-black z-10">
+                <div className="relative w-full max-w-md p-4 border rounded bg-gray-50 text-black z-10">
+                    {newHighscore && <div className="absolute top-0 text-yellow-300 text-5xl animate-bounce text-center"> New High Score</div>}
                     <p><strong>WPM:</strong>{wpm}</p>
                     <p><strong>CPM:</strong>{cpm}</p>
                     <p><strong>Accuracy:</strong>{formatPercentage(accuracy)}</p>
@@ -66,7 +139,8 @@ const page = () => {
                     <p><strong>Errors:</strong>{errors}</p>
                     <p><strong>ALL in 15 Seconds</strong></p>
                 </div>
-                : <div className="w-full  h-full p-10  space-x-2 rounded-md text-slate-300 z-10">
+                : <div className="relative w-full  h-full p-10  space-x-2 rounded-md text-slate-300 z-10">
+                    {newHighscore && <div className="absolute top-0 text-5xl animate-bounce text-center font-extrabold text-yellow-300"> New High Score </div>}
                     <div className="text-center text-3xl flex justify-center items-center space-x-10 p-3">
                         {[
                             { label: "WPM", value: wpm, size: "text-8xl" },
@@ -103,9 +177,11 @@ const page = () => {
                             <Refresh />
                         </button>
                     </div>
+                    {!user && <div className="text-yellow-300 text-2xl animate-pulse"> Login to track the history </div>}
                 </div>
             }
-            {!isMobile &&
+            {
+                !isMobile &&
                 <div className='z-10 w-full hidden md:flex justify-center items-center space-x-2 text-xs text-white '>
                     <span className="bg-slate-500 rounded-sm px-1 ">tab</span>
                     <span>- Restart</span>

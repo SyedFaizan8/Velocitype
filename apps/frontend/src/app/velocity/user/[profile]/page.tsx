@@ -1,149 +1,232 @@
-"use client"
-import Image from "next/image"
-import users from "./users.json"
-import { Instagram, Link, Report, Site, UserLeaderboard, X } from "@/components/Icons";
+"use client";
+
+import Image from "next/image";
+import { useParams, useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import { Link as InternalLink, Report, Site, UserLeaderboard } from "@/components/Icons";
 import TooltipIcon from "@/components/TooltipIcon";
 import { Chart } from "@/components/Chart";
 import { HyperText } from "@/components/ui/hyper-text";
-import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "@/store/reduxHooks";
-import { useRouter } from "next/navigation";
 import { fetchUser } from "@/store/authSlice";
+import axios from "axios";
+import Link from "next/link";
+import { formatTime } from "@/utils/helpers";
 
-export default async function Page({ params }: {
-    params: Promise<{ profile: string }>
-}) {
+interface UserStats {
+    total_tests_taken: number;
+    total_letters_typed: number;
+    total_words_typed: number;
+}
 
-    const { user } = useAppSelector(state => state.auth)
+export interface HistoryEntry {
+    wpm: number;
+    date: string;
+}
+
+interface HighestRank {
+    highest_wpm: number;
+    highest_accuracy: number;
+    achieved_at: Date | string;
+}
+
+interface User {
+    imageUrl: string;
+    fullname: string;
+    username: string;
+    created_at: string | Date;
+    bio: string;
+    website: string;
+    stats: UserStats;
+    leaderboard: null | HighestRank;
+    history: null | HistoryEntry[];
+}
+
+interface UserData {
+    user: User;
+    userRank: null | number;
+}
+
+export default function Page() {
+
+    const { profile: slug } = useParams() as { profile: string };
+
+    const { user, loading, initialized } = useAppSelector((state) => state.auth);
     const dispatch = useAppDispatch();
     const router = useRouter();
+    const [userData, setUserData] = useState<UserData | null>(null);
+
+    const bringProfile = async () => {
+        try {
+            const response = await axios.get(
+                `${process.env.NEXT_PUBLIC_BACKEND_URL}/profile/${slug}`,
+                { withCredentials: true }
+            );
+            console.log("Fetched profile:", response.data.data);
+            setUserData(response.data.data);
+        } catch (error) {
+            console.error("Error fetching profile:", error);
+        }
+    };
 
     useEffect(() => {
-        if (!user) dispatch(fetchUser())
-    }, [dispatch, user])
+        const fetchProfile = async () => {
+            if (initialized && !loading && !user) {
+                router.push("/velocity/login");
+            } else if (user) {
+                await bringProfile();
+            }
+        };
+        fetchProfile();
+    }, [user, loading, initialized, router, slug]);
 
     useEffect(() => {
-        if (!user) router.push("/velocity/login")
-    }, [user, router])
+        if (!initialized) {
+            const findUser = async () => {
+                const result = await dispatch(fetchUser());
+                if (result.payload) {
+                    await bringProfile();
+                }
+            };
+            findUser();
+        }
+    }, [initialized, dispatch, slug]);
 
-    const user_mc = users[0];
-    const {
-        all_time_ranking,
-        bio,
-        date_joined,
-        dp,
-        name,
-        personal_highest_wpm,
-        social_links,
-        test_completed,
-        time_typing,
-        total_characters_typed,
-        total_words_typed,
-        unique_name
-    } = user_mc;
-    const slug = (await params).profile
-    console.log(slug + "thhis is slug")
+    const [copied, setCopied] = useState(false);
 
-    if (!user) return null
+    const handleCopy = async () => {
+        try {
+            const link = window.location.href;
+            await navigator.clipboard.writeText(link);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        } catch (error) {
+            console.error("Failed to copy:", error);
+        }
+    };
+
+    if (initialized && !loading && !user) return null
+
+    if (!userData) return <div>Loading...</div>
+
+    const { stats, leaderboard, imageUrl, username, created_at, bio, website, fullname } = userData.user;
+    const totalTestsTaken = stats.total_tests_taken.toString();
+    const totalTimeTyping = formatTime((stats.total_tests_taken || 0) * 15)
+    const totalLettersTyped = stats.total_letters_typed.toString();
+    const totalWordsTyped = stats.total_words_typed.toString();
+    const highestAccuracy = leaderboard?.highest_accuracy?.toString() ?? "";
+    const totalTest = stats.total_tests_taken > 100 ? 100 : stats.total_tests_taken;
 
     return (
-        <div className="w-full h-full space-y-2 py-2 flex flex-col  justify-center">
-            <h1 className="text-2xl">Public View</h1>
+        <div className="w-full h-full space-y-2 py-2 flex flex-col justify-center">
+            {/* <h1 className="text-2xl">Public View</h1> */}
             <div className="w-full space-y-2">
                 <div className="grid grid-cols-10 w-full bg-slate-900 rounded-t-xl">
-                    <div className=" flex flex-col justify-center col-span-3 border border-r-slate-800 border-r-8 p-2 space-y-2">
-                        <div className="flex space-x-2 pl-5">
+                    {/* Profile Information */}
+                    <div className="flex flex-col justify-center col-span-4 border border-r-slate-800 border-r-8 p-2 space-y-2">
+                        <div className="flex space-x-5 pl-5">
                             <div className="text-7xl">
-                                {/* <Image href={null} alt="dp" /> */}
-                                <UserLeaderboard />
+                                {imageUrl ? (
+                                    <Image className="rounded-full h-30 w-30" src={imageUrl} alt="dp" width={100} height={100} />
+                                ) : (
+                                    <UserLeaderboard />
+                                )}
                             </div>
-                            <div className="">
-                                <p className="text-xl">{slug ? slug : "hello"}</p>
-                                <p className="text-md">{unique_name}</p>
-                                <p className="text-sm">joined {date_joined}</p>
+                            <div className="flex flex-col justify-center">
+                                <p className="text-xl text-yellow-500">{fullname}</p>
+                                <span className="text-sm text-slate-500 flex space-x-1"><span>id:</span><HyperText className="text-white" animateOnHover={false}>{username}</HyperText></span>
+                                <span className="text-xs text-slate-500 flex space-x-1"><span>joined:</span>
+                                    <HyperText className="text-white" animateOnHover={false}>{new Date(created_at).toDateString()}</HyperText>
+                                </span>
                             </div>
                         </div>
                         <div className="pl-5">
-                            <p className="text-sm">{bio}</p>
+                            <p className="text-sm text-slate-500">bio: <span className="text-white">{bio}</span></p>
                         </div>
-                        <div className="pl-5">
-                            <div className="flex space-x-2" >
-                                <span className="cursor-pointer"><TooltipIcon icon={<X />} tooltipText="Twitter/X" /></span>
-                                <span className="cursor-pointer"><TooltipIcon icon={<Instagram />} tooltipText="Instagram" /></span>
-                                <span className="cursor-pointer"><TooltipIcon icon={<Site />} tooltipText="Webite" /></span>
+                        <div className="pl-5 flex justify-start items-center">
+                            <div className=" space-x-2">
+                                {website && (
+                                    <Link href={website} target="_blank" rel="noopener noreferrer">
+                                        <TooltipIcon icon={<Site />} tooltipText="Website" />
+                                    </Link>
+                                )}
                             </div>
                         </div>
                     </div>
-                    <div className="col-span-3 text-start  border border-r-slate-800 border-r-8 px-4 py-2 space-y-2 ">
+
+                    {/* Statistics */}
+                    <div className="col-span-3 text-slate-500 text-start border border-r-slate-800 border-r-8 px-4 py-2 space-y-2">
                         <div>
                             <h1 className="text-xs">Test Completed</h1>
                             <div className="text-yellow-500 text-lg">
-                                <HyperText animateOnHover={false}>{test_completed.toString()}</HyperText>
+                                <HyperText animateOnHover={false}>{totalTestsTaken}</HyperText>
                             </div>
                         </div>
                         <div>
                             <h1 className="text-xs">Time Typing</h1>
                             <div className="text-yellow-500 text-lg">
-                                <HyperText animateOnHover={false}>{time_typing.toString()}</HyperText>
+                                <HyperText animateOnHover={false}>{totalTimeTyping}</HyperText>
                             </div>
                         </div>
                         <div>
                             <h1 className="text-xs">Total Characters Typed</h1>
                             <div className="text-yellow-500 text-lg">
-                                <HyperText animateOnHover={false}>{total_characters_typed.toString()}</HyperText>
+                                <HyperText animateOnHover={false}>{totalLettersTyped}</HyperText>
                             </div>
                         </div>
                         <div>
                             <h1 className="text-xs">Total Words Typed</h1>
                             <div className="text-yellow-500 text-lg">
-                                <HyperText animateOnHover={false}>{total_words_typed.toString()}</HyperText>
+                                <HyperText animateOnHover={false}>{totalWordsTyped}</HyperText>
                             </div>
                         </div>
                     </div>
 
-                    <div className="flex col-span-3 border  border-r-slate-800 border-r-8 text-center items-center justify-center   p-2 space-x-3">
+
+                    <div className="relative flex col-span-3 border text-center items-center justify-center p-2 space-x-3">
+                        <span onClick={handleCopy} className="cursor-pointer absolute right-0 top-0 p-3">
+                            <TooltipIcon icon={<InternalLink />} tooltipText="Copy Profile Link" />
+                        </span>
                         <div>
                             <h1 className="text-lg">All-Time-Leaderboard</h1>
                             <div className="flex justify-center items-center">
                                 <div className="text-yellow-500 text-5xl">
-                                    <HyperText animateOnHover={false}>{all_time_ranking.rank.toString()}</HyperText>
+                                    <HyperText animateOnHover={false}>
+                                        {userData.userRank ? userData.userRank.toString() : "New User"}
+                                    </HyperText>
                                 </div>
                             </div>
-                            <div className="flex space-x-4 text-sm">
+                            {leaderboard && <div className="flex space-x-4 text-sm">
                                 <div>
                                     <p>WPM</p>
-                                    <div className="text-yellow-500 ">
-                                        <HyperText animateOnHover={false}>{all_time_ranking.wpm.toString()}</HyperText>
+                                    <div className="text-yellow-500">
+                                        <HyperText animateOnHover={false}>
+                                            {leaderboard?.highest_wpm ? leaderboard.highest_wpm.toString() : ""}
+                                        </HyperText>
                                     </div>
                                 </div>
                                 <div>
                                     <p>Accuracy</p>
-                                    <div className="text-yellow-500 ">
-                                        <HyperText animateOnHover={false}>{all_time_ranking.accuracy.toString()}</HyperText>
+                                    <div className="text-yellow-500">
+                                        <HyperText animateOnHover={false}>{highestAccuracy + "%"}</HyperText>
                                     </div>
                                 </div>
                                 <div>
                                     <p>Date</p>
-                                    <div className="text-yellow-500 ">
-                                        <HyperText animateOnHover={false}>{new Date(all_time_ranking.date).toLocaleDateString()}</HyperText>
+                                    <div className="text-yellow-500">
+                                        <HyperText animateOnHover={false}>
+                                            {leaderboard?.achieved_at ? new Date(leaderboard.achieved_at).toLocaleDateString() : ""}
+                                        </HyperText>
                                     </div>
                                 </div>
-                            </div>
+                            </div>}
                         </div>
-                    </div>
-                    <div className=" col-span-1 flex flex-col text-center items-center justify-evenly p-2  text-xl space-y-3">
-                        <span className="cursor-pointer">
-                            <TooltipIcon icon={<Link />} tooltipText="Share Profile" />
-                        </span>
-                        <span className="cursor-pointer">
-                            <TooltipIcon icon={<Report />} tooltipText="Report User" />
-                        </span>
                     </div>
                 </div>
                 <div className="w-full">
-                    <Chart />
+                    <Chart userData={userData.user.history} totalTest={totalTest} />
                 </div>
-            </div >
-        </div >
-    )
+            </div>
+        </div>
+    );
 }

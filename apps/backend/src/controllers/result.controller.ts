@@ -1,9 +1,11 @@
+import { AuthRequest } from "../middlewares/auth.middleware";
 import { prisma, asyncHandler, ApiError, ApiResponse } from "../utils/index";
 
-export const result = asyncHandler(async (req, res) => {
+export const result = asyncHandler(async (req: AuthRequest, res) => {
   //fix to zod
+  let newHighscore: boolean = false;
   const { wpm, accuracy, totalChars, totalWords } = req.body;
-  const user_id = req.cookies.user_id || req.body.user_id;
+  const user_id = req.user?.user_id
   if (!user_id) throw new ApiError(400, "user id is required");
 
   //fix this
@@ -43,8 +45,8 @@ export const result = asyncHandler(async (req, res) => {
           achieved_at: new Date(),
         },
       });
-      if (!create)
-        throw new ApiError(500, "Unable to create new leaderbaord data");
+      if (!create) throw new ApiError(500, "Unable to create new leaderbaord data");
+      newHighscore = true;
     } else if (wpm > userLeaderboard.highest_wpm) {
       const newRank = await prisma.leaderboard.update({
         where: { user_id },
@@ -54,18 +56,14 @@ export const result = asyncHandler(async (req, res) => {
           achieved_at: new Date(),
         },
       });
-      if (!newRank)
-        throw new ApiError(500, "Unable to create new Rank in leaderboard");
+      if (!newRank) throw new ApiError(500, "Unable to create new Rank in leaderboard");
+      newHighscore = true;
     }
 
     return res
       .status(200)
       .json(
-        new ApiResponse(
-          200,
-          { stats, history },
-          "Result successfully recorded",
-        ),
+        new ApiResponse(200, { newHighscore }, "Result successfully recorded"),
       );
   } catch (error) {
     throw error instanceof ApiError

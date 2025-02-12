@@ -44,13 +44,16 @@ const page = () => {
     const [emailAvailable, setEmailAvailable] = useState<boolean | null>(null);
 
     const findUser = async () => {
-        const result = await dispatch(fetchUser());
-        if (result.payload?.username) await bringProfile()
+        await dispatch(fetchUser());
     };
 
     const bringProfile = async () => {
         try {
-            const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/user/profile/${user?.username}`, { withCredentials: true });
+            if (!user?.username) return;
+            const response = await axios.get(
+                `${process.env.NEXT_PUBLIC_BACKEND_URL}/user/profile/${user.username}`,
+                { withCredentials: true }
+            );
             console.log("Fetched profile:", response.data.data);
             setUserData(response.data.data);
         } catch (error) {
@@ -59,15 +62,12 @@ const page = () => {
     };
 
     useEffect(() => {
-        const fetch = async () => {
-            try {
-                if (initialized && !loading && !user) router.push("/velocity/login")
-                else if (user && user?.username) bringProfile()
-            } catch (error) {
-                console.log(error);
+        const checkAuth = async () => {
+            if (initialized && !loading && !user) {
+                router.push("/velocity/login");
             }
         };
-        fetch();
+        checkAuth();
     }, [user, router, loading, initialized]);
 
     useEffect(() => {
@@ -75,6 +75,13 @@ const page = () => {
             findUser();
         }
     }, [initialized, dispatch]);
+
+    useEffect(() => {
+        if (user?.username) {
+            bringProfile();
+        }
+    }, [user]);
+
 
     const checkAvailability = async (value: string, type: "username" | "email") => {
         try {
@@ -230,7 +237,7 @@ const page = () => {
                 </div>
                 <div className="col-span-4 space-y-3 px-2">
                     <form onSubmit={handleFullnameSubmit((data) => handleSubmitForm('fullname', data))} className="space-x-2">
-                        <input {...registerFullname('fullname')} type="text" className="rounded bg-neutral-900 px-2 w-80" placeholder="Full Name" />
+                        <input {...registerFullname('fullname')} type="text" className="rounded bg-neutral-900 px-2 w-96" placeholder="Full Name" />
                         <button type="submit" className="bg-slate-950 rounded-md px-2">Update</button>
                         {errorsFullname.fullname?.message && <span>{errorsFullname.fullname.message}</span>}
                     </form>
@@ -270,7 +277,7 @@ const page = () => {
                     </form>
 
                     <div className="space-x-2">
-                        <button onClick={() => bringProfile()} className="bg-slate-950 text-yellow-500 rounded-md px-2">Reset Form</button>
+                        <button onClick={() => bringProfile()} className="bg-slate-950 text-yellow-500 rounded-md px-2">Clear Form</button>
                     </div>
                     <div className="space-x-2">
                         <button className="bg-yellow-800 rounded-md px-2">Google Authentication</button>

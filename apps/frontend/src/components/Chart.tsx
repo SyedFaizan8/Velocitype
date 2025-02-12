@@ -10,6 +10,8 @@ import {
     ChartTooltip,
     ChartTooltipContent,
 } from "@/components/ui/chart"
+import { HistoryEntry } from "@/app/velocity/user/[profile]/page"
+import { HyperText } from "./ui/hyper-text"
 
 const chartData = [
     { date: "2024-04-01", wpm: 150 },
@@ -112,64 +114,71 @@ const chartConfig = {
     },
 } satisfies ChartConfig
 
-export const Chart = () => {
+export const Chart = ({ userData, totalTest }: { userData: any, totalTest: number }) => {
 
     return (
-        <Card className="">
+        <Card >
             <CardContent className="px-2 sm:p-6 bg-slate-900 rounded-b-xl">
-                <p>Last 100 Tests</p>
-                <ChartContainer
-                    config={chartConfig}
-                    className="aspect-auto h-[200px] w-full"
-                >
-                    <LineChart
-                        accessibilityLayer
-                        data={chartData}
-                        margin={{
-                            left: 12,
-                            right: 12,
-                        }}
+                {totalTest > 0 ? <div>
+                    <span className="flex space-x-1">
+                        <span>   Last</span>
+                        <HyperText animateOnHover={false}>{totalTest.toString()}</HyperText>
+                        <span> Tests</span>
+                    </span>
+                    <ChartContainer
+                        config={chartConfig}
+                        className="aspect-auto h-[200px] w-full"
                     >
-                        <CartesianGrid vertical={false} />
-                        <XAxis
-                            dataKey="date"
-                            tickLine={false}
-                            axisLine={false}
-                            tickMargin={8}
-                            minTickGap={32}
-                            tickFormatter={(value) => {
-                                const date = new Date(value)
-                                return date.toLocaleDateString("en-US", {
-                                    month: "short",
-                                    day: "numeric",
-                                })
+                        <LineChart
+                            accessibilityLayer
+                            data={userData}
+                            margin={{
+                                left: 12,
+                                right: 12,
                             }}
-                        />
-                        <ChartTooltip
-                            content={
-                                <ChartTooltipContent
-                                    className="w-[150px]"
-                                    nameKey="views"
-                                    labelFormatter={(value) => {
-                                        return new Date(value).toLocaleDateString("en-US", {
-                                            month: "short",
-                                            day: "numeric",
-                                            year: "numeric",
-                                        })
-                                    }}
-                                />
-                            }
-                        />
-                        <Line
-                            dataKey="wpm"
-                            type="monotone"
-                            stroke={`var(--color-wpm)`}
-                            strokeWidth={2}
-                            dot={false}
-                        />
-                    </LineChart>
-                </ChartContainer>
+                        >
+                            <CartesianGrid vertical={false} />
+                            <XAxis
+                                dataKey="date"
+                                tickLine={false}
+                                axisLine={false}
+                                tickMargin={8}
+                                minTickGap={32}
+                                tickFormatter={(value) => {
+                                    const date = new Date(value)
+                                    return date.toLocaleDateString("en-US", {
+                                        month: "short",
+                                        day: "numeric",
+                                    })
+                                }}
+                            />
+                            <ChartTooltip
+                                content={
+                                    <ChartTooltipContent
+                                        className="w-[150px]"
+                                        nameKey="views"
+                                        labelFormatter={(value) => {
+                                            return new Date(value).toLocaleDateString("en-US", {
+                                                month: "short",
+                                                day: "numeric",
+                                                year: "numeric",
+                                            })
+                                        }}
+                                    />
+                                }
+                            />
+                            <Line
+                                dataKey="wpm"
+                                type="monotone"
+                                stroke={`var(--color-wpm)`}
+                                strokeWidth={2}
+                                dot={false}
+                            />
+                        </LineChart>
+                    </ChartContainer>
+                </div> : <div className="w-full flex justify-center items-center h-[200px]">No History</div>
+                }
             </CardContent>
-        </Card>
+        </Card >
     )
 }

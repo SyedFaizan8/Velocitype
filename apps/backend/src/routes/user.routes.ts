@@ -21,13 +21,13 @@ router.route("/register").post(registerUser);
 router.route("/login").post(loginUser);
 
 router.route("/leaderboard").get(leaderboard);
-router.route("/profile/:username").get(profile);
 
 // secured routes
+router.route("/profile/:username").get(verifyJWT, profile);
 router.route("/logout").post(verifyJWT, logoutUser);
 router.route("/refresh-token").post(refreshAccessToken);
-router.route("/result").post(verifyJWT, result); // add verifyJWT later
+router.route("/result").post(verifyJWT, result);
 
-router.route("/imagekit-auth").get(authImagekit); // add verifyJWT later
+router.route("/imagekit-auth").get(verifyJWT, authImagekit);
 
 export default router;
