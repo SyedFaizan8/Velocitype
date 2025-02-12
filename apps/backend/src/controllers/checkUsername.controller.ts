@@ -11,7 +11,9 @@ export const checkUsername = asyncHandler(
     const { username } = validation.data;
 
     try {
-      const user = await prisma.user.findUnique({ where: { username: username.trim() } });
+      const user = await prisma.user.findUnique({
+        where: { username: username.trim() },
+      });
       return res
         .status(200)
         .json(

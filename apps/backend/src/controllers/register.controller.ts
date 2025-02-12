@@ -16,13 +16,21 @@ export const registerUser = asyncHandler(
       if (!validationResult.success)
         throw new ApiError(400, validationResult.error.errors[0].message);
 
-      const { fullname, username, email, password, confirmPassword } = validationResult.data;
-      if (password !== confirmPassword) throw new ApiError(400, "Passwords do not match");
+      const { fullname, username, email, password, confirmPassword } =
+        validationResult.data;
+      if (password !== confirmPassword)
+        throw new ApiError(400, "Passwords do not match");
 
-      const existingUserwithEmail = await prisma.user.findUnique({ where: { email } });
-      if (existingUserwithEmail) throw new ApiError(409, "User with email already exists");
-      const existingUserwithUsername = await prisma.user.findUnique({ where: { username } })
-      if (existingUserwithUsername) throw new ApiError(409, "User with username already exists");
+      const existingUserwithEmail = await prisma.user.findUnique({
+        where: { email },
+      });
+      if (existingUserwithEmail)
+        throw new ApiError(409, "User with email already exists");
+      const existingUserwithUsername = await prisma.user.findUnique({
+        where: { username },
+      });
+      if (existingUserwithUsername)
+        throw new ApiError(409, "User with username already exists");
 
       const hashedPassword = await hashPassword(password);
 

@@ -1,7 +1,6 @@
 import { prisma, asyncHandler, ApiError, ApiResponse } from "../utils/index";
 
 export const leaderboard = asyncHandler(async (req, res) => {
-
   const page = parseInt(req.query.page as string) || 1;
   const take = 50;
   const skip = (page - 1) * take;
@@ -24,7 +23,8 @@ export const leaderboard = asyncHandler(async (req, res) => {
       },
     });
 
-    if (leaderboard.length === 0) throw new ApiError(404, "No leaderboard data found");
+    if (leaderboard.length === 0)
+      throw new ApiError(404, "No leaderboard data found");
 
     return res
       .status(200)

@@ -96,8 +96,7 @@ export const updatePassword = asyncHandler(async (req: AuthRequest, res) => {
   const { oldPassword, newPassword } = req.body;
   const oldPass = oldPassword.trim();
   const newPass = newPassword.trim();
-  if (!oldPass || !newPass)
-    throw new ApiError(400, "password is required");
+  if (!oldPass || !newPass) throw new ApiError(400, "password is required");
 
   const user = await prisma.user.findUnique({
     where: { user_id },

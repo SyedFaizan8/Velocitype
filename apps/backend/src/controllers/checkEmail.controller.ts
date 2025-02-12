@@ -10,7 +10,9 @@ export const checkEmail = asyncHandler(async (req: Request, res: Response) => {
   const { email } = validation.data;
 
   try {
-    const user = await prisma.user.findUnique({ where: { email: email.trim() } });
+    const user = await prisma.user.findUnique({
+      where: { email: email.trim() },
+    });
     return res
       .status(200)
       .json(
