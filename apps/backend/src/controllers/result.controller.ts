@@ -5,7 +5,7 @@ export const result = asyncHandler(async (req: AuthRequest, res) => {
   //fix to zod
   let newHighscore: boolean = false;
   const { wpm, accuracy, totalChars, totalWords } = req.body;
-  const user_id = req.user?.user_id
+  const user_id = req.user?.user_id;
   if (!user_id) throw new ApiError(400, "user id is required");
 
   //fix this
@@ -45,7 +45,8 @@ export const result = asyncHandler(async (req: AuthRequest, res) => {
           achieved_at: new Date(),
         },
       });
-      if (!create) throw new ApiError(500, "Unable to create new leaderbaord data");
+      if (!create)
+        throw new ApiError(500, "Unable to create new leaderbaord data");
       newHighscore = true;
     } else if (wpm > userLeaderboard.highest_wpm) {
       const newRank = await prisma.leaderboard.update({
@@ -56,7 +57,8 @@ export const result = asyncHandler(async (req: AuthRequest, res) => {
           achieved_at: new Date(),
         },
       });
-      if (!newRank) throw new ApiError(500, "Unable to create new Rank in leaderboard");
+      if (!newRank)
+        throw new ApiError(500, "Unable to create new Rank in leaderboard");
       newHighscore = true;
     }
 
