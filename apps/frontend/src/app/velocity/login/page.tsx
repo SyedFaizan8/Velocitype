@@ -104,16 +104,16 @@ const page = () => {
 
     const onLogin = async (data: LoginValues) => {
         dispatch(loginUser(data))
-    };
-
-    useEffect(() => {
-        if (!error && user?.username) router.push("/")
         if (error) {
             toast({
                 variant: "destructive",
                 title: error,
             })
         }
+    };
+
+    useEffect(() => {
+        if (!error && user?.username) router.push("/")
     }, [error, user, onLogin, router])
 
     if (user) return null;

@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Crown, UserLeaderboard } from "@/components/Icons";
 import Link from "next/link";
 import axios from "axios";
+import { toast } from "@/hooks/use-toast";
 
 interface UserNameType {
     username: string;
@@ -40,7 +41,10 @@ const Page = () => {
             setData((prev) => [...prev, ...newData]);
         } catch (error: any) {
             if (error.response && error.response.status === 404) setHasMore(false);
-            else console.error("Error fetching leaderboard data", error);
+            else toast({
+                variant: "destructive",
+                title: "Error fetching leaderboard data"
+            })
 
         }
     };

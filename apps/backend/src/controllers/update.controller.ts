@@ -122,7 +122,7 @@ export const updatePassword = asyncHandler(async (req: AuthRequest, res) => {
 export const updateSocials = asyncHandler(async (req: AuthRequest, res) => {
   const user_id = req.user?.user_id;
   const { website } = req.body;
-  if (website.trim()) throw new ApiError(400, `website is required`);
+  if (!website.trim()) throw new ApiError(400, `website is required`);
 
   const updatedSocials = await prisma.user.update({
     where: { user_id },
