@@ -120,47 +120,8 @@ const page = () => {
 
     return (
         <div className="grid grid-cols-2 h-full w-full">
-            {/* <form onSubmit={handleSubmitRegister(onSubmit)} className="w-full flex flex-col justify-center items-center space-y-3">
-                <div className="flex gap-2 w-1/2 text-xl"><span className="pt-1"><Register /></span>register</div>
-                <InputField
-                    register={registerRegister}
-                    name="fullname"
-                    placeholder="full name"
-                    errors={errorsRegister}
-                />
-                <InputField
-                    register={registerRegister}
-                    name="username"
-                    placeholder="username"
-                    errors={errorsRegister}
-                    onChange={(e) => usernameAvailableCheck("username", e.target.value)}
-                />
-                {usernameAvailability !== null && (usernameAvailability ? <span className="">✅</span> : <span>❌</span>)}
-                <InputField
-                    register={registerRegister}
-                    name="email"
-                    placeholder="email"
-                    errors={errorsRegister}
-                    onChange={(e) => emailAvailableCheck("email", e.target.value)}
-                />
-                {emailAvailability !== null && (emailAvailability ? <span>✅</span> : <span>❌</span>)}
-                <PasswordInput<FormValues>
-                    register={registerRegister}
-                    name="password"
-                    placeholder="password"
-                    errors={errorsRegister}
-                />
-                <PasswordInput<FormValues>
-                    register={registerRegister}
-                    name="confirmPassword"
-                    placeholder="retype password"
-                    errors={errorsRegister}
-                />
-                <button type="submit" className="py-1 flex bg-slate-500 text-black font-extrabold rounded-md gap-2 w-1/2 justify-center items-center hover:bg-slate-900 hover:text-white transition">
-                    <Register /> Sign Up</button>
-            </form > */}
-
             <form onSubmit={handleSubmitRegister(onSubmit)} className="w-full flex flex-col justify-center items-center space-y-3">
+
                 <div className="flex gap-2 w-1/2 text-xl">
                     <span className="pt-1"><Register /></span>register
                 </div>
@@ -174,7 +135,6 @@ const page = () => {
                     />
                 </div>
 
-                {/* Username Input with Availability Check */}
                 <div className="flex items-center w-1/2">
                     <InputField
                         register={registerRegister}
@@ -182,7 +142,6 @@ const page = () => {
                         placeholder="username"
                         errors={errorsRegister}
                         onChange={(e) => usernameAvailableCheck("username", e.target.value)}
-                    // Ensures input takes full width inside flex container
                     />
                     {usernameAvailability !== null && (
                         <span className="ml-2 text-lg w-8 flex justify-center">
@@ -191,7 +150,6 @@ const page = () => {
                     )}
                 </div>
 
-                {/* Email Input with Availability Check */}
                 <div className="flex items-center w-1/2">
                     <InputField
                         register={registerRegister}
@@ -221,7 +179,7 @@ const page = () => {
                     errors={errorsRegister}
                 />
 
-                <button type="submit" className="py-1 flex bg-slate-500 text-black font-extrabold rounded-md gap-2 w-1/2 justify-center items-center hover:bg-slate-900 hover:text-white transition">
+                <button type="submit" className="py-1 flex bg-slate-500 text-black font-extrabold rounded-md gap-2 w-1/2 justify-center items-center hover:bg-slate-600 hover:text-white transition space-x-2 px-4  tracking-widest transform hover:scale-105 duration-200">
                     <Register /> Sign Up
                 </button>
             </form>
@@ -229,7 +187,7 @@ const page = () => {
 
             <form onSubmit={handleSubmitLogin(onLogin)} className="flex flex-col justify-center items-center space-y-3">
                 <div className="flex gap-2 w-1/2 text-xl"><span className="pt-1"><Login /></span>login</div>
-                <button className="py-1 flex bg-slate-500 text-black font-extrabold rounded-md gap-2 w-1/2 justify-center items-center hover:bg-slate-900 hover:text-white transition">
+                <button className="py-1 flex bg-slate-500 text-black font-extrabold rounded-md gap-2 w-1/2 justify-center items-center hover:bg-slate-600 hover:text-white transition space-x-2 px-4  tracking-widest transform hover:scale-105 duration-200">
                     <span className="p-1 flex "><Google /></span>
                 </button>
                 <div className="w-2/5 text-center">or</div>
@@ -247,7 +205,7 @@ const page = () => {
                     placeholder="password"
                     errors={errorsLogin}
                 />
-                <button type="submit" className="py-1 flex bg-slate-500 text-black font-extrabold rounded-md gap-2 w-1/2 justify-center items-center hover:bg-slate-900 hover:text-white transition">
+                <button type="submit" className="py-1 flex bg-slate-500 text-black font-extrabold rounded-md gap-2 w-1/2 justify-center items-center hover:bg-slate-600 hover:text-white transition  space-x-2 px-4  tracking-widest transform hover:scale-105 duration-200">
                     <Login /> Sign In</button>
             </form>
         </div >

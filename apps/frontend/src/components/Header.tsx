@@ -89,16 +89,6 @@ const Header = () => {
                         exit={{ opacity: 0, y: 20 }}
                         transition={{ duration: 0.5, ease: "easeInOut" }}
                         className="flex space-x-5 px-2 md:pl-0">
-                        <Link href={`/velocity/user/${user ? user.username : ""}`}>
-                            {user?.imageUrl
-                                ? <div className="pt-1">
-                                    <Image className="rounded-full h-8 w-8  cursor-pointer" src={user.imageUrl} alt="user" height={100} width={100} />
-                                </div>
-                                : <div className="hover:text-slate-200 cursor-pointer pt-2 md:text-2xl text-sm">
-                                    <TooltipIcon icon={<User />} tooltipText="profile" />
-                                </div>
-                            }
-                        </Link>
                         <div
                             className={`hover:text-slate-200 cursor-pointer pt-2 md:text-2xl text-md ${sound ? "text-yellow-200" : "text-slate-500"}`}
                             onClick={() => { dispatch(changeSound()) }}
@@ -107,6 +97,16 @@ const Header = () => {
                                 <TooltipIcon icon={<Speaker />} tooltipText="sound On" />
                                 : <TooltipIcon icon={<Mute />} tooltipText="sound off" />}
                         </div>
+                        <Link href={`/velocity/user/${user ? user.username : ""}`}>
+                            {user?.imageUrl
+                                ? <div className="pt-1">
+                                    <Image className="rounded-full h-7 w-7  cursor-pointer" src={user.imageUrl} alt="user" height={100} width={100} />
+                                </div>
+                                : <div className="hover:text-slate-200 cursor-pointer pt-2 md:text-2xl text-sm">
+                                    <TooltipIcon icon={<User />} tooltipText="profile" />
+                                </div>
+                            }
+                        </Link>
                     </motion.div>
                 </AnimatePresence>
             }

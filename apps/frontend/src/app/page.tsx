@@ -71,7 +71,7 @@ const Home = () => {
   return (
     <div>
       {timeLeft > 0 && <div
-        className="h-1 bg-slate-500 transition-all duration-1000 fixed top-0 left-0 rounded-br-full"
+        className="h-1 bg-yellow-500 transition-all ease-linear duration-1000 fixed top-0 left-0 rounded-br-full"
         style={{
           width: `${progressPercentage}%`,
           // background: "linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet)"

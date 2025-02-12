@@ -99,17 +99,13 @@ export default function Page() {
         }
     }, [initialized, dispatch, slug]);
 
-    const [copied, setCopied] = useState(false);
-
     const handleCopy = async () => {
-        try {
-            const link = window.location.href;
-            await navigator.clipboard.writeText(link);
-            setCopied(true);
-            setTimeout(() => setCopied(false), 2000);
-        } catch (error) {
-            console.error("Failed to copy:", error);
-        }
+        const link = window.location.href;
+        await navigator.clipboard.writeText(link);
+        toast({
+            title: "Profile link copied to clipboard"
+        })
+
     };
 
     if (initialized && !loading && !user) return null
