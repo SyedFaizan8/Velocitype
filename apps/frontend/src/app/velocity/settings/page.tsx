@@ -42,7 +42,7 @@ interface UserProfile {
     website: string | null;
 }
 
-const page = () => {
+const Page = () => {
 
     const dispatch = useAppDispatch();
     const { user, loading, initialized } = useAppSelector(state => state.auth);
@@ -339,4 +339,4 @@ const page = () => {
     );
 };
 
-export default page;
+export default Page;

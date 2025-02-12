@@ -46,7 +46,7 @@ const Home = () => {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, []);
+  },);
 
   useEffect(() => {
     if (state === "finish") {

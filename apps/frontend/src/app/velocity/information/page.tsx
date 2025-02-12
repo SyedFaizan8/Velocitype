@@ -3,9 +3,8 @@
 import TooltipIcon from '@/components/TooltipIcon';
 import { toast } from '@/hooks/use-toast';
 import Link from 'next/link';
-import React from 'react';
 
-const InformationPage: React.FC = () => {
+const Page = () => {
 
     return (
         <div className="p-5">
@@ -43,4 +42,4 @@ const InformationPage: React.FC = () => {
     );
 };
 
-export default InformationPage;
+export default Page;

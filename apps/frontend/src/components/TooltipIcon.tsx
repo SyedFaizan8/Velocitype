@@ -7,7 +7,7 @@ interface TooltipIconProps {
 
 const TooltipIcon: React.FC<TooltipIconProps> = ({ icon, tooltipText }) => (
     <TooltipProvider>
-        <Tooltip delayDuration={400} skipDelayDuration={0}>
+        <Tooltip delayDuration={400} >
             <TooltipTrigger asChild>
                 {typeof icon === 'string' ? <span>{icon}</span> : icon ?? <span>?</span>}
             </TooltipTrigger>

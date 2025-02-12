@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { Crown, UserLeaderboard } from "@/components/Icons";
 import Link from "next/link";
-import axios from "axios";
+import axios, { Axios, AxiosError } from "axios";
 import { toast } from "@/hooks/use-toast";
 
 interface UserNameType {
@@ -53,7 +53,7 @@ const Page = () => {
         if (hasMore) {
             fetchLeaderboard(currentPage);
         }
-    }, [currentPage]);
+    }, [currentPage, hasMore]);
 
     useEffect(() => {
         if (observer.current) observer.current.disconnect();

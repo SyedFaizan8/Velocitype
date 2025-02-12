@@ -27,7 +27,7 @@ interface LoginValues {
     password: string;
 }
 
-const page = () => {
+const Page = () => {
     const dispatch = useAppDispatch();
     const { user, error } = useAppSelector((state) => state.auth);
     const router = useRouter();
@@ -212,4 +212,4 @@ const page = () => {
     )
 }
 
-export default page
+export default Page

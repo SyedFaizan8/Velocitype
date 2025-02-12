@@ -10,12 +10,11 @@ import useIsMobile from "@/hooks/useIsMobile";
 import { FlickeringGrid } from "@/components/ui/flickering-grid";
 import { HyperText } from "@/components/ui/hyper-text";
 import { fetchUser } from "@/store/authSlice";
-import { AuroraText } from "@/components/magicui/aurora-text";
 import axios from "axios";
 import confetti from "canvas-confetti";
 import { toast } from "@/hooks/use-toast";
 
-const page = () => {
+const Page = () => {
     const { wpm, cpm, accuracy, totalLetters, totalWords, errors } = useAppSelector((state) => state.typing);
     const { user, loading, initialized } = useAppSelector(state => state.auth)
     const dispatch = useAppDispatch();
@@ -194,5 +193,5 @@ const page = () => {
     );
 };
 
-export default page;
+export default Page;
 
