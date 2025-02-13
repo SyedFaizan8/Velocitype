@@ -22,6 +22,10 @@ app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 // app.use(express.static("public"));
 app.use(cookieParser());
 
+app.get("/", (req, res) => {
+  res.json({ "Hello": "This is working" })
+})
+
 import userRouter from "./routes/user.routes";
 import userUpdate from "./routes/update.routes";
 import errorHandler from "./middlewares/errorHandler";
@@ -31,4 +35,5 @@ app.use("/api/user", userUpdate);
 app.use(errorHandler);
 
 // app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
+
 export default app;

@@ -12,11 +12,8 @@
     "incremental": true,
     "outDir": "./dist",
     "rootDir": "./src",
-    "baseUrl": ".",
-    "paths": {
-      "src/*": ["./src/*"]
-    }
+    "baseUrl": "."
   },
-  "include": ["src/**/*.ts"],
+  "include": ["./src/**/*.ts", "./app/*.ts"],
   "exclude": ["node_modules", "dist"]
 }
