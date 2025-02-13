@@ -11,9 +11,9 @@
     "isolatedModules": true,
     "incremental": true,
     "outDir": "./dist",
-    "rootDir": "./src",
+    "rootDir": "./",
     "baseUrl": "."
   },
-  "include": ["./src/**/*.ts", "./app/*.ts"],
+  "include": ["src/**/*", "api/**/*"],
   "exclude": ["node_modules", "dist"]
 }

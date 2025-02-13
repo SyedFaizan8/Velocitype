@@ -1,7 +1,7 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "main": "src/index.js",
+  "main": "dist/index.js",
   "scripts": {
     "dev": "nodemon",
     "build": "npx prisma generate && tsc",
