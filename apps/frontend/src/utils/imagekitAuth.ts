@@ -7,7 +7,7 @@ export const authenticator = async () => {
 
         const { signature, expire, token } = response.data.data;
         return { signature, expire, token };
-    } catch (error: any) {
+    } catch (error) {
         if (axios.isAxiosError(error)) {
             console.error("Axios error:", error.response?.data || error.message);
             throw new Error(`Authentication request failed: ${error.response?.data?.message || error.message}`);

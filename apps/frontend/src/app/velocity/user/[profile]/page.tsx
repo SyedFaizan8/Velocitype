@@ -2,8 +2,8 @@
 
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
-import { Link as InternalLink, Report, Site, UserLeaderboard } from "@/components/Icons";
+import { useCallback, useEffect, useState } from "react";
+import { Link as InternalLink, Site, UserLeaderboard } from "@/components/Icons";
 import TooltipIcon from "@/components/TooltipIcon";
 import { Chart } from "@/components/Chart";
 import { HyperText } from "@/components/ui/hyper-text";
@@ -57,20 +57,20 @@ export default function Page() {
     const router = useRouter();
     const [userData, setUserData] = useState<UserData | null>(null);
 
-    const bringProfile = async () => {
+    const bringProfile = useCallback(async () => {
         try {
             const response = await axios.get(
                 `${process.env.NEXT_PUBLIC_BACKEND_URL}/profile/${slug}`,
                 { withCredentials: true }
             );
             setUserData(response.data.data);
-        } catch (error) {
+        } catch {
             toast({
                 variant: "destructive",
                 title: "something went while fetching profile"
             })
         }
-    };
+    }, [slug, setUserData])
 
     useEffect(() => {
         const fetchProfile = async () => {
@@ -85,7 +85,7 @@ export default function Page() {
             }
         };
         fetchProfile();
-    }, [user, loading, initialized, router, slug]);
+    }, [user, loading, initialized, router, slug, bringProfile]);
 
     useEffect(() => {
         if (!initialized) {
@@ -97,7 +97,7 @@ export default function Page() {
             };
             findUser();
         }
-    }, [initialized, dispatch, slug]);
+    }, [initialized, dispatch, slug, bringProfile]);
 
     const handleCopy = async () => {
         const link = window.location.href;

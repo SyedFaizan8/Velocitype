@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/store/reduxHooks";
 import { resetStats } from "@/store/typingSlice";
 import { formatPercentage } from "@/utils/helpers";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Refresh } from "@/components/Icons";
 import useIsMobile from "@/hooks/useIsMobile";
 import { FlickeringGrid } from "@/components/ui/flickering-grid";
@@ -23,7 +23,7 @@ const Page = () => {
     const buttonRef = useRef<HTMLButtonElement>(null);
     const [newHighscore, setnewHighscore] = useState<boolean>(false)
 
-    const sendData = async () => {
+    const sendData = useCallback(async () => {
         try {
             if (wpm !== 0) {
                 const response = await axios.post(
@@ -39,13 +39,13 @@ const Page = () => {
                 const { newHighscore } = response.data.data
                 setnewHighscore(newHighscore)
             }
-        } catch (error) {
+        } catch {
             toast({
                 variant: "destructive",
                 title: "something went wrong while registering data"
             })
         }
-    };
+    }, [accuracy, totalLetters, totalWords, wpm])
 
     useEffect(() => {
         const handleSendData = async () => {
@@ -56,7 +56,7 @@ const Page = () => {
             }
         };
         if (!loading) handleSendData()
-    }, [user, initialized, loading, dispatch]);
+    }, [user, initialized, loading, dispatch, sendData]);
 
     const handleKeyDown = (event: KeyboardEvent) => {
         if (event.key === "Tab") {
@@ -76,11 +76,11 @@ const Page = () => {
         return () => {
             window.removeEventListener('keydown', handleKeyDown);
         };
-    }, []);
+    });
 
     useEffect(() => {
         if (wpm === 0) router.push("/")
-    }, [wpm])
+    }, [wpm, router])
 
     const handleClick = () => {
         const end = Date.now() + 3 * 1000;

@@ -26,8 +26,8 @@ export const loginUser = createAsyncThunk("auth/login",
         try {
             const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/login`, data, { withCredentials: true });
             return response.data.data;
-        } catch (error: any) {
-            return rejectWithValue(error.response?.data?.message || "Login failed");
+        } catch (error) {
+            if (axios.isAxiosError(error)) return rejectWithValue(error.response?.data?.message || "Login failed");
         }
     });
 
@@ -37,8 +37,8 @@ export const fetchUser = createAsyncThunk("auth/fetchUser",
         try {
             const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/user/me`, { withCredentials: true });
             return response.data.data;
-        } catch (error: any) {
-            return rejectWithValue(error.response?.data?.message || "User not found");
+        } catch (error) {
+            if (axios.isAxiosError(error)) return rejectWithValue(error.response?.data?.message || "User not found");
         }
     });
 
@@ -62,7 +62,7 @@ const authSlice = createSlice({
                 state.error = action.payload as string;
                 state.loading = false;
             })
-            .addCase(fetchUser.pending, (state, action) => {
+            .addCase(fetchUser.pending, (state) => {
                 state.loading = true;
             })
             .addCase(fetchUser.fulfilled, (state, action) => {

@@ -34,7 +34,12 @@ const typingSlice = createSlice({
             state.errors = action.payload.errors;
         },
         resetStats: (state) => {
-            state = initialState;
+            state.accuracy = initialState.accuracy;
+            state.cpm = initialState.cpm;
+            state.errors = initialState.errors;
+            state.totalLetters = initialState.totalLetters;
+            state.totalWords = initialState.totalWords;
+            state.wpm = initialState.wpm;
         },
     },
 });

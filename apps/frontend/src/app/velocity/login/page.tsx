@@ -1,7 +1,7 @@
 "use client"
 
 import { Google, Login, Register } from "@/components/Icons"
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { useForm } from "react-hook-form";
 import { zodResolver } from '@hookform/resolvers/zod';
 import { loginSchema, registerSchema } from "@repo/zod";
@@ -34,7 +34,7 @@ const Page = () => {
 
     useEffect(() => {
         if (!user) dispatch(fetchUser())
-    }, [user, router])
+    }, [user, router, dispatch])
 
     const {
         register: registerRegister,
@@ -62,7 +62,7 @@ const Page = () => {
             });
             if (type === "username") setUsernameAvailability(data.data.available);
             else setEmailAvailability(data.data.available)
-        } catch (error) {
+        } catch {
             if (type === "username") setUsernameAvailability(false);
             else setEmailAvailability(false)
         }
@@ -94,7 +94,7 @@ const Page = () => {
         try {
             const responce = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/register`, data);
             if (responce.data) onLogin({ email: data.email, password: data.password });
-        } catch (error) {
+        } catch {
             toast({
                 variant: "destructive",
                 title: "Something went wrong while registering user",
@@ -102,7 +102,7 @@ const Page = () => {
         }
     }
 
-    const onLogin = async (data: LoginValues) => {
+    const onLogin = useCallback(async (data: LoginValues) => {
         dispatch(loginUser(data))
         if (error) {
             toast({
@@ -110,7 +110,7 @@ const Page = () => {
                 title: error,
             })
         }
-    };
+    }, [dispatch, error])
 
     useEffect(() => {
         if (!error && user?.username) router.push("/")

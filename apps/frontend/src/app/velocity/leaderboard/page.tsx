@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { Crown, UserLeaderboard } from "@/components/Icons";
 import Link from "next/link";
-import axios, { Axios, AxiosError } from "axios";
+import axios from "axios";
 import { toast } from "@/hooks/use-toast";
 
 interface UserNameType {
@@ -39,13 +39,14 @@ const Page = () => {
             if (newData.length < USERS_PER_PAGE) setHasMore(false)
 
             setData((prev) => [...prev, ...newData]);
-        } catch (error: any) {
-            if (error.response && error.response.status === 404) setHasMore(false);
-            else toast({
-                variant: "destructive",
-                title: "Error fetching leaderboard data"
-            })
-
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                if (error.response && error.response.status === 404) setHasMore(false);
+                else toast({
+                    variant: "destructive",
+                    title: "Error fetching leaderboard data"
+                })
+            }
         }
     };
 

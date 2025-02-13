@@ -6,7 +6,7 @@ import { authenticator } from "@/utils/imagekitAuth";
 import { ImageKitProvider } from "imagekitio-next";
 import { IKUploadResponse } from "imagekitio-next/dist/types/components/IKUpload/props";
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { bioSchema, emailSchema, fullnameSchema, socialSchema, updatePasswordSchema, usernameSchema } from "@repo/zod";
 import axios from "axios";
 import { useForm } from "react-hook-form";
@@ -42,6 +42,45 @@ interface UserProfile {
     website: string | null;
 }
 
+interface FullnameFormDataType {
+    fullname: string;
+}
+
+interface UsernameFormDataType {
+    username: string;
+}
+
+interface EmailFormDataType {
+    email: string;
+}
+
+interface BioFormDataType {
+    bio: string;
+}
+
+interface SocialsFormDataType {
+    website: string;
+}
+
+interface UpdatePasswordFormDataType {
+    oldPassword: string;
+    newPassword: string;
+}
+
+interface ImageUrlType {
+    imageUrl: string | URL;
+}
+
+// Union type for possible form data structures
+type UserUpdateData =
+    | FullnameFormDataType
+    | UsernameFormDataType
+    | EmailFormDataType
+    | BioFormDataType
+    | SocialsFormDataType
+    | UpdatePasswordFormDataType
+    | ImageUrlType
+
 const Page = () => {
 
     const dispatch = useAppDispatch();
@@ -54,11 +93,11 @@ const Page = () => {
     const [uploading, setUploading] = useState(false);
     const fileUploadRef = useRef<HTMLInputElement | null>(null);
 
-    const findUser = async () => {
+    const findUser = useCallback(async () => {
         await dispatch(fetchUser());
-    };
+    }, [dispatch, fetchUser])
 
-    const bringProfile = async () => {
+    const bringProfile = useCallback(async () => {
         try {
             if (!user?.username) return;
             const response = await axios.get(
@@ -66,13 +105,13 @@ const Page = () => {
                 { withCredentials: true }
             );
             setUserData(response.data.data);
-        } catch (error) {
+        } catch {
             toast({
                 variant: "destructive",
                 title: "something went wrong while fetching profile"
             })
         }
-    };
+    }, [user, setUserData])
 
     useEffect(() => {
         const checkAuth = async () => {
@@ -87,13 +126,13 @@ const Page = () => {
         if (!initialized) {
             findUser();
         }
-    }, [initialized, dispatch]);
+    }, [initialized, dispatch, findUser]);
 
     useEffect(() => {
         if (user?.username) {
             bringProfile();
         }
-    }, [user]);
+    }, [user, bringProfile]);
 
     const onSuccess = async (res: IKUploadResponse) => {
         const transformation = "tr:h-500,w-500";
@@ -102,14 +141,14 @@ const Page = () => {
         handleSubmitForm('dp', { imageUrl: transformUrl })
     };
 
-    const handleSubmitForm = async (url: string, data: any) => {
+    const handleSubmitForm = async (url: string, data: UserUpdateData) => {
         try {
             await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/user/${url}`, data, { withCredentials: true });
             toast({
                 title: "Update Done",
                 description: `${url} is updated`,
             })
-        } catch (error) {
+        } catch {
             toast({
                 variant: "destructive",
                 title: "Uh oh! Something went wrong.",
@@ -155,14 +194,14 @@ const Page = () => {
         if (userData && !socialDirty) resetSocial({ website: userData.website || "" });
         if (userData && !passwordDirty) resetPassword({ oldPassword: "", newPassword: "" });
         if (userData?.imageUrl) setImageUrl(userData.imageUrl)
-    }, [userData, resetFullname, fullnameDirty, usernameDirty, resetUsername, emailDirty, resetEmail, bioDirty, resetBio, socialDirty, resetSocial]);
+    }, [userData, resetFullname, fullnameDirty, usernameDirty, resetUsername, emailDirty, resetEmail, bioDirty, resetBio, socialDirty, resetSocial, passwordDirty, resetPassword]);
 
     const handleLogout = async () => {
         try {
             await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/logout`, {}, { withCredentials: true });
             dispatch(logoutUser());
             router.push("/velocity/login");
-        } catch (error) {
+        } catch {
             toast({
                 title: "user loged out",
                 description: "successfull"
@@ -177,7 +216,7 @@ const Page = () => {
                 title: "Account status",
                 description: "Account Reset Successfull."
             })
-        } catch (error) {
+        } catch {
             toast({
                 variant: "destructive",
                 title: "Uh oh! Something went wrong.",
@@ -192,7 +231,7 @@ const Page = () => {
                 title: "Account status",
                 description: `Account deletion successfull, we miss you.`,
             })
-        } catch (error) {
+        } catch {
             toast({
                 variant: "destructive",
                 title: "Uh oh! Something went wrong.",
@@ -272,7 +311,7 @@ const Page = () => {
                         {errorsBio.bio?.message && <span className="text-xs text-red-500">{errorsBio.bio.message}</span>}
                     </form>
 
-                    <form onSubmit={handleSocialsSubmit((data) => handleSubmitForm('socials', data))} className="space-x-2" >
+                    <form onSubmit={handleSocialsSubmit((data) => handleSubmitForm('socials', { website: data?.website ?? '' }))} className="space-x-2" >
                         <input {...registerSocials('website')} type="text" className="rounded bg-neutral-900 px-2 w-96" placeholder="Website/Socials" />
                         <button type="submit" className="bg-slate-950 rounded-md px-2 text-slate-400">Update</button>
                         {errorsSocials.website?.message && (<span className="text-xs text-red-500">{errorsSocials.website?.message}</span>)}

@@ -36,7 +36,7 @@ export const formatTime = (seconds: number): string => {
     const minutes = Math.floor((seconds % 3600) / 60);
     const secs = seconds % 60;
 
-    let result = [];
+    const result = [];
 
     if (hours > 0) result.push(`${hours}h`);
     if (minutes > 0) result.push(`${minutes}m`);

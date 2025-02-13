@@ -18,7 +18,7 @@ export const bioSchema = z.object({
 });
 
 export const socialSchema = z.object({
-    website: z.string().url('Invalid URL').optional(),
+    website: z.string().optional(),
 });
 
 export const updatePasswordSchema = z.object({

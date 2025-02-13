@@ -64,7 +64,7 @@ const Home = () => {
 
       router.push("/velocity/result");
     }
-  }, [state]);
+  }, [state, dispatch, errors, router, totalTyped, totalWords]);
 
   const progressPercentage = ((15 - timeLeft) / 15) * 100;
 
