@@ -4,7 +4,6 @@
   "main": "src/index.ts",
   "scripts": {
     "dev": "nodemon",
-    "build": "npx prisma generate && tsc",
     "start": "node dist/index.js",
     "format": "npx prettier . --check --write"
   },
