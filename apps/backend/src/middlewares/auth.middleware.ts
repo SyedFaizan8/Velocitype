@@ -6,7 +6,7 @@ export interface AuthRequest extends Request {
   user?: { user_id: string };
 }
 
-const verifyJWT = asyncHandler(
+export const verifyJWT = asyncHandler(
   async (req: AuthRequest, _, next: NextFunction) => {
     try {
       const token =
@@ -33,5 +33,3 @@ const verifyJWT = asyncHandler(
     }
   },
 );
-
-export default verifyJWT;
