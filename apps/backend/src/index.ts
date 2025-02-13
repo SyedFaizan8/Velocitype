@@ -23,7 +23,7 @@ app.use(express.urlencoded({ extended: true, limit: "16kb" }));
 app.use(cookieParser());
 
 app.get("/", (req, res) => {
-  res.json({ Hello: "This is working" });
+  res.send("Hello world");
 });
 
 import userRouter from "./routes/user.routes";
