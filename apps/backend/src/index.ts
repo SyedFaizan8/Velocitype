@@ -8,7 +8,7 @@ dotenv.config({
 });
 
 const app = express();
-const PORT = process.env.PORT || 8000;
+// const PORT = process.env.PORT || 8000;
 
 app.use(
   cors({
@@ -30,4 +30,5 @@ app.use("/api", userRouter);
 app.use("/api/user", userUpdate);
 app.use(errorHandler);
 
-app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
+// app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
+export default app;
