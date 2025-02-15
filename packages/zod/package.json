@@ -1,17 +1,12 @@
 {
   "name": "@repo/zod",
   "version": "1.0.0",
-  "main": "dist/index.js",
   "exports": {
     ".": "./src/index.ts"
   },
   "scripts": {
     "build": "tsc"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
   "devDependencies": {
     "@types/node": "^22.13.1",
     "typescript": "^5.7.3"

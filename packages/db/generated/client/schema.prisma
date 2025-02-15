@@ -1,0 +1,60 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "./../generated/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  user_id      String   @id @default(uuid())
+  fullname     String
+  username     String   @unique
+  email        String   @unique
+  bio          String?
+  password     String
+  refreshToken String?
+  website      String?
+  imageUrl     String?
+  created_at   DateTime @default(now())
+
+  history     History[]
+  stats       TotalStatistics?
+  leaderboard Leaderboard?
+}
+
+model History {
+  history_id String   @id @default(uuid())
+  user_id    String
+  wpm        Int
+  accuracy   Decimal  @db.Decimal(5, 2)
+  date       DateTime @default(now())
+
+  user User @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+
+  @@index([user_id])
+}
+
+model TotalStatistics {
+  user_id             String @id
+  total_tests_taken   Int
+  total_letters_typed Int
+  total_words_typed   Int
+
+  user User @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+
+  @@index([user_id])
+}
+
+model Leaderboard {
+  user_id          String   @id
+  highest_wpm      Int
+  highest_accuracy Decimal  @db.Decimal(5, 2)
+  achieved_at      DateTime @default(now())
+
+  user User @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+
+  @@index([user_id])
+}
