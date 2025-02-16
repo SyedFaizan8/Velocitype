@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/utils/db";
-import { ApiError, ApiResponse } from "@/utils/backend/apiResponse";
-import { authMiddleware } from "@/middlewares/authMiddleware";
-import { resultSchema } from "@/utils/zodSchemas";
+import { prisma } from "@repo/db";
+import { ApiError, ApiResponse } from "@/utils/apiResponse";
+import { resultSchema } from "@repo/zod";
+import { getUserIdFromRequest } from "@/utils/auth";
 
 export async function POST(req: NextRequest) {
     try {
-        const user = await authMiddleware(req);
-        if (!user) {
+        const user_id = await getUserIdFromRequest(req);
+
+        if (!user_id) {
             return NextResponse.json(new ApiError(401, "Unauthorized"), {
                 status: 401,
             });
@@ -25,16 +26,15 @@ export async function POST(req: NextRequest) {
         const { wpm, accuracy, totalChars, totalWords } = validationResult.data;
         let newHighscore = false;
 
-        // Update or create total statistics
         const stats = await prisma.totalStatistics.upsert({
-            where: { user_id: user.user_id },
+            where: { user_id },
             update: {
                 total_tests_taken: { increment: 1 },
                 total_letters_typed: { increment: totalChars },
                 total_words_typed: { increment: totalWords },
             },
             create: {
-                user_id: user.user_id,
+                user_id: user_id,
                 total_tests_taken: 1,
                 total_letters_typed: totalChars,
                 total_words_typed: totalWords,
@@ -48,9 +48,8 @@ export async function POST(req: NextRequest) {
             );
         }
 
-        // Add to history
         const history = await prisma.history.create({
-            data: { user_id: user.user_id, wpm, accuracy },
+            data: { user_id, wpm, accuracy },
         });
 
         if (!history) {
@@ -60,15 +59,14 @@ export async function POST(req: NextRequest) {
             );
         }
 
-        // Check leaderboard and update if necessary
         const userLeaderboard = await prisma.leaderboard.findUnique({
-            where: { user_id: user.user_id },
+            where: { user_id },
         });
 
         if (!userLeaderboard) {
             await prisma.leaderboard.create({
                 data: {
-                    user_id: user.user_id,
+                    user_id,
                     highest_wpm: wpm,
                     highest_accuracy: accuracy,
                     achieved_at: new Date(),
@@ -77,7 +75,7 @@ export async function POST(req: NextRequest) {
             newHighscore = true;
         } else if (wpm > userLeaderboard.highest_wpm) {
             await prisma.leaderboard.update({
-                where: { user_id: user.user_id },
+                where: { user_id },
                 data: {
                     highest_wpm: wpm,
                     highest_accuracy: accuracy,

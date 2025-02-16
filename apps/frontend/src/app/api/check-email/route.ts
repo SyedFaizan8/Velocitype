@@ -1,14 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/utils/db"; // Prisma instance
+import { prisma } from "@repo/db";
 import { emailSchema } from "@repo/zod";
-import { ApiResponse, ApiError } from "@/utils/backend/apiResponse";
+import { ApiResponse, ApiError } from "@/utils/apiResponse";
 
 export async function GET(req: NextRequest) {
     try {
         const { searchParams } = new URL(req.url);
         const email = searchParams.get("email");
 
-        // Validate email
         const validation = emailSchema.safeParse({ email });
         if (!validation.success) {
             return NextResponse.json(new ApiError(400, "Validation failed"), { status: 400 });
@@ -16,7 +15,6 @@ export async function GET(req: NextRequest) {
 
         const trimmedEmail = validation.data.email.trim();
 
-        // Check if email exists
         const user = await prisma.user.findUnique({
             where: { email: trimmedEmail },
         });

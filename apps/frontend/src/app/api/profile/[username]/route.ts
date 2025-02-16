@@ -1,12 +1,23 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/utils/db";
-import { ApiResponse, ApiError } from "@/utils/backend/apiResponse";
+import { prisma } from "@repo/db";
+import { ApiResponse, ApiError } from "@/utils/apiResponse";
+import { getUserIdFromRequest } from "@/utils/auth";
 
 export async function GET(
     req: NextRequest,
-    { params }: { params: { username: string } }
+    context: { params: { username: string } }
 ) {
+
+    const user_id = await getUserIdFromRequest(req);
+
+    if (!user_id) {
+        return NextResponse.json(new ApiError(401, "Unauthorized"), {
+            status: 401,
+        });
+    }
+
     try {
+        const { params } = context;
         const { username } = params;
 
         const user = await prisma.user.findUnique({

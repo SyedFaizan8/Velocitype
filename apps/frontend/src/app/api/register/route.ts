@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { registerSchema } from "@repo/zod";
-import { prisma } from "@/utils/db"; // Prisma instance
-import { ApiResponse, ApiError } from "@/utils/backend/apiResponse";
-import { hashPassword } from "@/utils/backend/auth"; // Assume hashPassword utility function
+import { prisma } from "@repo/db";
+import { ApiResponse, ApiError } from "@/utils/apiResponse";
+import { getUserIdFromRequest, hashPassword } from "@/utils/auth";
 
 export async function POST(req: NextRequest) {
+
     try {
         const body = await req.json();
 
-        // Validate request body
         const validationResult = registerSchema.safeParse(body);
         if (!validationResult.success) {
             return NextResponse.json(new ApiError(400, validationResult.error.errors[0].message), {
@@ -22,22 +22,18 @@ export async function POST(req: NextRequest) {
             return NextResponse.json(new ApiError(400, "Passwords do not match"), { status: 400 });
         }
 
-        // Check if user with email already exists
         const existingUserwithEmail = await prisma.user.findUnique({ where: { email } });
         if (existingUserwithEmail) {
             return NextResponse.json(new ApiError(409, "User with email already exists"), { status: 409 });
         }
 
-        // Check if user with username already exists
         const existingUserwithUsername = await prisma.user.findUnique({ where: { username } });
         if (existingUserwithUsername) {
             return NextResponse.json(new ApiError(409, "User with username already exists"), { status: 409 });
         }
 
-        // Hash the password
         const hashedPassword = await hashPassword(password);
 
-        // Create new user
         const newUser = await prisma.user.create({
             data: { fullname, username, email, password: hashedPassword },
             select: { user_id: true },
@@ -49,7 +45,6 @@ export async function POST(req: NextRequest) {
             });
         }
 
-        // Initialize user statistics
         const dataCreated = await prisma.totalStatistics.create({
             data: {
                 user_id: newUser.user_id,

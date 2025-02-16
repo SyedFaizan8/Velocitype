@@ -1,12 +1,11 @@
 import * as z from 'zod';
 
-
 export const fullnameSchema = z.object({
     fullname: z.string().min(3, 'at least 3 characters'),
 });
 
 export const usernameSchema = z.object({
-    username: z.string().min(3, 'at least 3 characters'),
+    username: z.string().min(3, 'at least 3 characters').regex(/^[a-zA-Z0-9_]+$/, "remove special character")
 });
 
 export const emailSchema = z.object({
@@ -18,7 +17,7 @@ export const bioSchema = z.object({
 });
 
 export const socialSchema = z.object({
-    website: z.string().optional(),
+    website: z.string().url("Invalid URL"),
 });
 
 export const updatePasswordSchema = z.object({
@@ -27,7 +26,7 @@ export const updatePasswordSchema = z.object({
 });
 
 export const dpSchema = z.object({
-    profilePicture: z.string().url('Invalid URL'),
+    imageUrl: z.string().url('Invalid URL'),
 });
 
 export const registerSchema = z.object({
@@ -45,3 +44,26 @@ export const loginSchema = z.object({
     email: emailSchema.shape.email,
     password: z.string().min(6, 'at least 6 characters'),
 });
+
+export const resultSchema = z.object({
+    wpm: z.number(),
+    accuracy: z.number(),
+    totalChars: z.number(),
+    totalWords: z.number()
+})
+
+export type FullnameFormData = z.infer<typeof fullnameSchema>;
+
+export type UsernameFormData = z.infer<typeof usernameSchema>;
+
+export type EmailFormData = z.infer<typeof emailSchema>;
+
+export type BioFormData = z.infer<typeof bioSchema>;
+
+export type SocialsFormData = z.infer<typeof socialSchema>;
+
+export type UpdatePasswordFormData = z.infer<typeof updatePasswordSchema>;
+
+export type RegisterFormData = z.infer<typeof registerSchema>;
+
+export type LoginFormData = z.infer<typeof loginSchema>;

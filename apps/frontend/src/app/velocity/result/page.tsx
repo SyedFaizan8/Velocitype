@@ -179,7 +179,7 @@ const Page = () => {
                             <Refresh />
                         </button>
                     </div>
-                    {!user && <div className="text-yellow-300 text-2xl animate-pulse"> Login to track the history </div>}
+                    {!user && <div className="text-yellow-300 text-2xl animate-pulse"> Login to track Progress </div>}
                 </div>
             }
             {

@@ -1,11 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/utils/db";
-import { ApiError, ApiResponse } from "@/utils/backend/apiResponse";
+import { prisma } from "@repo/db";
+import { ApiError, ApiResponse } from "@/utils/apiResponse";
+import { getUserIdFromRequest } from "@/utils/auth";
 
 export async function GET(
     req: NextRequest,
     { params }: { params: { username: string } }
 ) {
+
+    const user_id = await getUserIdFromRequest(req);
+
+    if (!user_id) {
+        return NextResponse.json(new ApiError(401, "Unauthorized"), {
+            status: 401,
+        });
+    }
+
     const { username } = params;
     if (!username) {
         return NextResponse.json(new ApiError(400, "Username is required"), {

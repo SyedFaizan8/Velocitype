@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/utils/db";
-import { ApiResponse, ApiError } from "@/utils/backend/apiResponse";
+import { prisma } from "@repo/db";
+import { ApiResponse, ApiError } from "@/utils/apiResponse";
 
 export async function GET(req: NextRequest) {
     try {

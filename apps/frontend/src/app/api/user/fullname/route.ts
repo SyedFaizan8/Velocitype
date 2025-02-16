@@ -1,19 +1,39 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/utils/db";
-import { ApiError, ApiResponse } from "@/utils/backend/apiResponse";
-import { getUserId } from "@/utils/backend/auth";
+import { prisma } from "@repo/db";
+import { ApiError, ApiResponse } from "@/utils/apiResponse";
+import { getUserIdFromRequest } from "@/utils/auth";
+import { fullnameSchema } from "@repo/zod";
 
-export async function PATCH(req: NextRequest) {
-    const user_id = await getUserId(req);
-    const { fullname } = await req.json();
+export async function POST(req: NextRequest) {
+    try {
+        const user_id = await getUserIdFromRequest(req);
 
-    if (!fullname.trim()) return NextResponse.json(new ApiError(400, "Fullname is required"), { status: 400 });
+        if (!user_id) {
+            return NextResponse.json(new ApiError(401, "Unauthorized"), {
+                status: 401,
+            });
+        }
 
-    const updatedUser = await prisma.user.update({
-        where: { user_id },
-        data: { fullname: fullname.trim() },
-        select: { fullname: true },
-    });
+        const body = await req.json();
 
-    return NextResponse.json(new ApiResponse(200, updatedUser, "Fullname updated successfully"), { status: 200 });
+        const validationResult = fullnameSchema.safeParse(body);
+        if (!validationResult.success) {
+            return NextResponse.json(
+                new ApiError(400, "Invalid input data"),
+                { status: 400 }
+            );
+        }
+
+        const { fullname } = validationResult.data;
+
+        const updatedUser = await prisma.user.update({
+            where: { user_id },
+            data: { fullname: fullname.trim() },
+            select: { fullname: true },
+        });
+
+        return NextResponse.json(new ApiResponse(200, updatedUser, "Fullname updated successfully"), { status: 200 });
+    } catch {
+        return NextResponse.json(new ApiError(500, "Something went wrong while updating fullname"))
+    }
 }

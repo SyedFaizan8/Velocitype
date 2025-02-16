@@ -1,14 +1,40 @@
-export async function PATCH(req: NextRequest) {
-    const user_id = await getUserId(req);
-    const { website } = await req.json();
+import { ApiError, ApiResponse } from "@/utils/apiResponse";
+import { getUserIdFromRequest } from "@/utils/auth";
+import { prisma } from "@repo/db";
+import { socialSchema } from "@repo/zod";
+import { NextRequest, NextResponse } from "next/server";
 
-    if (!website.trim()) return NextResponse.json(new ApiError(400, "Website is required"), { status: 400 });
+export async function POST(req: NextRequest) {
+    try {
+        const user_id = await getUserIdFromRequest(req);
 
-    const updatedUser = await prisma.user.update({
-        where: { user_id },
-        data: { website: website.trim() },
-        select: { website: true },
-    });
+        if (!user_id) {
+            return NextResponse.json(new ApiError(401, "Unauthorized"), {
+                status: 401,
+            });
+        }
 
-    return NextResponse.json(new ApiResponse(200, updatedUser, "Socials updated successfully"), { status: 200 });
+        const body = await req.json();
+
+        const validationResult = socialSchema.safeParse(body);
+        if (!validationResult.success) {
+            return NextResponse.json(
+                new ApiError(400, "Invalid input data"),
+                { status: 400 }
+            );
+        }
+
+        const { website } = validationResult.data;
+
+        const updatedUser = await prisma.user.update({
+            where: { user_id },
+            data: { website: website.trim() },
+            select: { website: true },
+        });
+
+        return NextResponse.json(new ApiResponse(200, updatedUser, "Socials updated successfully"), { status: 200 });
+
+    } catch {
+        return NextResponse.json(new ApiError(500, "Something went wrong while updating socials"))
+    }
 }

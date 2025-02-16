@@ -144,7 +144,7 @@ export default function Page() {
                             </div>
                         </div>
                         <div className="pl-5">
-                            <p className="text-sm text-slate-500">bio: <span className="text-white">{bio}</span></p>
+                            <p className="text-sm text-slate-500">{bio ? "bio :" : null} <span className="text-white">{bio}</span></p>
                         </div>
                         <div className="pl-5 flex justify-start items-center">
                             <div className=" space-x-2">

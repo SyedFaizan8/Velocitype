@@ -6,6 +6,7 @@ import { Crown, UserLeaderboard } from "@/components/Icons";
 import Link from "next/link";
 import axios from "axios";
 import { toast } from "@/hooks/use-toast";
+import TooltipIcon from "@/components/TooltipIcon";
 
 interface UserNameType {
     username: string;
@@ -115,7 +116,7 @@ const Page = () => {
                                         </div>
                                     )}
                                     <Link href={`/velocity/user/${user.username}`}>
-                                        <span>{user.username}</span>
+                                        <span><TooltipIcon icon={user.username} tooltipText={"login to view profile"} /></span>
                                     </Link>
                                 </div>
                                 <div className="p-1 w-2/12 flex items-center">{highest_wpm}</div>

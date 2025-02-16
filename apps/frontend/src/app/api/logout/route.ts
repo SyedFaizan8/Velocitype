@@ -1,25 +1,26 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/utils/db";
-import { ApiError, ApiResponse } from "@/utils/backend/apiResponse";
-import { verifyAuth } from "@/middlewares/auth.middleware";
-import { options } from "@/utils/backend/cookieOptions";
+import { prisma } from "@repo/db";
+import { ApiError, ApiResponse } from "@/utils/apiResponse";
+import { getUserIdFromRequest } from "@/utils/auth";
+import { options } from "@/utils/cookieOptions";
 
 export async function POST(req: NextRequest) {
     try {
-        const user = await verifyAuth(req);
-        if (!user) {
+        const user_id = await getUserIdFromRequest(req);
+
+        if (!user_id) {
             return NextResponse.json(new ApiError(401, "Unauthorized"), {
                 status: 401,
             });
         }
 
         await prisma.user.update({
-            where: { user_id: user.user_id },
+            where: { user_id },
             data: { refreshToken: null },
         });
 
         const response = NextResponse.json(
-            new ApiResponse(200, "User Logged Out"),
+            new ApiResponse(200, null, "User Logged Out"),
             { status: 200 }
         );
 

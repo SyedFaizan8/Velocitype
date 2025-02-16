@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { prisma } from "@/utils/db";
-import { ApiError, ApiResponse } from "@/utils/backend/apiResponse";
-import { options } from "@/utils/backend/cookieOptions";
-import { REFRESH_SECRET, generateAccessAndRefreshTokens } from "@/utils/jwt";
+import { prisma } from "@repo/db";
+import { ApiError, ApiResponse } from "@/utils/apiResponse";
+import { options } from "@/utils/cookieOptions";
+import { generateAccessAndRefereshToken } from "@/utils/auth";
+
+const REFRESH_SECRET = process.env.REFRESH_SECRET as string;
 
 export async function POST(req: NextRequest) {
     try {
@@ -17,10 +19,7 @@ export async function POST(req: NextRequest) {
             });
         }
 
-        const decodedToken = jwt.verify(
-            incomingRefreshToken,
-            REFRESH_SECRET
-        ) as JwtPayload;
+        const decodedToken = jwt.verify(incomingRefreshToken, REFRESH_SECRET) as JwtPayload;
 
         const user = await prisma.user.findUnique({
             where: { user_id: decodedToken.user_id },
@@ -40,9 +39,7 @@ export async function POST(req: NextRequest) {
             );
         }
 
-        const { accessToken, refreshToken } = await generateAccessAndRefreshTokens(
-            user.user_id
-        );
+        const { accessToken, refreshToken } = await generateAccessAndRefereshToken(user.user_id);
 
         const response = NextResponse.json(
             new ApiResponse(

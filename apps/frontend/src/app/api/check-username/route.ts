@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/utils/db";
+import { prisma } from "@repo/db";
 import { usernameSchema } from "@repo/zod";
-import { ApiResponse, ApiError } from "@/utils/backend/apiResponse";
+import { ApiResponse, ApiError } from "@/utils/apiResponse";
 
 export async function GET(req: NextRequest) {
     try {

@@ -7,14 +7,28 @@ import { ImageKitProvider } from "imagekitio-next";
 import { IKUploadResponse } from "imagekitio-next/dist/types/components/IKUpload/props";
 import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { bioSchema, emailSchema, fullnameSchema, socialSchema, updatePasswordSchema, usernameSchema } from "@repo/zod";
 import axios from "axios";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { BioFormData, EmailFormData, FullnameFormData, SocialsFormData, UpdatePasswordFormData, UsernameFormData } from "@/utils/types";
 import { useAppDispatch, useAppSelector } from "@/store/reduxHooks";
 import { useRouter } from "next/navigation";
 import { fetchUser, logoutUser } from "@/store/authSlice";
+import { useToast } from "@/hooks/use-toast";
+
+import {
+    bioSchema,
+    emailSchema,
+    fullnameSchema,
+    socialSchema,
+    updatePasswordSchema,
+    usernameSchema,
+    BioFormData,
+    EmailFormData,
+    FullnameFormData,
+    SocialsFormData,
+    UpdatePasswordFormData,
+    UsernameFormData
+} from "@repo/zod";
 
 import {
     AlertDialog,
@@ -27,7 +41,6 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { useToast } from "@/hooks/use-toast";
 
 
 const urlEndpoint = process.env.NEXT_PUBLIC_URL_ENDPOINT;
@@ -71,7 +84,6 @@ interface ImageUrlType {
     imageUrl: string | URL;
 }
 
-// Union type for possible form data structures
 type UserUpdateData =
     | FullnameFormDataType
     | UsernameFormDataType
@@ -329,7 +341,7 @@ const Page = () => {
                     </button>
                     <div className="space-x-2">
                         <button className="space-x-2 px-4 rounded-md bg-slate-950 font-bold text-yellow-400 tracking-widest transform hover:scale-105 hover:bg-slate-900 transition-colors duration-200">
-                            Google Auth
+                            Link Google
                         </button>
                     </div>
                     <div className="space-x-6">
