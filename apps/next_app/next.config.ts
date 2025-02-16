@@ -9,7 +9,12 @@ const nextConfig: NextConfig = {
         port: ""
       }
     ]
-  }
+  },
+  webpack: (config) => {
+    config.resolve.symlinks = false;
+    return config;
+  },
+  transpilePackages: ["@repo/zod", "@repo/db"],
 };
 
 export default nextConfig;

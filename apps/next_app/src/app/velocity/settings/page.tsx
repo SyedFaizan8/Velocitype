@@ -22,12 +22,6 @@ import {
     socialSchema,
     updatePasswordSchema,
     usernameSchema,
-    BioFormData,
-    EmailFormData,
-    FullnameFormData,
-    SocialsFormData,
-    UpdatePasswordFormData,
-    UsernameFormData
 } from "@repo/zod";
 
 import {
@@ -41,6 +35,7 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
+import { BioFormData, EmailFormData, FullnameFormData, SocialsFormData, UpdatePasswordFormData, UsernameFormData } from "@/utils/types";
 
 
 const urlEndpoint = process.env.NEXT_PUBLIC_URL_ENDPOINT;

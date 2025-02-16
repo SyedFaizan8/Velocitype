@@ -3,14 +3,19 @@ import { prisma } from "@repo/db";
 import { usernameSchema } from "@repo/zod";
 import { ApiResponse, ApiError } from "@/utils/apiResponse";
 
-export async function GET(req: NextRequest) {
+export async function GET(
+    req: NextRequest,
+    { params }: { params: { username: string } }
+) {
     try {
-        const { searchParams } = new URL(req.url);
-        const username = searchParams.get("username");
+
+        const username = params.username;
 
         const validation = usernameSchema.safeParse({ username });
         if (!validation.success) {
-            return NextResponse.json(new ApiError(400, "Validation failed"), { status: 400 });
+            return NextResponse.json(new ApiError(400, "Validation failed"), {
+                status: 400,
+            });
         }
 
         const trimmedUsername = validation.data.username.trim();
@@ -20,12 +25,17 @@ export async function GET(req: NextRequest) {
         });
 
         return NextResponse.json(
-            new ApiResponse(200, { available: user === null }, "Username availability check successful"),
+            new ApiResponse(
+                200,
+                { available: user === null },
+                "Username availability check successful"
+            ),
             { status: 200 }
         );
     } catch (error) {
-        return NextResponse.json(new ApiError(500, "Internal server error while checking username"), {
-            status: 500,
-        });
+        return NextResponse.json(
+            new ApiError(500, "Internal server error while checking username"),
+            { status: 500 }
+        );
     }
 }
