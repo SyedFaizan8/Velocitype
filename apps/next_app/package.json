@@ -48,6 +48,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4.0.6",
     "@types/howler": "^2.2.12",
     "@types/node": "^20",
     "@types/quotesy": "^1.0.3",
