@@ -5,11 +5,6 @@ import { ApiResponse, ApiError } from "@/utils/apiResponse";
 
 export async function GET(req: NextRequest) {
 
-    if (!process.env.DATABASE_URL) return NextResponse.json(
-        new ApiError(500, "env not found"),
-        { status: 500 }
-    );
-
     try {
         const { searchParams } = new URL(req.url);
         const username = searchParams.get('username');

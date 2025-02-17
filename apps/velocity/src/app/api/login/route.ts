@@ -6,6 +6,12 @@ import { comparePassword, generateAccessAndRefereshToken } from "@/utils/auth";
 import { options } from "@/utils/cookieOptions";
 
 export async function POST(req: NextRequest) {
+
+    if (!process.env.DATABASE_URL) return NextResponse.json(
+        new ApiError(500, "env not found"),
+        { status: 500 }
+    );
+
     try {
         const body = await req.json();
         const validationResult = loginSchema.safeParse(body);
