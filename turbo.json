@@ -13,7 +13,8 @@
          "IMAGEKIT_PRIVATE_KEY",
          "IMAGEKIT_URL_ENDPOINT",
          "DIRECT_URL",
-         "DATABASE_URL"
+         "DATABASE_URL",
+         "PRISMA_QUERY_ENGINE_BINARY"
         ]
     },
     "lint": {
