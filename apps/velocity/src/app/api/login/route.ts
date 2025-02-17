@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { loginSchema } from "@repo/zod";
 import { prisma } from "@/lib/prisma";
 import { ApiResponse, ApiError } from "@/utils/apiResponse";
-import { comparePassword, generateAccessAndRefereshToken } from "@/utils/auth";
+import { comparePassword, generateAccessAndRefreshToken } from "@/utils/auth";
 import { options } from "@/utils/cookieOptions";
 
 export async function POST(req: NextRequest) {
@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
             });
         }
 
-        const { accessToken, refreshToken } = await generateAccessAndRefereshToken(user.user_id);
+        const { accessToken, refreshToken } = await generateAccessAndRefreshToken(user.user_id);
         const { password: _ignored, ...userData } = user;
         void _ignored;
 

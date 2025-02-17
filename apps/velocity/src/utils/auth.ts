@@ -33,7 +33,7 @@ export const generateRefreshToken = (user_id: string) => {
 };
 
 
-export const generateAccessAndRefereshToken = async (user_id: string) => {
+export const generateAccessAndRefreshToken = async (user_id: string) => {
     try {
         const accessToken = generateAcessToken(user_id);
         const refreshToken = generateRefreshToken(user_id);
