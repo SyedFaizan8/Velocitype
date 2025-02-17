@@ -27,7 +27,7 @@ const Page = () => {
         try {
             if (wpm !== 0) {
                 const response = await axios.post(
-                    `${process.env.NEXT_PUBLIC_BACKEND_URL}/result`,
+                    "/api/result",
                     {
                         wpm,
                         accuracy,

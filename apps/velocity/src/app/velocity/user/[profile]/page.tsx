@@ -60,7 +60,7 @@ export default function Page() {
     const bringProfile = useCallback(async () => {
         try {
             const response = await axios.get(
-                `${process.env.NEXT_PUBLIC_BACKEND_URL}/profile`,
+                "/api/profile",
                 {
                     params: { username: slug },
                     withCredentials: true
@@ -125,10 +125,8 @@ export default function Page() {
 
     return (
         <div className="w-full h-full space-y-2 py-2 flex flex-col justify-center">
-            {/* <h1 className="text-2xl">Public View</h1> */}
             <div className="w-full space-y-2">
                 <div className="grid grid-cols-10 w-full bg-slate-900 rounded-t-xl">
-                    {/* Profile Information */}
                     <div className="flex flex-col justify-center col-span-4 border border-r-slate-800 border-r-8 p-2 space-y-2">
                         <div className="flex space-x-5 pl-5">
                             <div className="text-7xl">

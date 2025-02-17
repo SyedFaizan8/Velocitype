@@ -31,10 +31,7 @@ const Page = () => {
 
     const fetchLeaderboard = async (page: number) => {
         try {
-            const response = await axios.get(
-                `${process.env.NEXT_PUBLIC_BACKEND_URL}/leaderboard`,
-                { params: { page } }
-            );
+            const response = await axios.get("/api/leaderboard", { params: { page } });
             const newData: LeaderboardType[] = response.data.data;
 
             if (newData.length < USERS_PER_PAGE) setHasMore(false)

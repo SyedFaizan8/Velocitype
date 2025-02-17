@@ -108,7 +108,7 @@ const Page = () => {
         try {
             if (!user?.username) return;
             const response = await axios.get(
-                `${process.env.NEXT_PUBLIC_BACKEND_URL}/user/profile`,
+                "/api/user/profile",
                 {
                     params: { username: user.username },
                     withCredentials: true
@@ -153,7 +153,7 @@ const Page = () => {
 
     const handleSubmitForm = async (url: string, data: UserUpdateData) => {
         try {
-            await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/user/${url}`, data, { withCredentials: true });
+            await axios.post(`/api/user/${url}`, data, { withCredentials: true });
             toast({
                 title: "Update Done",
                 description: `${url} is updated`,
@@ -208,7 +208,7 @@ const Page = () => {
 
     const handleLogout = async () => {
         try {
-            await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/logout`, {}, { withCredentials: true });
+            await axios.post("/api/logout", {}, { withCredentials: true });
             dispatch(logoutUser());
             router.push("/velocity/login");
         } catch {
@@ -221,7 +221,7 @@ const Page = () => {
 
     const resetAccount = async () => {
         try {
-            await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/user/reset`, {}, { withCredentials: true });
+            await axios.post("/api/user/reset", {}, { withCredentials: true });
             toast({
                 title: "Account status",
                 description: "Account Reset Successfull."
@@ -236,7 +236,7 @@ const Page = () => {
     }
     const deleteAccount = async () => {
         try {
-            await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/user/delete`, {}, { withCredentials: true });
+            await axios.post("/api/user/delete", {}, { withCredentials: true });
             toast({
                 title: "Account status",
                 description: `Account deletion successfull, we miss you.`,

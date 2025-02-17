@@ -57,7 +57,7 @@ const Page = () => {
 
     const checkAvailability = async (type: string, value: string) => {
         try {
-            const { data } = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/check-${type}`, {
+            const { data } = await axios.get(`/api/check-${type}`, {
                 params: { [type]: value },
             });
             if (type === "username") setUsernameAvailability(data.data.available);
@@ -93,13 +93,17 @@ const Page = () => {
         }
         if (usernameAvailability && emailAvailability) {
             try {
-                const responce = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/register`, data);
-                if (responce.data) onLogin({ email: data.email, password: data.password });
-            } catch {
-                toast({
-                    variant: "destructive",
-                    title: "Something went wrong while registering user",
-                })
+                const response = await axios.post("/api/register", data);
+                // console.log("Response:", response.data);
+                if (response.data) onLogin({ email: data.email, password: data.password });
+            } catch (error) {
+                if (axios.isAxiosError(error)) {
+                    // console.error("Axios POST Error:", error?.response?.data || error.message);
+                    toast({
+                        variant: "destructive",
+                        title: error?.response?.data || error.message,
+                    })
+                }
             }
         }
     }
