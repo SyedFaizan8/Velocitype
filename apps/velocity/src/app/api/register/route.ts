@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { registerSchema } from "@repo/zod";
-import { prisma } from "@repo/db";
+import { prisma } from "@/lib/prisma";
 import { ApiResponse, ApiError } from "@/utils/apiResponse";
 import { hashPassword } from "@/utils/auth";
 

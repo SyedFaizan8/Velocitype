@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { loginSchema } from "@repo/zod";
-import { prisma } from "@repo/db";
+import { prisma } from "@/lib/prisma";
 import { ApiResponse, ApiError } from "@/utils/apiResponse";
 import { comparePassword, generateAccessAndRefereshToken } from "@/utils/auth";
 import { options } from "@/utils/cookieOptions";

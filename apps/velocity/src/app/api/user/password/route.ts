@@ -1,6 +1,6 @@
 import { ApiError, ApiResponse } from "@/utils/apiResponse";
 import { comparePassword, getUserIdFromRequest, hashPassword } from "@/utils/auth";
-import { prisma } from "@repo/db";
+import { prisma } from "@/lib/prisma";
 import { updatePasswordSchema } from "@repo/zod";
 import { NextRequest, NextResponse } from "next/server";
 

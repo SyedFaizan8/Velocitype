@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@repo/db";
+import { prisma } from "@/lib/prisma";
 import { ApiError, ApiResponse } from "@/utils/apiResponse";
 import { getUserIdFromRequest } from "@/utils/auth";
 import { fullnameSchema } from "@repo/zod";

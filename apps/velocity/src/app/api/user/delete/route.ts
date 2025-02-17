@@ -1,6 +1,6 @@
 import { ApiError, ApiResponse } from "@/utils/apiResponse";
 import { getUserIdFromRequest } from "@/utils/auth";
-import { prisma } from "@repo/db";
+import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
