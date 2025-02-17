@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
         });
 
         if (!newUser) {
-            return NextResponse.json(new ApiError(500, "Something went wrong while registering the user"), {
+            return NextResponse.json(new ApiError(500, "Something went wrong while registering the user in database"), {
                 status: 500,
             });
         }

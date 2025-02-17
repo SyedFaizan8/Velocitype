@@ -91,14 +91,16 @@ const Page = () => {
                 description: "try different email"
             })
         }
-        try {
-            const responce = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/register`, data);
-            if (responce.data) onLogin({ email: data.email, password: data.password });
-        } catch {
-            toast({
-                variant: "destructive",
-                title: "Something went wrong while registering user",
-            })
+        if (usernameAvailability && emailAvailability) {
+            try {
+                const responce = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/register`, data);
+                if (responce.data) onLogin({ email: data.email, password: data.password });
+            } catch {
+                toast({
+                    variant: "destructive",
+                    title: "Something went wrong while registering user",
+                })
+            }
         }
     }
 
