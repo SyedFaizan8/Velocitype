@@ -12,7 +12,16 @@
     "build": {
       "dependsOn": ["^build", "^db:generate"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
-      "outputs": [".next/**", "!.next/cache/**"]
+      "outputs": [".next/**", "!.next/cache/**"],
+      "env": [
+        "ACCESS_SECRET",
+         "REFRESH_SECRET",
+         "IMAGEKIT_PUBLIC_KEY",
+         "IMAGEKIT_PRIVATE_KEY",
+         "IMAGEKIT_URL_ENDPOINT",
+         "DIRECT_URL",
+         "DATABASE_URL"
+        ]
     },
     "lint": {
       "dependsOn": ["^lint"]
