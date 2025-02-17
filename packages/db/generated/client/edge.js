@@ -168,6 +168,10 @@ const config = {
         "fromEnvVar": null,
         "value": "windows",
         "native": true
+      },
+      {
+        "fromEnvVar": null,
+        "value": "rhel-openssl-3.0.x"
       }
     ],
     "previewFeatures": [],
@@ -194,8 +198,8 @@ const config = {
       }
     }
   },
-  "inlineSchema": "generator client {\n  provider = \"prisma-client-js\"\n  output   = \"./../generated/client\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel User {\n  user_id      String   @id @default(uuid())\n  fullname     String\n  username     String   @unique\n  email        String   @unique\n  bio          String?\n  password     String\n  refreshToken String?\n  website      String?\n  imageUrl     String?\n  created_at   DateTime @default(now())\n\n  history     History[]\n  stats       TotalStatistics?\n  leaderboard Leaderboard?\n}\n\nmodel History {\n  history_id String   @id @default(uuid())\n  user_id    String\n  wpm        Int\n  accuracy   Decimal  @db.Decimal(5, 2)\n  date       DateTime @default(now())\n\n  user User @relation(fields: [user_id], references: [user_id], onDelete: Cascade)\n\n  @@index([user_id])\n}\n\nmodel TotalStatistics {\n  user_id             String @id\n  total_tests_taken   Int\n  total_letters_typed Int\n  total_words_typed   Int\n\n  user User @relation(fields: [user_id], references: [user_id], onDelete: Cascade)\n\n  @@index([user_id])\n}\n\nmodel Leaderboard {\n  user_id          String   @id\n  highest_wpm      Int\n  highest_accuracy Decimal  @db.Decimal(5, 2)\n  achieved_at      DateTime @default(now())\n\n  user User @relation(fields: [user_id], references: [user_id], onDelete: Cascade)\n\n  @@index([user_id])\n}\n",
-  "inlineSchemaHash": "d14ac4223c38e9bd82d5e2736c1981338fcda6fe2783613ce342f72c5c4dc04c",
+  "inlineSchema": "generator client {\n  provider      = \"prisma-client-js\"\n  binaryTargets = [\"native\", \"rhel-openssl-3.0.x\"]\n  output        = \"./../generated/client\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel User {\n  user_id      String   @id @default(uuid())\n  fullname     String\n  username     String   @unique\n  email        String   @unique\n  bio          String?\n  password     String\n  refreshToken String?\n  website      String?\n  imageUrl     String?\n  created_at   DateTime @default(now())\n\n  history     History[]\n  stats       TotalStatistics?\n  leaderboard Leaderboard?\n}\n\nmodel History {\n  history_id String   @id @default(uuid())\n  user_id    String\n  wpm        Int\n  accuracy   Decimal  @db.Decimal(5, 2)\n  date       DateTime @default(now())\n\n  user User @relation(fields: [user_id], references: [user_id], onDelete: Cascade)\n\n  @@index([user_id])\n}\n\nmodel TotalStatistics {\n  user_id             String @id\n  total_tests_taken   Int\n  total_letters_typed Int\n  total_words_typed   Int\n\n  user User @relation(fields: [user_id], references: [user_id], onDelete: Cascade)\n\n  @@index([user_id])\n}\n\nmodel Leaderboard {\n  user_id          String   @id\n  highest_wpm      Int\n  highest_accuracy Decimal  @db.Decimal(5, 2)\n  achieved_at      DateTime @default(now())\n\n  user User @relation(fields: [user_id], references: [user_id], onDelete: Cascade)\n\n  @@index([user_id])\n}\n",
+  "inlineSchemaHash": "494e1f3fc2f408f982b9904e33735fb6f4700888f25845584c37b07fd5ab4988",
   "copyEngine": true
 }
 config.dirname = '/'
