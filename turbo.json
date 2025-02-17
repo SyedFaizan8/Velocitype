@@ -2,15 +2,8 @@
   "$schema": "https://turbo.build/schema.json",
   "ui": "tui",
   "tasks": {
-    "db:generate": {
-      "cache": false
-    },
-    "db:migrate": {
-      "cache": false,
-      "persistent": true
-    },
     "build": {
-      "dependsOn": ["^build", "^db:generate"],
+      "dependsOn": ["^build"],
       "inputs": ["$TURBO_DEFAULT$", ".env*"],
       "outputs": [".next/**", "!.next/cache/**"],
       "env": [
@@ -30,7 +23,6 @@
       "dependsOn": ["^check-types"]
     },
     "dev": {
-      "dependsOn": ["^db:generate"],
       "cache": false,
       "persistent": true
     }
