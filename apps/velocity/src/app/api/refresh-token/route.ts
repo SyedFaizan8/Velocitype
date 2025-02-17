@@ -3,7 +3,7 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import { prisma } from "@/lib/prisma";
 import { ApiError, ApiResponse } from "@/utils/apiResponse";
 import { options } from "@/utils/cookieOptions";
-import { generateAccessAndRefereshToken } from "@/utils/auth";
+import { generateAccessAndRefreshToken } from "@/utils/auth";
 
 const REFRESH_SECRET = process.env.REFRESH_SECRET as string;
 
@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
             );
         }
 
-        const { accessToken, refreshToken } = await generateAccessAndRefereshToken(user.user_id);
+        const { accessToken, refreshToken } = await generateAccessAndRefreshToken(user.user_id);
 
         const response = NextResponse.json(
             new ApiResponse(
