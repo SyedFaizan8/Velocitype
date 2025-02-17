@@ -158,7 +158,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "D:\\Mine\\Projects\\velocitype\\packages\\db\\generated\\client",
+      "value": "D:\\Mine\\Projects\\new_velocitype\\packages\\db\\generated\\client",
       "fromEnvVar": null
     },
     "config": {
@@ -172,7 +172,7 @@ const config = {
       }
     ],
     "previewFeatures": [],
-    "sourceFilePath": "D:\\Mine\\Projects\\velocitype\\packages\\db\\prisma\\schema.prisma",
+    "sourceFilePath": "D:\\Mine\\Projects\\new_velocitype\\packages\\db\\prisma\\schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {

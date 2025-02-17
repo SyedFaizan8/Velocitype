@@ -1,19 +1,22 @@
 {
-  "name": "velocitype",
+  "name": "new_velocitype",
   "private": true,
   "scripts": {
-    "build": "turbo build",
-    "dev": "turbo dev",
-    "lint": "turbo lint"
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "check-types": "turbo run check-types"
   },
   "devDependencies": {
-    "turbo": "^2.3.3",
-    "typescript": "5.5.4"
+    "prettier": "^3.5.0",
+    "turbo": "^2.4.2",
+    "typescript": "5.7.3"
   },
   "engines": {
     "node": ">=18"
   },
-  "packageManager": "npm@10.8.1",
+  "packageManager": "npm@11.1.0",
   "workspaces": [
     "apps/*",
     "packages/*"
