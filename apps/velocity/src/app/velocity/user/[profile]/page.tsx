@@ -60,13 +60,9 @@ export default function Page() {
     const bringProfile = useCallback(async () => {
         try {
             const response = await axios.get(
-                `${process.env.NEXT_PUBLIC_BACKEND_URL}/profile/${slug}`,
-                { withCredentials: true }
-            );
-            await axios.get(
                 `${process.env.NEXT_PUBLIC_BACKEND_URL}/profile`,
                 {
-                    params: { profile: slug },
+                    params: { username: slug },
                     withCredentials: true
                 },
             );
