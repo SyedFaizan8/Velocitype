@@ -23,8 +23,8 @@ const chartConfig = {
 export const Chart = ({ userData, totalTest }: { userData: HistoryEntry[] | null, totalTest: number }) => {
 
     return (
-        <Card >
-            <CardContent className="px-2 sm:p-6 bg-slate-900 rounded-b-xl">
+        <Card className="h-full bg-slate-900 rounded-none rounded-b-xl w-full" >
+            <CardContent className="px-2 sm:p-6  ">
                 {totalTest > 0 ? <div>
                     <span className="flex space-x-1">
                         <span>   Last</span>

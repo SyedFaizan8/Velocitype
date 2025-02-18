@@ -29,7 +29,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased dark`}
       >
-        <div className="bg-slate-800 text-slate-50 md:py-10	py-2 px-6 md:px-32 min-h-screen max-h-screen tracking-wider font-mono overflow-hidden">
+        <div className="bg-slate-800 text-slate-50 md:py-10	py-2 px-6 md:px-20 min-h-screen max-h-screen tracking-wider font-mono overflow-hidden">
           <Providers>
             {children}
           </Providers>

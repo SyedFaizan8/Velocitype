@@ -10,7 +10,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     return (
         <>
             <Header />
-            <section className="w-full md:px-10 px-6 h-[80vh] flex flex-col justify-center items-center">
+            <section className="w-full px-6 h-[80vh] flex flex-col justify-center items-center">
                 {children}
             </section>
             <Toaster />

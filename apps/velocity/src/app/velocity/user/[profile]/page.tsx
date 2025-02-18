@@ -13,6 +13,7 @@ import axios from "axios";
 import Link from "next/link";
 import { formatTime } from "@/utils/helpers";
 import { toast } from "@/hooks/use-toast";
+import { UserSkeleton } from "@/components/skeleton/UserSkeleton"
 
 interface UserStats {
     total_tests_taken: number;
@@ -113,7 +114,7 @@ export default function Page() {
 
     if (initialized && !loading && !user) return null
 
-    if (!userData) return <div>Loading...</div>
+    if (!userData) return <UserSkeleton />
 
     const { stats, leaderboard, imageUrl, username, created_at, bio, website, fullname } = userData.user;
     const totalTestsTaken = stats.total_tests_taken.toString();
@@ -125,9 +126,9 @@ export default function Page() {
 
     return (
         <div className="w-full h-full space-y-2 py-2 flex flex-col justify-center">
-            <div className="w-full space-y-2">
+            <div className="w-full space-y-2 h-full flex flex-col justify-center ">
                 <div className="grid grid-cols-10 w-full bg-slate-900 rounded-t-xl">
-                    <div className="flex flex-col justify-center col-span-4 border border-r-slate-800 border-r-8 p-2 space-y-2">
+                    <div className="flex flex-col justify-center col-span-4 border border-r-slate-800 border-r-8 px-2 space-y-2 py-5">
                         <div className="flex space-x-5 pl-5">
                             <div className="text-7xl">
                                 {imageUrl ? (
@@ -159,28 +160,28 @@ export default function Page() {
                     </div>
 
                     {/* Statistics */}
-                    <div className="col-span-3 text-slate-500 text-start border border-r-slate-800 border-r-8 px-4 py-2 space-y-2">
-                        <div>
-                            <h1 className="text-xs">Test Completed</h1>
-                            <div className="text-yellow-500 text-lg">
+                    <div className="col-span-3 text-slate-500 text-start border border-r-slate-800 border-r-8 pl-6 py-2 space-y-2 flex  flex-col justify-center ">
+                        <div className="flex items-center space-x-4 text-lg">
+                            <h1>Test Completed</h1>
+                            <div className="text-yellow-500">
                                 <HyperText animateOnHover={false}>{totalTestsTaken}</HyperText>
                             </div>
                         </div>
-                        <div>
-                            <h1 className="text-xs">Time Typing</h1>
-                            <div className="text-yellow-500 text-lg">
+                        <div className="flex items-center space-x-4 text-lg">
+                            <h1 >Time Typing</h1>
+                            <div className="text-yellow-500 ">
                                 <HyperText animateOnHover={false}>{totalTimeTyping}</HyperText>
                             </div>
                         </div>
-                        <div>
-                            <h1 className="text-xs">Total Characters Typed</h1>
-                            <div className="text-yellow-500 text-lg">
+                        <div className="flex items-center space-x-4 text-lg">
+                            <h1>Characters Typed</h1>
+                            <div className="text-yellow-500">
                                 <HyperText animateOnHover={false}>{totalLettersTyped}</HyperText>
                             </div>
                         </div>
-                        <div>
-                            <h1 className="text-xs">Total Words Typed</h1>
-                            <div className="text-yellow-500 text-lg">
+                        <div className="flex items-center space-x-4 text-lg">
+                            <h1>Words Typed</h1>
+                            <div className="text-yellow-500">
                                 <HyperText animateOnHover={false}>{totalWordsTyped}</HyperText>
                             </div>
                         </div>
@@ -227,7 +228,7 @@ export default function Page() {
                         </div>
                     </div>
                 </div>
-                <div className="w-full">
+                <div className="w-full  ">
                     <Chart userData={userData.user.history} totalTest={totalTest} />
                 </div>
             </div>

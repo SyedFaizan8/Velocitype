@@ -14,6 +14,7 @@ import { useAppDispatch, useAppSelector } from "@/store/reduxHooks";
 import { useRouter } from "next/navigation";
 import { fetchUser, logoutUser } from "@/store/authSlice";
 import { useToast } from "@/hooks/use-toast";
+import { SettingsSkeleton } from "@/components/skeleton/SettingsSkeleton"
 
 import {
     bioSchema,
@@ -36,10 +37,7 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { BioFormData, EmailFormData, FullnameFormData, SocialsFormData, UpdatePasswordFormData, UsernameFormData } from "@/utils/types";
-
-
-const urlEndpoint = process.env.NEXT_PUBLIC_URL_ENDPOINT;
-const publicKey = process.env.NEXT_PUBLIC_PUBLIC_KEY;
+import { urlEndpoint, publicKey } from "@/utils/constants"
 
 interface UserProfile {
     imageUrl: string | null;
@@ -250,7 +248,7 @@ const Page = () => {
         }
     }
 
-    if (loading || !user || !userData) return null
+    if (loading || !user || !userData) return <SettingsSkeleton />
 
     return (
         <div className="w-full h-full grid relative">

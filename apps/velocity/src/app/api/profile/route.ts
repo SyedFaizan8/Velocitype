@@ -47,12 +47,12 @@ export async function GET(
                     },
                 },
                 history: {
-                    orderBy: { date: "desc" },
+                    orderBy: { date: "asc" },
                     take: 100,
                     select: {
                         wpm: true,
                         date: true,
-                    },
+                    }
                 },
             },
         });

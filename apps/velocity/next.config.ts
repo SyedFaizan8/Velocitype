@@ -9,7 +9,8 @@ const nextConfig: NextConfig = {
         port: ""
       }
     ]
-  }
+  },
+  // transpilePackages: ["@repo/zod"] //change this in prod 
 };
 
 export default nextConfig;
