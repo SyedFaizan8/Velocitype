@@ -17,7 +17,7 @@ export async function OPTIONS() {
 }
 
 export async function POST(req: NextRequest) {
-
+    console.log("POST /api/login endpoint hit");
     try {
         const body = await req.json();
         const validationResult = loginSchema.safeParse(body);
