@@ -1,7 +1,7 @@
 import { ApiError } from "./apiResponse";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import bcrypt from "bcryptjs"
-import { prisma } from "@repo/db";
+import { prisma } from "@/lib/prisma";
 import { NextRequest } from "next/server";
 
 const SALT_ROUNDS = 12;
