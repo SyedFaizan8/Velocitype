@@ -5,7 +5,7 @@ import { ApiResponse, ApiError } from "@/utils/apiResponse";
 import { comparePassword, generateAccessAndRefreshToken } from "@/utils/auth";
 import { options } from "@/utils/cookieOptions";
 
-export async function OPTIONS(request: NextRequest) {
+export async function OPTIONS() {
     return new Response(null, {
         status: 204,
         headers: {
