@@ -5,6 +5,17 @@ import { ApiResponse, ApiError } from "@/utils/apiResponse";
 import { comparePassword, generateAccessAndRefreshToken } from "@/utils/auth";
 import { options } from "@/utils/cookieOptions";
 
+export async function OPTIONS(request: NextRequest) {
+    return new Response(null, {
+        status: 204,
+        headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+            "Access-Control-Allow-Headers": "Content-Type",
+        },
+    });
+}
+
 export async function POST(req: NextRequest) {
 
     try {
