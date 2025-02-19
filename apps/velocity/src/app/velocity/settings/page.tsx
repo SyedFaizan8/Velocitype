@@ -1,4 +1,5 @@
 "use client";
+
 import FileUpload from "@/components/FileUpload";
 import { Edit, Loading, UserLeaderboard } from "@/components/Icons";
 import { addTransformationToImageKitURL } from "@/utils/addTranformation";
@@ -15,7 +16,6 @@ import { useRouter } from "next/navigation";
 import { fetchUser, logoutUser } from "@/store/authSlice";
 import { useToast } from "@/hooks/use-toast";
 import { SettingsSkeleton } from "@/components/skeleton/SettingsSkeleton"
-
 import {
     bioSchema,
     emailSchema,
@@ -24,7 +24,6 @@ import {
     updatePasswordSchema,
     usernameSchema,
 } from "@repo/zod";
-
 import {
     AlertDialog,
     AlertDialogAction,
@@ -36,55 +35,16 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
-import { BioFormData, EmailFormData, FullnameFormData, SocialsFormData, UpdatePasswordFormData, UsernameFormData } from "@/utils/types";
+import {
+    BioFormData,
+    EmailFormData,
+    FullnameFormData,
+    SocialsFormData,
+    UpdatePasswordFormData,
+    UsernameFormData
+} from "@/utils/types/formTypes";
 import { urlEndpoint, publicKey } from "@/utils/constants"
-
-interface UserProfile {
-    imageUrl: string | null;
-    fullname: string | null;
-    username: string;
-    email: string;
-    bio: string | null;
-    website: string | null;
-}
-
-interface FullnameFormDataType {
-    fullname: string;
-}
-
-interface UsernameFormDataType {
-    username: string;
-}
-
-interface EmailFormDataType {
-    email: string;
-}
-
-interface BioFormDataType {
-    bio: string;
-}
-
-interface SocialsFormDataType {
-    website: string;
-}
-
-interface UpdatePasswordFormDataType {
-    oldPassword: string;
-    newPassword: string;
-}
-
-interface ImageUrlType {
-    imageUrl: string | URL;
-}
-
-type UserUpdateData =
-    | FullnameFormDataType
-    | UsernameFormDataType
-    | EmailFormDataType
-    | BioFormDataType
-    | SocialsFormDataType
-    | UpdatePasswordFormDataType
-    | ImageUrlType
+import { UserProfile, UserUpdateData } from "@/utils/types/settingsTypes"
 
 const Page = () => {
 
@@ -123,23 +83,17 @@ const Page = () => {
 
     useEffect(() => {
         const checkAuth = async () => {
-            if (initialized && !loading && !user) {
-                router.push("/velocity/login");
-            }
+            if (initialized && !loading && !user) router.push("/velocity/login")
         };
         checkAuth();
     }, [user, router, loading, initialized]);
 
     useEffect(() => {
-        if (!initialized) {
-            findUser();
-        }
+        if (!initialized) findUser();
     }, [initialized, dispatch, findUser]);
 
     useEffect(() => {
-        if (user?.username) {
-            bringProfile();
-        }
+        if (user?.username) bringProfile()
     }, [user, bringProfile]);
 
     const onSuccess = async (res: IKUploadResponse) => {

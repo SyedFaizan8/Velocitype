@@ -4,8 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { ApiError, ApiResponse } from "@/utils/apiResponse";
 import { options } from "@/utils/cookieOptions";
 import { generateAccessAndRefreshToken } from "@/utils/auth";
-
-const REFRESH_SECRET = process.env.REFRESH_SECRET as string;
+import { REFRESH_SECRET } from "@/utils/constants";
 
 export async function POST(req: NextRequest) {
     try {

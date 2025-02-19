@@ -3,11 +3,8 @@ import jwt, { JwtPayload } from "jsonwebtoken";
 import bcrypt from "bcryptjs"
 import { prisma } from "@/lib/prisma";
 import { NextRequest } from "next/server";
+import { ACCESS_SECRET, REFRESH_SECRET, SALT_ROUNDS } from "@/utils/constants"
 
-const SALT_ROUNDS = 12;
-
-const ACCESS_SECRET = process.env.ACCESS_SECRET as string
-const REFRESH_SECRET = process.env.REFRESH_SECRET as string
 
 export const hashPassword = async (password: string): Promise<string> => {
     const salt = await bcrypt.genSalt(SALT_ROUNDS);

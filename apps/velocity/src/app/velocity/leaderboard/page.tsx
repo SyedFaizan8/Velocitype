@@ -3,7 +3,6 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import { Crown, UserLeaderboard } from "@/components/Icons";
-import Link from "next/link";
 import axios from "axios";
 import { toast } from "@/hooks/use-toast";
 import TooltipIcon from "@/components/TooltipIcon";
@@ -11,20 +10,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/store/reduxHooks";
 import { fetchUser } from "@/store/authSlice";
+import { LeaderboardType } from "@/utils/types/leaderboardtypes";
+import { USERS_PER_PAGE } from "@/utils/constants"
 
-interface UserNameType {
-    username: string;
-    imageUrl: URL | string | null;
-}
-
-interface LeaderboardType {
-    user: UserNameType;
-    highest_wpm: number;
-    highest_accuracy: number;
-    achieved_at: Date | string;
-}
-
-const USERS_PER_PAGE = 50;
 
 const Page = () => {
     const [currentPage, setCurrentPage] = useState<number>(1);
@@ -134,9 +122,6 @@ const Page = () => {
                                     <div onClick={() => onRedirect(user.username)} className="cursor-pointer">
                                         <span><TooltipIcon icon={user.username} tooltipText={"login to view profile"} /></span>
                                     </div>
-                                    {/* <Link href={`/velocity/user/${user.username}`}>
-                                        <span><TooltipIcon icon={user.username} tooltipText={"login to view profile"} /></span>
-                                    </Link> */}
                                 </div>
                                 <div className="p-1 w-2/12 flex items-center">{highest_wpm}</div>
                                 <div className="hidden md:flex p-1 w-2/12 items-center">
