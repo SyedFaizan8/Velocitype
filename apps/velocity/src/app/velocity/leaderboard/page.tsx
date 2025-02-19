@@ -10,7 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useRouter } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/store/reduxHooks";
 import { fetchUser } from "@/store/authSlice";
-import { LeaderboardType } from "@/utils/types/leaderboardtypes";
+import { LeaderboardType } from "@/utils/types/leaderboardTypes";
 import { USERS_PER_PAGE } from "@/utils/constants"
 
 
