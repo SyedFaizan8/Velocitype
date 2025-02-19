@@ -10,7 +10,7 @@ const nextConfig: NextConfig = {
       }
     ]
   },
-  // transpilePackages: ["@repo/zod"] //change this in prod 
+  // transpilePackages: ["@repo/zod"] //no use in prod
 };
 
 export default nextConfig;

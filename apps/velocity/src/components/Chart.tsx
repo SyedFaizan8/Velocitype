@@ -11,7 +11,7 @@ import {
     ChartTooltipContent,
 } from "@/components/ui/chart"
 import { HyperText } from "./ui/hyper-text"
-import { HistoryEntry } from "@/app/velocity/user/[profile]/page"
+import { HistoryEntry } from "@/utils/types/profileTypes"
 
 const chartConfig = {
     wpm: {

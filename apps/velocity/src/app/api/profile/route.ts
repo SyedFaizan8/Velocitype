@@ -1,19 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { ApiResponse, ApiError } from "@/utils/apiResponse";
-import { getUserIdFromRequest } from "@/utils/auth";
 
 export async function GET(
     req: NextRequest
 ) {
-
-    const user_id = await getUserIdFromRequest(req);
-
-    if (!user_id) {
-        return NextResponse.json(new ApiError(401, "Unauthorized"), {
-            status: 401,
-        });
-    }
 
     const { searchParams } = new URL(req.url);
     const username = searchParams.get('username');

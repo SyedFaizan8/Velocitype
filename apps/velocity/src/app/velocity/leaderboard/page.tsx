@@ -1,17 +1,15 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { Crown, UserLeaderboard } from "@/components/Icons";
 import axios from "axios";
 import { toast } from "@/hooks/use-toast";
 import TooltipIcon from "@/components/TooltipIcon";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useRouter } from "next/navigation";
-import { useAppDispatch, useAppSelector } from "@/store/reduxHooks";
-import { fetchUser } from "@/store/authSlice";
 import { LeaderboardType } from "@/utils/types/leaderboardTypes";
 import { USERS_PER_PAGE } from "@/utils/constants"
+import Link from "next/link";
 
 
 const Page = () => {
@@ -20,9 +18,6 @@ const Page = () => {
     const [hasMore, setHasMore] = useState<boolean>(true);
     const observer = useRef<IntersectionObserver | null>(null);
     const loadMoreRef = useRef<HTMLDivElement | null>(null);
-    const dispatch = useAppDispatch();
-    const { user, initialized } = useAppSelector(state => state.auth);
-    const router = useRouter();
 
     const fetchLeaderboard = async (page: number) => {
         try {
@@ -60,18 +55,6 @@ const Page = () => {
 
         return () => observer.current?.disconnect();
     }, [hasMore]);
-
-    const findUser = useCallback(async () => {
-        await dispatch(fetchUser());
-    }, [dispatch])
-
-    useEffect(() => {
-        if (!initialized) findUser()
-    }, [initialized, dispatch, findUser]);
-
-    const onRedirect = (username: string) => {
-        if (user) router.push(`/velocity/user/${username}`)
-    }
 
     return (
         <div className="w-full text-center max-h-full md:px-20 h-5/6">
@@ -119,9 +102,9 @@ const Page = () => {
                                             <UserLeaderboard />
                                         </div>
                                     )}
-                                    <div onClick={() => onRedirect(user.username)} className="cursor-pointer">
+                                    <Link href={`/velocity/profile/${user.username}`} className="cursor-pointer">
                                         <span><TooltipIcon icon={user.username} tooltipText={"login to view profile"} /></span>
-                                    </div>
+                                    </Link>
                                 </div>
                                 <div className="p-1 w-2/12 flex items-center">{highest_wpm}</div>
                                 <div className="hidden md:flex p-1 w-2/12 items-center">

@@ -20,7 +20,7 @@ export async function middleware(request: NextRequest) {
 
     if (!token && !isPublicFrontend && !isLoginRoute) {
         if (isApiRoute) {
-            return NextResponse.json({ message: 'Unauthorized request' }, { status: 401 });
+            return NextResponse.json({ message: 'Unauthorized request from middleware' }, { status: 401 });
         }
         return NextResponse.redirect(new URL('/velocity/login', request.nextUrl));
     }
@@ -33,7 +33,6 @@ export const config = {
         '/velocity/login',
         '/velocity/user/:path*',
         '/velocity/settings',
-        '/api/profile/:username*',
         '/api/logout',
         '/api/refresh-token',
         '/api/result',
