@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { ApiError, ApiResponse } from "@/utils/apiResponse";
 import { getUserIdFromRequest } from "@/utils/auth";
-import { options } from "@/utils/cookieOptions";
+import { refreshTokenOptions, accessTokenOptions } from "@/utils/cookieOptions";
 
 export async function POST(req: NextRequest) {
     try {
@@ -24,8 +24,8 @@ export async function POST(req: NextRequest) {
             { status: 200 }
         );
 
-        response.cookies.set("accessToken", "", { ...options, maxAge: 0 });
-        response.cookies.set("refreshToken", "", { ...options, maxAge: 0 });
+        response.cookies.set("accessToken", "", { ...accessTokenOptions, maxAge: 0 });
+        response.cookies.set("refreshToken", "", { ...refreshTokenOptions, maxAge: 0 });
 
         return response;
     } catch (error) {

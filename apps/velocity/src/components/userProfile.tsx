@@ -95,7 +95,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ userData }) => {
                         </div>
                     </div>
 
-                    <div className="col-span-3 text-slate-500 text-start border border-r-slate-800 border-r-8 pl-6 py-2 space-y-2 flex flex-col justify-center">
+                    <div className="col-span-3 text-slate-500 text-start border border-r-slate-800 border-r-8 pl-6 pr-4 py-2 space-y-2 flex flex-col justify-center">
                         <div className="flex items-center space-x-4 text-lg">
                             <h1>Test Completed</h1>
                             <div className="text-yellow-500">
@@ -130,7 +130,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ userData }) => {
                         </div>
                     </div>
 
-                    <div className="relative flex col-span-3 border text-center items-center justify-center p-2 space-x-3">
+                    <div className="relative flex col-span-3 border text-center items-center justify-center p-8 space-x-3">
                         <span onClick={handleCopy} className="cursor-pointer absolute right-0 top-0 p-3">
                             <TooltipIcon icon={<InternalLink />} tooltipText="Copy Profile Link" />
                         </span>
@@ -146,7 +146,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ userData }) => {
                             {leaderboard && (
                                 <div className="flex space-x-4 text-sm">
                                     <div>
-                                        <p>WPM</p>
+                                        <p className='text-slate-400'>WPM</p>
                                         <div className="text-yellow-500">
                                             <HyperText animateOnHover={false}>
                                                 {leaderboard.highest_wpm ? leaderboard.highest_wpm.toString() : ''}
@@ -154,7 +154,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ userData }) => {
                                         </div>
                                     </div>
                                     <div>
-                                        <p>Accuracy</p>
+                                        <p className='text-slate-400'>Accuracy</p>
                                         <div className="text-yellow-500">
                                             <HyperText animateOnHover={false}>
                                                 {highestAccuracy + '%'}
@@ -162,7 +162,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ userData }) => {
                                         </div>
                                     </div>
                                     <div>
-                                        <p>Date</p>
+                                        <p className='text-slate-400'>Date</p>
                                         <div className="text-yellow-500">
                                             <HyperText animateOnHover={false}>
                                                 {leaderboard.achieved_at ? new Date(leaderboard.achieved_at).toLocaleDateString() : ''}

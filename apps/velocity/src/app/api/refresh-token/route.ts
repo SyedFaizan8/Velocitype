@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { prisma } from "@/lib/prisma";
 import { ApiError, ApiResponse } from "@/utils/apiResponse";
-import { options } from "@/utils/cookieOptions";
+import { refreshTokenOptions, accessTokenOptions } from "@/utils/cookieOptions";
 import { generateAccessAndRefreshToken } from "@/utils/auth";
 import { REFRESH_SECRET } from "@/utils/constants";
 
@@ -49,10 +49,11 @@ export async function POST(req: NextRequest) {
             { status: 200 }
         );
 
-        response.cookies.set("accessToken", accessToken, options);
-        response.cookies.set("refreshToken", refreshToken, options);
+        response.cookies.set("accessToken", accessToken, accessTokenOptions);
+        response.cookies.set("refreshToken", refreshToken, refreshTokenOptions);
 
         return response;
+
     } catch (error) {
         return NextResponse.json(
             error instanceof ApiError

@@ -13,6 +13,7 @@ import { useAppDispatch, useAppSelector } from "@/store/reduxHooks";
 import { useRouter } from "next/navigation";
 import { fetchUser, loginUser } from "@/store/authSlice";
 import { toast } from "@/hooks/use-toast";
+import { useAvailability } from "@/hooks/useAvalibility";
 
 interface FormValues {
     fullname: string;
@@ -42,6 +43,7 @@ const Page = () => {
         formState: { errors: errorsRegister },
     } = useForm<FormValues>({
         resolver: zodResolver(registerSchema),
+        mode: "onBlur"
     });
 
     const {
@@ -49,32 +51,16 @@ const Page = () => {
         handleSubmit: handleSubmitLogin,
         formState: { errors: errorsLogin },
     } = useForm<LoginValues>({
-        resolver: zodResolver(loginSchema)
+        resolver: zodResolver(loginSchema),
+        mode: "onBlur"
     });
 
-    const [usernameAvailability, setUsernameAvailability] = useState<boolean | null>(null);
-    const [emailAvailability, setEmailAvailability] = useState<boolean | null>(null);
-
-    const checkAvailability = async (type: string, value: string) => {
-        try {
-            const { data } = await axios.get(`/api/check-${type}`, {
-                params: { [type]: value },
-            });
-            if (type === "username") setUsernameAvailability(data.data.available);
-            else setEmailAvailability(data.data.available)
-        } catch {
-            if (type === "username") setUsernameAvailability(false);
-            else setEmailAvailability(false)
-        }
-    };
-
-    const usernameAvailableCheck = useDebouncedCallback((type: string, value: string) => {
-        checkAvailability(type, value);
-    }, 500);
-
-    const emailAvailableCheck = useDebouncedCallback((type: string, value: string) => {
-        checkAvailability(type, value);
-    }, 500)
+    const {
+        usernameAvailability,
+        emailAvailability,
+        checkUsernameAvailability,
+        checkEmailAvailability
+    } = useAvailability();
 
     const onSubmit = async (data: FormValues) => {
         if (!usernameAvailability) {
@@ -83,22 +69,18 @@ const Page = () => {
                 title: "username is taken",
                 description: "try different username"
             })
-        };
-        if (!emailAvailability) {
+        } else if (!emailAvailability) {
             toast({
                 variant: "destructive",
-                title: "user already exists with this email",
+                title: "email is taken ",
                 description: "try different email"
             })
-        }
-        if (usernameAvailability && emailAvailability) {
+        } else if (usernameAvailability && emailAvailability) {
             try {
                 const response = await axios.post("/api/register", data);
-                // console.log("Response:", response.data);
                 if (response.data) onLogin({ email: data.email, password: data.password });
             } catch (error) {
                 if (axios.isAxiosError(error)) {
-                    // console.error("Axios POST Error:", error?.response?.data || error.message);
                     toast({
                         variant: "destructive",
                         title: error?.response?.data || error.message,
@@ -110,17 +92,20 @@ const Page = () => {
 
     const onLogin = useCallback(async (data: LoginValues) => {
         dispatch(loginUser(data))
+    }, [dispatch])
+
+    useEffect(() => {
+        if (!error && user?.username) router.push("/")
+    }, [error, user, onLogin, router])
+
+    useEffect(() => {
         if (error) {
             toast({
                 variant: "destructive",
                 title: error,
             })
         }
-    }, [dispatch, error])
-
-    useEffect(() => {
-        if (!error && user?.username) router.push("/")
-    }, [error, user, onLogin, router])
+    }, [error])
 
     if (user) return null;
 
@@ -147,27 +132,26 @@ const Page = () => {
                         name="username"
                         placeholder="username"
                         errors={errorsRegister}
-                        onChange={(e) => usernameAvailableCheck("username", e.target.value)}
+                        onChange={(e) => checkUsernameAvailability(e.target.value)}
                     />
-                    {usernameAvailability !== null && (
+                    {(usernameAvailability !== null && usernameAvailability && !errorsRegister.username) && (
                         <span className="ml-2 text-lg w-8 flex justify-center">
-                            {usernameAvailability ? "✅" : "❌"}
+                            {usernameAvailability && "✅"}
                         </span>
                     )}
                 </div>
 
-                <div className="flex items-center w-1/2">
+                <div className="flex items-center w-1/2 relative">
                     <InputField
                         register={registerRegister}
                         name="email"
                         placeholder="email"
                         errors={errorsRegister}
-                        onChange={(e) => emailAvailableCheck("email", e.target.value)}
-
+                        onChange={(e) => checkEmailAvailability(e.target.value)}
                     />
-                    {emailAvailability !== null && (
-                        <span className="ml-2 text-lg w-8 flex justify-center">
-                            {emailAvailability ? "✅" : "❌"}
+                    {(emailAvailability !== null && emailAvailability && !errorsRegister.email) && (
+                        <span className="ml-2 text-lg w-8 flex justify-center abosulte">
+                            {emailAvailability && "✅"}
                         </span>
                     )}
                 </div>

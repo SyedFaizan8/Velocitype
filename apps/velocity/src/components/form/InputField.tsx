@@ -1,5 +1,6 @@
 import { UseFormRegister, FieldErrors, FieldValues, Path } from "react-hook-form";
 import { AnimatePresence, motion } from "framer-motion";
+import { useDebouncedCallback } from 'use-debounce';
 
 interface InputFieldProps<T extends FieldValues> {
     register: UseFormRegister<T>;
@@ -18,14 +19,27 @@ const InputField = <T extends FieldValues>({
     errors,
     onChange,
 }: InputFieldProps<T>) => {
+
+    const registeredProps = register(name);
+
+    const debouncedOnChange = useDebouncedCallback(
+        (e: React.ChangeEvent<HTMLInputElement>) => {
+            registeredProps.onChange(e);
+            if (onChange) {
+                onChange(e);
+            }
+        },
+        300
+    );
+
     return (
         <div className="w-full">
             <input
-                {...register(name)}
+                {...registeredProps}
                 className="rounded py-1 px-2 w-full bg-slate-900"
                 type={type}
                 placeholder={placeholder}
-                onChange={onChange}
+                onChange={debouncedOnChange}
             />
             <AnimatePresence>
                 {errors[name] && (

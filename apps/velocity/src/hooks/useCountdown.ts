@@ -30,7 +30,7 @@ const useCountdown = (seconds: number) => {
 
     useEffect(() => {
         return () => clearInterval(intervalRef.current!);
-    }, [])
+    })
 
     return { timeLeft, startCountdown, resetCountdown }
 }

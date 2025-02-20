@@ -24,7 +24,7 @@ export const Chart = ({ userData, totalTest }: { userData: HistoryEntry[] | null
 
     return (
         <Card className="h-full bg-slate-900 rounded-none rounded-b-xl w-full" >
-            <CardContent className="px-2 sm:p-6  ">
+            <CardContent className="px-2 sm:p-4">
                 {totalTest > 0 ? <div>
                     <span className="flex space-x-1">
                         <span>   Last</span>
@@ -33,7 +33,7 @@ export const Chart = ({ userData, totalTest }: { userData: HistoryEntry[] | null
                     </span>
                     <ChartContainer
                         config={chartConfig}
-                        className="aspect-auto h-[200px] w-full"
+                        className="aspect-auto h-[200px] w-full "
                     >
                         <LineChart
                             accessibilityLayer

@@ -9,6 +9,7 @@ import useIsMobile from "@/hooks/useIsMobile";
 import Image from "next/image";
 import { useEffect } from "react";
 import { fetchUser } from "@/store/authSlice";
+import { Howler } from 'howler';
 
 const Header = () => {
     const { sound } = useAppSelector(state => state.sound)
@@ -21,6 +22,11 @@ const Header = () => {
             dispatch(fetchUser());
         }
     }, [initialized, dispatch]);
+
+    const handleToggleSound = () => {
+        dispatch(changeSound());
+        if (!sound) Howler.unload();
+    };
 
     return (
         <div className="z-10 relative w-full flex justify-between md:text-3xl text-lg text-slate-500 ">
@@ -68,7 +74,7 @@ const Header = () => {
                             </Link>
                             <div
                                 className={`hover:text-slate-200 cursor-pointer pt-2 md:text-2xl text-md ${sound ? "text-yellow-200" : "text-slate-500"}`}
-                                onClick={() => { dispatch(changeSound()) }}
+                                onClick={handleToggleSound}
                             >
                                 {sound ?
                                     <TooltipIcon icon={<Speaker />} tooltipText="sound On" />

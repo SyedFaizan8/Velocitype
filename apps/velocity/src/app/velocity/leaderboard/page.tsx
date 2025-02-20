@@ -10,6 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { LeaderboardType } from "@/utils/types/leaderboardTypes";
 import { USERS_PER_PAGE } from "@/utils/constants"
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 
 const Page = () => {
@@ -18,6 +19,7 @@ const Page = () => {
     const [hasMore, setHasMore] = useState<boolean>(true);
     const observer = useRef<IntersectionObserver | null>(null);
     const loadMoreRef = useRef<HTMLDivElement | null>(null);
+    const router = useRouter();
 
     const fetchLeaderboard = async (page: number) => {
         try {
@@ -56,6 +58,10 @@ const Page = () => {
         return () => observer.current?.disconnect();
     }, [hasMore]);
 
+    const onSubmit = (username: string) => {
+        router.push(`/velocity/profile/${username}`)
+    }
+
     return (
         <div className="w-full text-center max-h-full md:px-20 h-5/6">
             <h1 className="text-xl md:text-4xl text-slate-500 mb-2 ">
@@ -73,11 +79,12 @@ const Page = () => {
                     <div className="overflow-auto h-80 scrollbar-thin scrollbar-thumb-slate-500 scrollbar-track-transparent">
                         {data.map(({ user, highest_wpm, highest_accuracy, achieved_at }, index) => (
                             <div
+                                onClick={() => onSubmit(user.username)}
                                 key={index}
-                                className={`md:py-2 flex text-left text-slate-100 ${(index + 1) % 2 !== 0 ? "bg-slate-500" : ""
-                                    } rounded-md mb-2`}
+                                className={`md:py-1 flex text-left text-slate-100 ${(index + 1) % 2 !== 0 ? "bg-slate-500" : ""
+                                    } rounded-md`}
                             >
-                                <div className="p-1 flex justify-center items-center w-2/12 md:w-1/12">
+                                <div className="p-1 flex cursor-pointer justify-center items-center w-2/12 md:w-1/12">
                                     {index === 0 ? (
                                         <div className="flex items-center justify-center text-xl">
                                             <Crown />
@@ -86,7 +93,7 @@ const Page = () => {
                                         <span>{index + 1}</span>
                                     )}
                                 </div>
-                                <div className="p-1 space-x-2 w-8/12 md:w-4/12 flex items-center">
+                                <div className="p-1 cursor-pointer space-x-2 w-8/12 md:w-4/12 flex items-center">
                                     {user.imageUrl &&
                                         typeof user.imageUrl === "string" &&
                                         user.imageUrl.length > 0 ? (
@@ -102,21 +109,19 @@ const Page = () => {
                                             <UserLeaderboard />
                                         </div>
                                     )}
-                                    <Link href={`/velocity/profile/${user.username}`} className="cursor-pointer">
-                                        <span><TooltipIcon icon={user.username} tooltipText={"login to view profile"} /></span>
-                                    </Link>
+                                    <span>{user.username}</span>
                                 </div>
-                                <div className="p-1 w-2/12 flex items-center">{highest_wpm}</div>
-                                <div className="hidden md:flex p-1 w-2/12 items-center">
+                                <div className="p-1 w-2/12 cursor-pointer flex items-center">{highest_wpm}</div>
+                                <div className="hidden md:flex p-1 w-2/12 items-center cursor-pointer">
                                     {highest_accuracy}%
                                 </div>
-                                <div className="hidden md:flex p-1 w-3/12 items-center">
+                                <div className="hidden md:flex p-1 w-3/12 items-center cursor-pointer">
                                     {new Date(achieved_at).toLocaleString()}
                                 </div>
                             </div>
                         ))}
-                        <div ref={loadMoreRef} className="py-2 h-16 w-full">
-                            {hasMore ? <Skeleton className="h-full w-full" /> : null}
+                        <div ref={loadMoreRef}>
+                            {hasMore ? <Skeleton className="w-full h-10" /> : null}
                         </div>
                     </div>
                 </div>

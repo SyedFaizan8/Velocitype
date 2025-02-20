@@ -59,7 +59,7 @@ const Page = () => {
     }, [user, initialized, loading, dispatch, sendData]);
 
     const handleKeyDown = (event: KeyboardEvent) => {
-        if (event.key === "Tab") {
+        if (event.key === "Tab" || event.key === "Enter") {
             dispatch(resetStats());
             router.push("/");
         }
@@ -186,6 +186,8 @@ const Page = () => {
                 !isMobile &&
                 <div className='z-10 w-full hidden md:flex justify-center items-center space-x-2 text-xs text-white '>
                     <span className="bg-slate-500 rounded-sm px-1 ">tab</span>
+                    <span>or</span>
+                    <span className="bg-slate-500 rounded-sm px-1 ">enter</span>
                     <span>- Restart</span>
                 </div>
             }

@@ -38,7 +38,22 @@ export const fetchUser = createAsyncThunk("auth/fetchUser",
             const response = await axios.get(`/api/user/me`, { withCredentials: true });
             return response.data.data;
         } catch (error) {
-            if (axios.isAxiosError(error)) return rejectWithValue(error.response?.data?.message || "User not found");
+            if (axios.isAxiosError(error)) {
+                if (error.response?.status === 401) {
+                    try {
+                        await axios.post('/api/refresh-token', {}, { withCredentials: true });
+                        const refreshedResponse = await axios.get('/api/user/me', { withCredentials: true })
+                        return refreshedResponse.data.data;
+                    } catch (refreshError) {
+                        if (axios.isAxiosError(refreshError)) {
+                            return rejectWithValue(refreshError.response?.data.message || "Refresh token failed");
+                        }
+                        return rejectWithValue("Refresh token failed");
+                    }
+                }
+                return rejectWithValue(error.response?.data.message || "User not found")
+            }
+            return rejectWithValue("An unkown error occured");
         }
     });
 
@@ -70,10 +85,11 @@ const authSlice = createSlice({
                 state.loading = false;
                 state.initialized = true;
             })
-            .addCase(fetchUser.rejected, (state) => {
+            .addCase(fetchUser.rejected, (state, action) => {
                 state.user = null;
                 state.loading = false;
                 state.initialized = true;
+                state.error = action.payload as string;
             });
     },
 });

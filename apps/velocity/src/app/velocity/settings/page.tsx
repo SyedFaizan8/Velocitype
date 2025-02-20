@@ -45,6 +45,7 @@ import {
 } from "@/utils/types/formTypes";
 import { urlEndpoint, publicKey } from "@/utils/constants"
 import { UserProfile, UserUpdateData } from "@/utils/types/settingsTypes"
+import { useAvailability } from "@/hooks/useAvalibility";
 
 const Page = () => {
 
@@ -57,6 +58,15 @@ const Page = () => {
     const [imageUrl, setImageUrl] = useState<string | null>();
     const [uploading, setUploading] = useState(false);
     const fileUploadRef = useRef<HTMLInputElement | null>(null);
+
+    const {
+        usernameAvailability,
+        emailAvailability,
+        checkUsernameAvailability,
+        checkEmailAvailability,
+        setEmailAvailability,
+        setUsernameAvailability
+    } = useAvailability();
 
     const findUser = useCallback(async () => {
         await dispatch(fetchUser());
@@ -105,12 +115,24 @@ const Page = () => {
 
     const handleSubmitForm = async (url: string, data: UserUpdateData) => {
         try {
-            await axios.post(`/api/user/${url}`, data, { withCredentials: true });
-            toast({
-                title: "Update Done",
-                description: `${url} is updated`,
-            })
-        } catch {
+            if (url === "username" && (usernameAvailability !== null && !usernameAvailability)) {
+                toast({
+                    variant: "destructive",
+                    title: "usename is taken",
+                })
+            } else if (url === "email" && (emailAvailability !== null && !emailAvailability)) {
+                toast({
+                    variant: "destructive",
+                    title: "email is taken",
+                })
+            } else {
+                await axios.post(`/api/user/${url}`, data, { withCredentials: true });
+                toast({
+                    title: "Update Done",
+                    description: `${url} is updated`,
+                })
+            }
+        } catch (error) {
             toast({
                 variant: "destructive",
                 title: "Uh oh! Something went wrong.",
@@ -148,7 +170,7 @@ const Page = () => {
         resolver: zodResolver(updatePasswordSchema),
     });
 
-    useEffect(() => {
+    const resetForm = () => {
         if (userData && !fullnameDirty) resetFullname({ fullname: userData.fullname || "" })
         if (userData && !usernameDirty) resetUsername({ username: userData.username || "" })
         if (userData && !emailDirty) resetEmail({ email: userData.email || "" })
@@ -156,6 +178,12 @@ const Page = () => {
         if (userData && !socialDirty) resetSocial({ website: userData.website || "" });
         if (userData && !passwordDirty) resetPassword({ oldPassword: "", newPassword: "" });
         if (userData?.imageUrl) setImageUrl(userData.imageUrl)
+        if (emailAvailability && setEmailAvailability) setEmailAvailability(null);
+        if (usernameAvailability && setUsernameAvailability) setUsernameAvailability(null);
+    }
+
+    useEffect(() => {
+        resetForm();
     }, [userData, resetFullname, fullnameDirty, usernameDirty, resetUsername, emailDirty, resetEmail, bioDirty, resetBio, socialDirty, resetSocial, passwordDirty, resetPassword]);
 
     const handleLogout = async () => {
@@ -256,15 +284,17 @@ const Page = () => {
                     </form>
 
                     <form onSubmit={handleUsernameSubmit((data) => handleSubmitForm('username', data))} className="space-x-2">
-                        <input {...registerUsername('username')} type="text" className="rounded bg-neutral-900 px-2 w-96" placeholder="Username" />
+                        <input {...registerUsername('username')} type="text" className="rounded bg-neutral-900 px-2 w-96" placeholder="Username" onChange={e => checkUsernameAvailability(e.target.value)} />
                         <button type="submit" className="bg-slate-950 rounded-md px-2 text-slate-400">Update</button>
                         {errorsUsername.username?.message && <span className="text-xs text-red-500">{errorsUsername.username.message}</span>}
+                        {(usernameAvailability !== null && usernameAvailability && !errorsUsername.username) && (<span>{usernameAvailability && "✅ available"}</span>)}
                     </form>
 
                     <form onSubmit={handleEmailSubmit((data) => handleSubmitForm('email', data))} className="space-x-2">
-                        <input {...registerEmail('email')} type="text" className="rounded bg-neutral-900 px-2 w-96" placeholder="Email" />
+                        <input {...registerEmail('email')} type="text" className="rounded bg-neutral-900 px-2 w-96" placeholder="Email" onChange={e => checkEmailAvailability(e.target.value)} />
                         <button type="submit" className="bg-slate-950 rounded-md px-2 text-slate-400">Update</button>
                         {errorsEmail.email?.message && <span className="text-xs text-red-500">{errorsEmail.email.message}</span>}
+                        {(emailAvailability && emailAvailability !== null && !errorsEmail.email) && (<span>{emailAvailability && "✅ available"}</span>)}
                     </form>
 
                     <form onSubmit={handleBioSubmit((data) => handleSubmitForm('bio', data))} className="space-x-2">
@@ -286,7 +316,7 @@ const Page = () => {
                         {(errorsPassword.oldPassword?.message || errorsPassword.newPassword?.message)
                             && <span className="text-xs text-red-500">{errorsPassword.oldPassword?.message || errorsPassword.newPassword?.message}</span>}
                     </form>
-                    <button className="space-x-2 px-4 rounded-md bg-slate-950 font-bold text-white tracking-widest transform hover:scale-105 hover:bg-slate-900 transition-colors duration-200">
+                    <button onClick={resetForm} className="space-x-2 px-4 rounded-md bg-slate-950 font-bold text-white tracking-widest transform hover:scale-105 hover:bg-slate-900 transition-colors duration-200">
                         Clear Form
                     </button>
                     <div className="space-x-2">

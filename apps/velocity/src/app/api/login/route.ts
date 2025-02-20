@@ -3,7 +3,7 @@ import { loginSchema } from "@repo/zod";
 import { prisma } from "@/lib/prisma";
 import { ApiResponse, ApiError } from "@/utils/apiResponse";
 import { comparePassword, generateAccessAndRefreshToken } from "@/utils/auth";
-import { options } from "@/utils/cookieOptions";
+import { accessTokenOptions, refreshTokenOptions } from "@/utils/cookieOptions";
 
 export async function POST(req: NextRequest) {
     console.log("POST /api/login endpoint hit");
@@ -51,8 +51,8 @@ export async function POST(req: NextRequest) {
             { status: 200 }
         );
 
-        response.cookies.set("accessToken", accessToken, options);
-        response.cookies.set("refreshToken", refreshToken, options);
+        response.cookies.set("accessToken", accessToken, accessTokenOptions);
+        response.cookies.set("refreshToken", refreshToken, refreshTokenOptions);
 
         return response;
     } catch (error) {

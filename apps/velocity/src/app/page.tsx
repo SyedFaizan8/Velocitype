@@ -10,12 +10,14 @@ import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import useEngine from '@/hooks/useEngine';
 import useIsMobile from '@/hooks/useIsMobile';
+import useLiveStats from '@/hooks/useLiveStats';
 import { Mute, Refresh, Speaker } from '@/components/Icons';
 
 import { useAppDispatch, useAppSelector } from "@/store/reduxHooks";
 import { setTypingStats } from "@/store/typingSlice";
 import { calculateAccuracyPercentage, wordsPerMinute } from '@/utils/helpers';
 import { changeSound } from "@/store/soundSlice"
+import { Howler } from 'howler';
 
 const Home = () => {
   const isMobile = useIsMobile();
@@ -68,6 +70,11 @@ const Home = () => {
 
   const progressPercentage = ((15 - timeLeft) / 15) * 100;
 
+  const handleToggleSound = () => {
+    dispatch(changeSound());
+    if (!sound) Howler.unload();
+  };
+
   return (
     <div>
       {timeLeft > 0 && <div
@@ -89,7 +96,7 @@ const Home = () => {
             </Link>
             <div
               className={`hover:text-slate-200 cursor-pointer pt-2 md:text-2xl text-md ${sound ? "text-yellow-200" : "text-slate-500"}`}
-              onClick={() => { dispatch(changeSound()) }}
+              onClick={handleToggleSound}
             >
               {sound ? <Speaker /> : <Mute />}
             </div>
