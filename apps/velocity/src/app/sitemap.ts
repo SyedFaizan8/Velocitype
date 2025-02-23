@@ -22,7 +22,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
             url: `${baseUrl}/velocitype/user/${username}`,
             lastModified: new Date(),
             changedFrequency: 'weekly',
-            images: [imageUrl]
+            ...(imageUrl && { images: [imageUrl] })
         }))
 
         return [

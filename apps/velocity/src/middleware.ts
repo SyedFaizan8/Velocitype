@@ -6,7 +6,7 @@ import redis from "@/lib/redisClient";
 const ratelimit = new Ratelimit({
     redis,
     limiter: Ratelimit.slidingWindow(100, '15 m'),
-    analytics: true // TODO: Search what it is 
+    analytics: true
 })
 
 export async function middleware(request: NextRequest) {
@@ -50,7 +50,6 @@ export const config = {
     matcher: [
         '/velocity/login',
         '/velocity/user/:path*',
-        '/velocity/settings',
         '/api/logout',
         '/api/refresh-token',
         '/api/result',

@@ -64,6 +64,7 @@ const Page = () => {
         <div className="w-full text-center max-h-full md:px-20 h-5/6">
             <h1 className="text-xl md:text-4xl text-slate-500 mb-2 ">
                 All-Time Leaderboard
+                <div className="text-base">updates in every 5 minutes</div>
             </h1>
             <div>
                 <div className="w-full p-2 md:p-4">
@@ -74,7 +75,7 @@ const Page = () => {
                         <div className="hidden md:flex items-center w-2/12">accuracy</div>
                         <div className="hidden md:flex items-center w-3/12">date</div>
                     </div>
-                    <div className="overflow-auto md:h-[330px] scrollbar-thin scrollbar-thumb-slate-500 scrollbar-track-transparent">
+                    <div className="overflow-auto md:h-[330px] scroll-smooth scrollbar-thin scrollbar-thumb-slate-500 scrollbar-track-transparent">
                         {data.map(({ user, highest_wpm, highest_accuracy, achieved_at }, index) => (
                             <div
                                 onClick={() => onSubmit(user.username)}
