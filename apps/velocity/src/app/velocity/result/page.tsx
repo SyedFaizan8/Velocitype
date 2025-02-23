@@ -81,7 +81,7 @@ const Page = () => {
 
     useEffect(() => {
         if (wpm === 0 && accuracy === 0) router.push("/")
-    }, [wpm, router])
+    }, [wpm, router, accuracy])
 
     const handleClick = () => {
         const end = Date.now() + 3 * 1000;

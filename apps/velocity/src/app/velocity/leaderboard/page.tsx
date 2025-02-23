@@ -5,11 +5,9 @@ import Image from "next/image";
 import { Crown, UserLeaderboard } from "@/components/Icons";
 import axios from "axios";
 import { toast } from "@/hooks/use-toast";
-import TooltipIcon from "@/components/TooltipIcon";
 import { Skeleton } from "@/components/ui/skeleton";
 import { LeaderboardType } from "@/utils/types/leaderboardTypes";
 import { USERS_PER_PAGE } from "@/utils/constants"
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 
@@ -34,7 +32,7 @@ const Page = () => {
                 if (error.response && error.response.status === 404) setHasMore(false);
                 else toast({
                     variant: "destructive",
-                    title: "Error fetching leaderboard data"
+                    title: error.response?.data.message || "Error fetching leaderboard data"
                 })
             }
         }

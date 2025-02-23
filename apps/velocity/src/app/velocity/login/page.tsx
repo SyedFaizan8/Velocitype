@@ -5,7 +5,6 @@ import { useCallback, useEffect, useState } from "react"
 import { useForm } from "react-hook-form";
 import { zodResolver } from '@hookform/resolvers/zod';
 import { loginSchema, registerSchema } from "@repo/zod";
-import { useDebouncedCallback } from "use-debounce";
 import axios from "axios";
 import PasswordInput from "@/components/form/PasswordInput";
 import InputField from "@/components/form/InputField";
@@ -14,6 +13,8 @@ import { useRouter } from "next/navigation";
 import { fetchUser, loginUser } from "@/store/authSlice";
 import { toast } from "@/hooks/use-toast";
 import { useAvailability } from "@/hooks/useAvalibility";
+import Turnstile from "react-turnstile";
+import { TURNSTILE_SITE_KEY } from "@/utils/constants";
 
 interface FormValues {
     fullname: string;
@@ -32,6 +33,7 @@ const Page = () => {
     const dispatch = useAppDispatch();
     const { user, error } = useAppSelector((state) => state.auth);
     const router = useRouter();
+    const [token, setToken] = useState<string | null>(null);
 
     useEffect(() => {
         if (!user) dispatch(fetchUser())
@@ -63,6 +65,27 @@ const Page = () => {
     } = useAvailability();
 
     const onSubmit = async (data: FormValues) => {
+
+        if (!token) {
+            toast({
+                variant: "destructive",
+                title: "Please complete the CAPTCHA."
+            })
+            return;
+        }
+
+        try {
+            await axios.post("/api/verify-turnstile", { token });
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                toast({
+                    variant: "destructive",
+                    title: "CAPTCHA verification failed",
+                    description: error.response?.data?.message || "An error occurred during CAPTCHA verification."
+                });
+            }
+        }
+
         if (!usernameAvailability) {
             toast({
                 variant: "destructive",
@@ -93,7 +116,7 @@ const Page = () => {
     const onLogin = useCallback(async (data: LoginValues) => {
         await dispatch(loginUser(data))
         if (!error) toast({ title: "login successfull" })
-    }, [dispatch])
+    }, [dispatch, error])
 
     useEffect(() => {
         if (!error && user?.username) router.push("/")
@@ -151,7 +174,7 @@ const Page = () => {
                         onChange={(e) => checkEmailAvailability(e.target.value)}
                     />
                     {(emailAvailability !== null && emailAvailability && !errorsRegister.email) && (
-                        <span className="ml-2 text-lg w-8 flex justify-center abosulte">
+                        <span className="ml-2 text-lg w-8 flex justify-center ">
                             {emailAvailability && "✅"}
                         </span>
                     )}
@@ -168,6 +191,12 @@ const Page = () => {
                     name="confirmPassword"
                     placeholder="retype password"
                     errors={errorsRegister}
+                />
+
+                <Turnstile
+                    theme="dark"
+                    sitekey={TURNSTILE_SITE_KEY}
+                    onVerify={(token: string) => setToken(token)}
                 />
 
                 <button type="submit" className="py-1 flex bg-slate-500 text-black font-extrabold rounded-md gap-2 w-1/2 justify-center items-center hover:bg-slate-600 hover:text-white transition space-x-2 px-4  tracking-widest transform hover:scale-105 duration-200">

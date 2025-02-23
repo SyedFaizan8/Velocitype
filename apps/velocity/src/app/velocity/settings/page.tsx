@@ -132,7 +132,7 @@ const Page = () => {
                     description: `${url} is updated`,
                 })
             }
-        } catch (error) {
+        } catch {
             toast({
                 variant: "destructive",
                 title: "Uh oh! Something went wrong.",
@@ -170,7 +170,7 @@ const Page = () => {
         resolver: zodResolver(updatePasswordSchema),
     });
 
-    const resetForm = () => {
+    const resetForm = useCallback(() => {
         if (userData && !fullnameDirty) resetFullname({ fullname: userData.fullname || "" })
         if (userData && !usernameDirty) resetUsername({ username: userData.username || "" })
         if (userData && !emailDirty) resetEmail({ email: userData.email || "" })
@@ -180,11 +180,23 @@ const Page = () => {
         if (userData?.imageUrl) setImageUrl(userData.imageUrl)
         if (emailAvailability && setEmailAvailability) setEmailAvailability(null);
         if (usernameAvailability && setUsernameAvailability) setUsernameAvailability(null);
-    }
+    }, [
+        userData,
+        fullnameDirty,
+        usernameDirty,
+        emailDirty,
+        bioDirty,
+        socialDirty,
+        passwordDirty,
+        emailAvailability,
+        setEmailAvailability,
+        usernameAvailability,
+        setUsernameAvailability
+    ])
 
     useEffect(() => {
         resetForm();
-    }, [userData, resetFullname, fullnameDirty, usernameDirty, resetUsername, emailDirty, resetEmail, bioDirty, resetBio, socialDirty, resetSocial, passwordDirty, resetPassword]);
+    }, [resetForm, userData, resetFullname, fullnameDirty, usernameDirty, resetUsername, emailDirty, resetEmail, bioDirty, resetBio, socialDirty, resetSocial, passwordDirty, resetPassword]);
 
     const handleLogout = async () => {
         try {
