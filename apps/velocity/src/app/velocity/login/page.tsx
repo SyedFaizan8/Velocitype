@@ -91,7 +91,8 @@ const Page = () => {
     }
 
     const onLogin = useCallback(async (data: LoginValues) => {
-        dispatch(loginUser(data))
+        await dispatch(loginUser(data))
+        if (!error) toast({ title: "login successfull" })
     }, [dispatch])
 
     useEffect(() => {

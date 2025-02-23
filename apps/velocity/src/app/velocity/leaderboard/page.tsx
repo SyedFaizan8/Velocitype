@@ -71,18 +71,18 @@ const Page = () => {
                 <div className="w-full p-2 md:p-4">
                     <div className="flex text-left text-sm md:text-xl text-slate-500 font-semibold border-b pb-1">
                         <div className="flex items-center justify-center p-1 w-2/12 md:w-1/12">#</div>
-                        <div className="flex items-center p-1 w-8/12 md:w-4/12">Name</div>
-                        <div className="flex items-center w-2/12">WPM</div>
-                        <div className="hidden md:flex items-center w-2/12">Accuracy</div>
-                        <div className="hidden md:flex items-center w-3/12">Date</div>
+                        <div className="flex items-center p-1 w-8/12 md:w-4/12">name</div>
+                        <div className="flex items-center w-2/12">wpm</div>
+                        <div className="hidden md:flex items-center w-2/12">accuracy</div>
+                        <div className="hidden md:flex items-center w-3/12">date</div>
                     </div>
-                    <div className="overflow-auto h-80 scrollbar-thin scrollbar-thumb-slate-500 scrollbar-track-transparent">
+                    <div className="overflow-auto md:h-[330px] scrollbar-thin scrollbar-thumb-slate-500 scrollbar-track-transparent">
                         {data.map(({ user, highest_wpm, highest_accuracy, achieved_at }, index) => (
                             <div
                                 onClick={() => onSubmit(user.username)}
                                 key={index}
-                                className={`md:py-1 flex text-left text-slate-100 ${(index + 1) % 2 !== 0 ? "bg-slate-500" : ""
-                                    } rounded-md`}
+                                className={`md:py-2 flex text-left text-slate-100 ${(index + 1) % 2 !== 0 ? "bg-slate-500" : ""
+                                    } rounded-l-md`}
                             >
                                 <div className="p-1 flex cursor-pointer justify-center items-center w-2/12 md:w-1/12">
                                     {index === 0 ? (

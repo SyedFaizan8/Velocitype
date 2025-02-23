@@ -13,9 +13,10 @@ import { fetchUser } from "@/store/authSlice";
 import axios from "axios";
 import confetti from "canvas-confetti";
 import { toast } from "@/hooks/use-toast";
+import { Separator } from "@/components/ui/separator"
 
 const Page = () => {
-    const { wpm, cpm, accuracy, totalLetters, totalWords, errors } = useAppSelector((state) => state.typing);
+    const { wpm, accuracy, raw, totalLetters, totalWords, errors } = useAppSelector((state) => state.typing);
     const { user, loading, initialized } = useAppSelector(state => state.auth)
     const dispatch = useAppDispatch();
     const router = useRouter();
@@ -79,7 +80,7 @@ const Page = () => {
     });
 
     useEffect(() => {
-        if (wpm === 0) router.push("/")
+        if (wpm === 0 && accuracy === 0) router.push("/")
     }, [wpm, router])
 
     const handleClick = () => {
@@ -113,9 +114,9 @@ const Page = () => {
         if (newHighscore) handleClick()
     }, [newHighscore]);
 
-    if (wpm === 0) return null
+    if (wpm === 0 && accuracy === 0) return null
     return (
-        <div className=" p-6 flex flex-col items-center">
+        <div className=" p-6 flex flex-col items-center justify-center">
             {!isMobile &&
                 <div className="fixed inset-0 z-0">
                     <FlickeringGrid
@@ -134,39 +135,45 @@ const Page = () => {
                 <div className="relative w-full max-w-md p-4 border rounded bg-gray-50 text-black z-10">
                     {newHighscore && <div className="absolute top-0 text-yellow-300 text-5xl animate-bounce text-center"> New High Score</div>}
                     <p><strong>WPM:</strong>{wpm}</p>
-                    <p><strong>CPM:</strong>{cpm}</p>
                     <p><strong>Accuracy:</strong>{formatPercentage(accuracy)}</p>
+                    <p><strong>Raw WPM:</strong>{raw}</p>
                     <p><strong>Total Letters Typed:</strong>{totalLetters}</p>
                     <p><strong>Total Words Typed:</strong>{totalWords}</p>
                     <p><strong>Errors:</strong>{errors}</p>
                     <p><strong>ALL in 15 Seconds</strong></p>
                 </div>
-                : <div className="relative w-full  h-full p-10  space-x-2 rounded-md text-slate-300 z-10">
-                    {newHighscore && <div className="absolute top-0 text-5xl animate-bounce text-center font-extrabold text-yellow-300"> New High Score </div>}
-                    <div className="text-center text-3xl flex justify-center items-center space-x-10 p-3">
-                        {[
-                            { label: "WPM", value: wpm, size: "text-8xl" },
-                            { label: "Accuracy", value: formatPercentage(accuracy), size: "text-5xl" }
-                        ].map(({ label, value, size }) => (
-                            <div key={label}>
-                                <strong>{label}</strong>
-                                <HyperText className={`text-yellow-500 ${size}`} animateOnHover={false}>{value.toString()}</HyperText>
+                : <div className="relative w-full  h-full p-10  space-x-2 rounded-md text-slate-300 z-10 ">
+                    {newHighscore && <div className="absolute top-0 text-5xl animate-bounce text-center font-extrabold text-yellow-300 w-full"> New High Score </div>}
+                    <div className="flex space-x-5 justify-center items-center">
+                        <div className="text-center text-4xl flex flex-col justify-center items-center p-2 border border-r-slate-300 ">
+                            <strong>wpm</strong>
+                            <HyperText className="text-yellow-500 text-9xl" animateOnHover={false}>{wpm.toString()}</HyperText>
+                        </div>
+                        <div className="text-3xl flex flex-col justify-center items-start p-3 space-y-1">
+                            <div>
+                                <strong className="text-neutral-300">accuracy</strong>
+                                <HyperText className="text-yellow-500 text-6xl" animateOnHover={false}>{formatPercentage(accuracy).toString()}</HyperText>
                             </div>
-                        ))}
+                            <Separator className="bg-slate-300" />
+                            <div className="flex  space-x-3">
+                                <strong className="text-neutral-300 text-4xl">raw</strong>
+                                <HyperText className="text-yellow-500 text-4xl" animateOnHover={false}>{raw.toString()}</HyperText>
+                            </div>
+                        </div>
                     </div>
                     <div className="p-5 text-2xl">
                         {[
-                            { label: "Total Letters Typed", value: totalLetters },
-                            { label: "Total Words Typed", value: totalWords },
-                            { label: "Errors", value: errors }
+                            { label: "letters typed", value: totalLetters },
+                            { label: "words typed", value: totalWords },
+                            { label: "errors", value: errors }
                         ].map(({ label, value }) => (
-                            <div className="text-center flex justify-center items-center" key={label}>
+                            <div className="text-center flex justify-center items-center text-neutral-300" key={label}>
                                 <strong>{label}:</strong>
-                                <HyperText className="text-yellow-500 text-2xl" animateOnHover={false}>{value.toString()}</HyperText>
+                                <HyperText className="text-yellow-500 text-3xl" animateOnHover={false}>{value.toString()}</HyperText>
                             </div>
                         ))}
                     </div>
-                    <div className="text-center">
+                    <div className="text-center text-neutral-300">
                         <strong>In 15 Seconds</strong>
                     </div>
                     <div className="flex justify-center mt-8">
@@ -179,16 +186,16 @@ const Page = () => {
                             <Refresh />
                         </button>
                     </div>
-                    {!user && <div className="text-yellow-300 text-2xl animate-pulse"> Login to track Progress </div>}
+                    {!user && <div className="text-yellow-300 text-2xl animate-pulse text-center"> Login to track Progress </div>}
                 </div>
             }
             {
                 !isMobile &&
-                <div className='z-10 w-full hidden md:flex justify-center items-center space-x-2 text-xs text-white '>
-                    <span className="bg-slate-500 rounded-sm px-1 ">tab</span>
-                    <span>or</span>
-                    <span className="bg-slate-500 rounded-sm px-1 ">enter</span>
-                    <span>- Restart</span>
+                <div className='z-10 w-full hidden md:flex justify-center items-center space-x-2 text-sm text-white '>
+                    <span className="bg-slate-500 rounded-sm px-1 text-xs">tab</span>
+                    <span className="text-xs">or</span>
+                    <span className="bg-slate-500 rounded-sm px-1 text-xs">enter</span>
+                    <span>- restart</span>
                 </div>
             }
         </div >

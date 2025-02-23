@@ -38,7 +38,7 @@ export async function GET(
                     },
                 },
                 history: {
-                    orderBy: { date: "asc" },
+                    orderBy: { date: "desc" },
                     take: 100,
                     select: {
                         wpm: true,

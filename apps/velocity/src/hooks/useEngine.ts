@@ -1,19 +1,19 @@
 "use client"
+
 import { useCallback, useEffect, useState } from "react";
 import { countErrors } from "../utils/helpers";
 import useCountdown from "./useCountdown";
 import useWords from "./useWords";
 import useTypings from "./useTypings";
+import { TEST_DURATION } from "@/utils/constants";
 
 export type State = "start" | "run" | "finish";
 
-const COUNTDOWN_SECONDS = 15;
-
 const useEngine = () => {
     const [state, setState] = useState<State>("start");
-    const { timeLeft, startCountdown, resetCountdown } = useCountdown(COUNTDOWN_SECONDS);
+    const { timeLeft, startCountdown, resetCountdown } = useCountdown(TEST_DURATION);
     const { words, updateWords } = useWords();
-    const { cursor, typed, clearTyped, totalTyped, resetTotalTyped, totalWords } = useTypings(state !== "finish");
+    const { cursor, typed, clearTyped, totalTyped, resetTotalTyped } = useTypings(state !== "finish");
 
     const [errors, setErrors] = useState(0);
 
@@ -63,7 +63,7 @@ const useEngine = () => {
         }
     }, [clearTyped, areWordsFinished, updateWords, sumErrors]);
 
-    return { state, words, typed, errors, restart, timeLeft, totalTyped, totalWords };
+    return { state, words, typed, errors, restart, timeLeft, totalTyped };
 };
 
 export default useEngine;

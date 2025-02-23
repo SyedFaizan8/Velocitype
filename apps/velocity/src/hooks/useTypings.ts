@@ -8,9 +8,7 @@ const useTypings = (enabled: boolean) => {
   const [cursor, setCursor] = useState(0);
   const [typed, setTyped] = useState<string>("");
   const totalTyped = useRef(0);
-  const totalWords = useRef("");
   const sound = useSelector((state: RootState) => state.sound.sound);
-
 
   const keydownHandler = useCallback(
     ({ key, code }: KeyboardEvent) => {
@@ -21,13 +19,11 @@ const useTypings = (enabled: boolean) => {
           setTyped((prev) => prev.slice(0, -1));
           setCursor((cursor) => cursor - 1);
           totalTyped.current -= 1;
-          totalWords.current = totalWords.current.slice(0, -1);
           break;
         default:
           setTyped((prev) => prev.concat(key));
           setCursor((cursor) => cursor + 1);
           totalTyped.current += 1;
-          totalWords.current += key;
       }
     },
     [enabled, sound]
@@ -40,7 +36,6 @@ const useTypings = (enabled: boolean) => {
 
   const resetTotalTyped = useCallback(() => {
     totalTyped.current = 0;
-    totalWords.current = "";
   }, []);
 
   useEffect(() => {
@@ -55,8 +50,7 @@ const useTypings = (enabled: boolean) => {
     cursor,
     clearTyped,
     resetTotalTyped,
-    totalTyped: totalTyped.current,
-    totalWords: totalWords.current
+    totalTyped: totalTyped.current
   };
 };
 

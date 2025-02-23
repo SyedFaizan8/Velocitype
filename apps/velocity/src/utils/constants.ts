@@ -12,4 +12,6 @@ export const SALT_ROUNDS = 12;
 
 export const USERS_PER_PAGE = 50;
 
+export const TEST_DURATION: number = 15;
+
 export const baseUrl = process.env.NEXT_PUBLIC_BASE_URL as string

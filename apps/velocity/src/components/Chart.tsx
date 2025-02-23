@@ -37,7 +37,7 @@ export const Chart = ({ userData, totalTest }: { userData: HistoryEntry[] | null
                     >
                         <LineChart
                             accessibilityLayer
-                            data={userData!}
+                            data={[...userData!].reverse()}
                             margin={{
                                 left: 12,
                                 right: 12,

@@ -9,7 +9,6 @@ export async function generateMetadata(
     return await getProfileMetadata(profile);
 }
 
-
 export default function ProfileLayout({ children }: { children: ReactNode }) {
     return <div className="profile-layout">{children}</div>;
 }

@@ -10,12 +10,11 @@ import Footer from '@/components/Footer';
 import Header from '@/components/Header';
 import useEngine from '@/hooks/useEngine';
 import useIsMobile from '@/hooks/useIsMobile';
-import useLiveStats from '@/hooks/useLiveStats';
 import { Mute, Refresh, Speaker } from '@/components/Icons';
 
 import { useAppDispatch, useAppSelector } from "@/store/reduxHooks";
 import { setTypingStats } from "@/store/typingSlice";
-import { calculateAccuracyPercentage, wordsPerMinute } from '@/utils/helpers';
+import { calculateAccuracyPercentage, calculateWPM, liveWPM } from '@/utils/helpers';
 import { changeSound } from "@/store/soundSlice"
 import { Howler } from 'howler';
 
@@ -25,7 +24,7 @@ const Home = () => {
   const dispatch = useAppDispatch();
   const { sound } = useAppSelector(state => state.sound);
 
-  const { words, typed, timeLeft, errors, state, restart, totalTyped, totalWords } = useEngine();
+  const { words, typed, timeLeft, errors, state, restart, totalTyped } = useEngine();
   const [isCapsLockOn, setIsCapsLockOn] = useState(false);
 
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -55,18 +54,18 @@ const Home = () => {
 
       dispatch(
         setTypingStats({
-          cpm: totalTyped <= 0 ? 0 : totalTyped * 4,
-          wpm: wordsPerMinute(totalWords),
+          wpm: calculateWPM(totalTyped, errors),
           accuracy: calculateAccuracyPercentage(errors, totalTyped),
+          raw: Math.round((totalTyped / 5) * 4),
           totalLetters: totalTyped <= 0 ? 0 : totalTyped,
-          totalWords: totalWords.split(" ").length,
+          totalWords: Math.round(totalTyped / 5),
           errors: errors,
         })
       );
 
       router.push("/velocity/result");
     }
-  }, [state, dispatch, errors, router, totalTyped, totalWords]);
+  }, [state, dispatch, errors, router, totalTyped]);
 
   const progressPercentage = ((15 - timeLeft) / 15) * 100;
 
@@ -92,7 +91,7 @@ const Home = () => {
           : <div
             className="flex justify-between">
             <Link href="/">
-              <div className="text-slate-500 font-bold cursor-pointer md:text-3xl text-lg ">VelociType</div>
+              <div className="text-slate-500 font-bold cursor-pointer md:text-3xl text-lg ">velociType</div>
             </Link>
             <div
               className={`hover:text-slate-200 cursor-pointer pt-2 md:text-2xl text-md ${sound ? "text-yellow-200" : "text-slate-500"}`}
@@ -106,7 +105,7 @@ const Home = () => {
         <div className="w-full flex justify-between items-center h-10">
           <h2 className="text-yellow-400 font-medium text-lg">{state === "run" ? "Time " + timeLeft : ""}</h2>
           <h2 className="text-yellow-400 font-medium text-lg">
-            {state === "run" ? "Wpm " + totalWords.split(" ").length * 4 : ""}
+            {state === "run" ? "Wpm " + liveWPM(totalTyped, timeLeft) : null}
           </h2>
         </div>
         <div className="relative md:text-3xl text-lg leading-relaxed h-56">
@@ -150,9 +149,10 @@ const Home = () => {
 
       {
         !isMobile &&
-        <div className='w-full hidden md:flex justify-center items-center space-x-2 text-xs text-slate-500 '>
-          <span className="bg-slate-500 rounded-sm px-1 text-white">tab</span>
-          <span>- Restart</span>
+        <div className='w-full hidden md:flex justify-center items-center space-x-1 text-sm text-slate-500 '>
+          <span className="bg-slate-500 rounded-sm px-1 text-xs text-white">tab</span>
+          <span>-</span>
+          <span>restart</span>
         </div>
       }
 

@@ -1,38 +1,38 @@
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useState, useRef, useEffect, useCallback } from "react";
 
-const useCountdown = (seconds: number) => {
-
-    const [timeLeft, setTimeLeft] = useState(seconds);
-    const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-    const hasTimerEnded = timeLeft <= 0;
-    const isRunning = intervalRef.current != null;
+const useCountdown = (initialSeconds: number) => {
+    const [timeLeft, setTimeLeft] = useState(initialSeconds);
+    const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
     const startCountdown = useCallback(() => {
-        if (!hasTimerEnded && !isRunning) {
-            intervalRef.current = setInterval(() => {
-                setTimeLeft((prevTimeLeft) => prevTimeLeft - 1);
-            }, 1000);
-        }
-    }, [setTimeLeft, hasTimerEnded, isRunning]);
+        if (intervalRef.current) return;
+        intervalRef.current = setInterval(() => {
+            setTimeLeft((prev) => {
+                if (prev <= 1) {
+                    clearInterval(intervalRef.current!);
+                    intervalRef.current = null;
+                    return 0;
+                }
+                return prev - 1;
+            });
+        }, 1000);
+    }, []);
 
     const resetCountdown = useCallback(() => {
-        clearInterval(intervalRef.current!);
-        intervalRef.current = null;
-        setTimeLeft(seconds);
-    }, [seconds]);
-
-    useEffect(() => {
-        if (hasTimerEnded) {
-            clearInterval(intervalRef.current!);
+        if (intervalRef.current) {
+            clearInterval(intervalRef.current);
             intervalRef.current = null;
         }
-    }, [hasTimerEnded]);
+        setTimeLeft(initialSeconds);
+    }, [initialSeconds]);
 
     useEffect(() => {
-        return () => clearInterval(intervalRef.current!);
-    })
+        return () => {
+            if (intervalRef.current) clearInterval(intervalRef.current);
+        };
+    }, []);
 
-    return { timeLeft, startCountdown, resetCountdown }
-}
+    return { timeLeft, startCountdown, resetCountdown };
+};
 
 export default useCountdown;

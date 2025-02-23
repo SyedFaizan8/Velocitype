@@ -73,7 +73,7 @@ export async function POST(req: NextRequest) {
                 },
             });
             newHighscore = true;
-        } else if (wpm > userLeaderboard.highest_wpm) {
+        } else if (wpm > userLeaderboard.highest_wpm || (wpm >= userLeaderboard.highest_wpm && accuracy >= userLeaderboard.highest_accuracy.toNumber())) {
             await prisma.leaderboard.update({
                 where: { user_id },
                 data: {

@@ -20,7 +20,7 @@ export async function middleware(request: NextRequest) {
 
     if (!token && !isPublicFrontend && !isLoginRoute) {
         if (isApiRoute) {
-            return NextResponse.json({ message: 'Unauthorized request from middleware' }, { status: 401 });
+            return NextResponse.json({ message: 'Please login' }, { status: 401 });
         }
         return NextResponse.redirect(new URL('/velocity/login', request.nextUrl));
     }
