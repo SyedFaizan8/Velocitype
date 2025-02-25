@@ -1,4 +1,6 @@
-import { RESEND_KEY } from '@/utils/constants';
+// import { RESEND_KEY } from '@/utils/constants';
 import { Resend } from 'resend';
+
+const RESEND_KEY = process.env.RESEND_API_KEY!
 
 export const resend = new Resend(RESEND_KEY);
