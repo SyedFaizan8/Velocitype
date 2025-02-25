@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { ApiError, ApiResponse } from "@/utils/apiResponse";
 import { getUserIdFromRequest } from "@/utils/auth";
 import { fullnameSchema } from "@repo/zod";
+import { decryptBackend } from "@/utils/decryptBackend";
 
 export async function POST(req: NextRequest) {
     try {
@@ -14,9 +15,15 @@ export async function POST(req: NextRequest) {
             });
         }
 
-        const body = await req.json();
+        const { error, status, decryptedBody } = await decryptBackend(req)
+        if (error) {
+            return NextResponse.json(
+                new ApiError(status, error),
+                { status: status }
+            );
+        }
 
-        const validationResult = fullnameSchema.safeParse(body);
+        const validationResult = fullnameSchema.safeParse(decryptedBody);
         if (!validationResult.success) {
             return NextResponse.json(
                 new ApiError(400, "Invalid input data"),

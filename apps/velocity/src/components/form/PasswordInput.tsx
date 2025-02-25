@@ -9,18 +9,20 @@ interface PasswordInputProps<T extends FieldValues> {
     name: Path<T>;
     placeholder: string;
     errors: FieldErrors<T>;
+    className?: string;
+    inputClassName?: string;
 }
 
-const PasswordInput = <T extends FieldValues>({ register, name, placeholder, errors }: PasswordInputProps<T>) => {
+const PasswordInput = <T extends FieldValues>({ register, name, placeholder, errors, className = "", inputClassName = "" }: PasswordInputProps<T>) => {
     const [showPassword, setShowPassword] = useState(false);
 
     return (
-        <div className="relative w-1/2">
+        <div className={`relative w-1/2 ${className}`}>
             <div className="relative w-full">
                 <input
                     type={showPassword ? "text" : "password"}
                     {...register(name)}
-                    className="rounded py-1 px-2 bg-slate-900 w-full pr-10"
+                    className={`rounded py-1 px-2 bg-slate-900 w-full pr-10 ${inputClassName}`}
                     placeholder={placeholder}
                 />
                 <span

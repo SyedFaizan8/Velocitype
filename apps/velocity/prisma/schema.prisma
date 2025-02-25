@@ -9,16 +9,18 @@ datasource db {
 }
 
 model User {
-  user_id      String   @id @default(uuid())
-  fullname     String
-  username     String   @unique
-  email        String   @unique
-  bio          String?
-  password     String
-  refreshToken String?
-  website      String?
-  imageUrl     String?
-  created_at   DateTime @default(now())
+  user_id              String    @id @default(uuid())
+  fullname             String
+  username             String    @unique
+  email                String    @unique
+  bio                  String?
+  password             String
+  refreshToken         String?
+  website              String?
+  imageUrl             String?
+  resetPasswordToken   String?
+  resetPasswordExpires DateTime?
+  created_at           DateTime  @default(now())
 
   history     History[]
   stats       TotalStatistics?

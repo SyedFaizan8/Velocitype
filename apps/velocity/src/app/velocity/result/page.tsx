@@ -14,6 +14,7 @@ import axios from "axios";
 import confetti from "canvas-confetti";
 import { toast } from "@/hooks/use-toast";
 import { Separator } from "@/components/ui/separator"
+import { encryptFrontend } from "@/utils/encryptFrontend";
 
 const Page = () => {
     const { wpm, accuracy, raw, totalLetters, totalWords, errors } = useAppSelector((state) => state.typing);
@@ -26,25 +27,51 @@ const Page = () => {
 
     const sendData = useCallback(async () => {
         try {
+
             if (wpm !== 0) {
+
+                const payload = {
+                    wpm,
+                    accuracy,
+                    totalChars: totalLetters,
+                    totalWords,
+                };
+
+                const { error, iv, ciphertext, signature } = await encryptFrontend(payload);
+                if (error) {
+                    toast({
+                        title: "Something went wrong while encrypting"
+                    })
+                }
+
                 const response = await axios.post(
                     "/api/result",
                     {
-                        wpm,
-                        accuracy,
-                        totalChars: totalLetters,
-                        totalWords,
+                        data: ciphertext,
+                        iv
                     },
-                    { withCredentials: true }
+                    {
+                        headers: {
+                            "x-signature": signature,
+                        },
+                        withCredentials: true
+                    }
                 );
                 const { newHighscore } = response.data.data
                 setnewHighscore(newHighscore)
             }
-        } catch {
-            toast({
-                variant: "destructive",
-                title: "something went wrong while registering data"
-            })
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                toast({
+                    variant: "destructive",
+                    title: error.response?.data.message
+                })
+            } else {
+                toast({
+                    variant: "destructive",
+                    title: "something went wrong while registering data"
+                })
+            }
         }
     }, [accuracy, totalLetters, totalWords, wpm])
 
@@ -80,8 +107,8 @@ const Page = () => {
     });
 
     useEffect(() => {
-        if (wpm === 0 && accuracy === 0) router.push("/")
-    }, [wpm, router, accuracy])
+        if (totalLetters === 0) router.push("/")
+    }, [totalLetters, router, accuracy])
 
     const handleClick = () => {
         const end = Date.now() + 3 * 1000;
@@ -114,7 +141,7 @@ const Page = () => {
         if (newHighscore) handleClick()
     }, [newHighscore]);
 
-    if (wpm === 0 && accuracy === 0) return null
+    if (totalLetters === 0) return null
     return (
         <div className=" p-6 flex flex-col items-center justify-center">
             {!isMobile &&

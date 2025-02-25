@@ -18,12 +18,12 @@ const useTypings = (enabled: boolean) => {
         case "Backspace":
           setTyped((prev) => prev.slice(0, -1));
           setCursor((cursor) => cursor - 1);
-          totalTyped.current -= 1;
+          if (totalTyped.current !== 0) totalTyped.current -= 1;
           break;
         default:
           setTyped((prev) => prev.concat(key));
           setCursor((cursor) => cursor + 1);
-          totalTyped.current += 1;
+          if (code !== "Space") totalTyped.current += 1;
       }
     },
     [enabled, sound]

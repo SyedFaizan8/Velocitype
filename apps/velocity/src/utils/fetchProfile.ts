@@ -2,16 +2,18 @@ import axios from 'axios';
 import { baseUrl } from '@/utils/constants';
 import type { UserData } from '@/utils/types/profileTypes';
 
-const profileCache = new Map<string, UserData>();
+const profileCache = new Map<string, { data: UserData, timestamp: number }>();
+const CACHE_DURATION = 60 * 1000;
 
 export async function fetchProfile(username: string): Promise<UserData> {
 
-    if (profileCache.has(username)) return profileCache.get(username)!;
+    const cachedProfile = profileCache.get(username);
+    const now = Date.now();
+
+    if (cachedProfile && (now - cachedProfile.timestamp < CACHE_DURATION)) return cachedProfile.data;
 
     try {
-        const response = await axios.get(`${baseUrl}/api/profile`, {
-            params: { username },
-        });
+        const response = await axios.get(`${baseUrl}/api/profile`, { params: { username } });
 
         if (response.status !== 200) {
             throw new Error(response.data.message || 'Failed to fetch profile data');
@@ -19,7 +21,7 @@ export async function fetchProfile(username: string): Promise<UserData> {
 
         const profileData = response.data.data as UserData;
 
-        profileCache.set(username, profileData)
+        profileCache.set(username, { data: profileData, timestamp: now });
 
         return profileData;
 

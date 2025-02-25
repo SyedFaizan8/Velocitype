@@ -4,12 +4,20 @@ import { prisma } from "@/lib/prisma";
 import { ApiResponse, ApiError } from "@/utils/apiResponse";
 import { comparePassword, generateAccessAndRefreshToken } from "@/utils/auth";
 import { accessTokenOptions, refreshTokenOptions } from "@/utils/cookieOptions";
+import { decryptBackend } from "@/utils/decryptBackend";
 
 export async function POST(req: NextRequest) {
-    console.log("POST /api/login endpoint hit");
     try {
-        const body = await req.json();
-        const validationResult = loginSchema.safeParse(body);
+
+        const { error, status, decryptedBody } = await decryptBackend(req)
+        if (error) {
+            return NextResponse.json(
+                new ApiError(status, error),
+                { status: status }
+            );
+        }
+
+        const validationResult = loginSchema.safeParse(decryptedBody);
         if (!validationResult.success) {
             return NextResponse.json(
                 new ApiError(400, "Email and password must be provided"),

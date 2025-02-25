@@ -64,7 +64,7 @@ const Page = () => {
         <div className="w-full text-center max-h-full md:px-20 h-5/6">
             <h1 className="text-xl md:text-4xl text-slate-500 mb-2 ">
                 All-Time Leaderboard
-                <div className="text-base">updates in every 5 minutes</div>
+                <div className="text-base">updated every minute</div>
             </h1>
             <div>
                 <div className="w-full p-2 md:p-4">
@@ -76,49 +76,59 @@ const Page = () => {
                         <div className="hidden md:flex items-center w-3/12">date</div>
                     </div>
                     <div className="overflow-auto md:h-[330px] scroll-smooth scrollbar-thin scrollbar-thumb-slate-500 scrollbar-track-transparent">
-                        {data.map(({ user, highest_wpm, highest_accuracy, achieved_at }, index) => (
-                            <div
-                                onClick={() => onSubmit(user.username)}
-                                key={index}
-                                className={`md:py-2 flex text-left text-slate-100 ${(index + 1) % 2 !== 0 ? "bg-slate-500" : ""
-                                    } rounded-l-md`}
-                            >
-                                <div className="p-1 flex cursor-pointer justify-center items-center w-2/12 md:w-1/12">
-                                    {index === 0 ? (
-                                        <div className="flex items-center justify-center text-xl">
-                                            <Crown />
-                                        </div>
-                                    ) : (
-                                        <span>{index + 1}</span>
-                                    )}
+                        {data
+                            .sort((a, b) => {
+                                if (b.highest_wpm === a.highest_wpm) {
+                                    if (b.highest_accuracy === a.highest_accuracy) {
+                                        return new Date(b.achieved_at).getTime() - new Date(a.achieved_at).getTime();
+                                    }
+                                    return b.highest_accuracy - a.highest_accuracy;
+                                }
+                                return b.highest_wpm - a.highest_wpm;
+                            })
+                            .map(({ user, highest_wpm, highest_accuracy, achieved_at }, index) => (
+                                <div
+                                    onClick={() => onSubmit(user.username)}
+                                    key={index}
+                                    className={`md:py-2 flex text-left text-slate-100 ${(index + 1) % 2 !== 0 ? "bg-slate-500" : ""
+                                        } rounded-l-md`}
+                                >
+                                    <div className="p-1 flex cursor-pointer justify-center items-center w-2/12 md:w-1/12">
+                                        {index === 0 ? (
+                                            <div className="flex items-center justify-center text-xl">
+                                                <Crown />
+                                            </div>
+                                        ) : (
+                                            <span>{index + 1}</span>
+                                        )}
+                                    </div>
+                                    <div className="p-1 cursor-pointer space-x-2 w-8/12 md:w-4/12 flex items-center">
+                                        {user.imageUrl &&
+                                            typeof user.imageUrl === "string" &&
+                                            user.imageUrl.length > 0 ? (
+                                            <Image
+                                                width={24}
+                                                height={24}
+                                                src={user.imageUrl}
+                                                alt={user.username}
+                                                className="inline rounded-full w-6 h-6"
+                                            />
+                                        ) : (
+                                            <div className="rounded-full text-2xl">
+                                                <UserLeaderboard />
+                                            </div>
+                                        )}
+                                        <span>{user.username}</span>
+                                    </div>
+                                    <div className="p-1 w-2/12 cursor-pointer flex items-center">{highest_wpm}</div>
+                                    <div className="hidden md:flex p-1 w-2/12 items-center cursor-pointer">
+                                        {highest_accuracy}%
+                                    </div>
+                                    <div className="hidden md:flex p-1 w-3/12 items-center cursor-pointer">
+                                        {new Date(achieved_at).toLocaleString()}
+                                    </div>
                                 </div>
-                                <div className="p-1 cursor-pointer space-x-2 w-8/12 md:w-4/12 flex items-center">
-                                    {user.imageUrl &&
-                                        typeof user.imageUrl === "string" &&
-                                        user.imageUrl.length > 0 ? (
-                                        <Image
-                                            width={24}
-                                            height={24}
-                                            src={user.imageUrl}
-                                            alt={user.username}
-                                            className="inline rounded-full w-6 h-6"
-                                        />
-                                    ) : (
-                                        <div className="rounded-full text-2xl">
-                                            <UserLeaderboard />
-                                        </div>
-                                    )}
-                                    <span>{user.username}</span>
-                                </div>
-                                <div className="p-1 w-2/12 cursor-pointer flex items-center">{highest_wpm}</div>
-                                <div className="hidden md:flex p-1 w-2/12 items-center cursor-pointer">
-                                    {highest_accuracy}%
-                                </div>
-                                <div className="hidden md:flex p-1 w-3/12 items-center cursor-pointer">
-                                    {new Date(achieved_at).toLocaleString()}
-                                </div>
-                            </div>
-                        ))}
+                            ))}
                         <div ref={loadMoreRef}>
                             {hasMore ? <Skeleton className="w-full h-10" /> : null}
                         </div>

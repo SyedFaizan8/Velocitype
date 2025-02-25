@@ -3,6 +3,7 @@ import { getUserIdFromRequest } from "@/utils/auth";
 import { prisma } from "@/lib/prisma";
 import { usernameSchema } from "@repo/zod";
 import { NextRequest, NextResponse } from "next/server";
+import { decryptBackend } from "@/utils/decryptBackend";
 
 export async function POST(req: NextRequest) {
 
@@ -15,9 +16,15 @@ export async function POST(req: NextRequest) {
             });
         }
 
-        const body = await req.json();
+        const { error, status, decryptedBody } = await decryptBackend(req)
+        if (error) {
+            return NextResponse.json(
+                new ApiError(status, error),
+                { status: status }
+            );
+        }
 
-        const validationResult = usernameSchema.safeParse(body);
+        const validationResult = usernameSchema.safeParse(decryptedBody);
         if (!validationResult.success) {
             return NextResponse.json(
                 new ApiError(400, "Invalid input data"),

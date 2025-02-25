@@ -51,13 +51,12 @@ const Home = () => {
 
   useEffect(() => {
     if (state === "finish") {
-
       dispatch(
         setTypingStats({
           wpm: calculateWPM(totalTyped, errors),
           accuracy: calculateAccuracyPercentage(errors, totalTyped),
-          raw: Math.round((totalTyped / 5) * 4),
-          totalLetters: totalTyped <= 0 ? 0 : totalTyped,
+          raw: Math.floor((totalTyped / 5) * 4),
+          totalLetters: Math.max(0, totalTyped),
           totalWords: Math.round(totalTyped / 5),
           errors: errors,
         })
@@ -105,7 +104,7 @@ const Home = () => {
         <div className="w-full flex justify-between items-center h-10">
           <h2 className="text-yellow-400 font-medium text-lg">{state === "run" ? "Time " + timeLeft : ""}</h2>
           <h2 className="text-yellow-400 font-medium text-lg">
-            {state === "run" ? "Wpm " + liveWPM(totalTyped, timeLeft) : null}
+            {state === "run" ? <span className='text-slate-500'>{`wpm ${liveWPM(totalTyped, timeLeft)}`}</span> : null}
           </h2>
         </div>
         <div className="relative md:text-3xl text-lg leading-relaxed h-56">

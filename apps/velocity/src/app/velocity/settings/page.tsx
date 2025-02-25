@@ -46,6 +46,8 @@ import {
 import { urlEndpoint, publicKey } from "@/utils/constants"
 import { UserProfile, UserUpdateData } from "@/utils/types/settingsTypes"
 import { useAvailability } from "@/hooks/useAvalibility";
+import Link from "next/link";
+import { encryptFrontend } from "@/utils/encryptFrontend";
 
 const Page = () => {
 
@@ -126,7 +128,24 @@ const Page = () => {
                     title: "email is taken",
                 })
             } else {
-                await axios.post(`/api/user/${url}`, data, { withCredentials: true });
+
+                const { error, iv, ciphertext, signature } = await encryptFrontend(data);
+                if (error) {
+                    toast({
+                        title: "Something went wrong while encrypting"
+                    })
+                }
+
+                await axios.post(`/api/user/${url}`,
+                    {
+                        data: ciphertext,
+                        iv
+                    },
+                    {
+                        withCredentials: true,
+                        headers: { "x-signature": signature },
+                    });
+
                 toast({
                     title: "Update Done",
                     description: `${url} is updated`,
@@ -188,21 +207,30 @@ const Page = () => {
         bioDirty,
         socialDirty,
         passwordDirty,
-        emailAvailability,
+        resetFullname,
+        resetUsername,
+        resetEmail,
+        resetBio,
+        resetSocial,
+        resetPassword,
         setEmailAvailability,
-        usernameAvailability,
-        setUsernameAvailability
-    ])
+        setUsernameAvailability,
+        emailAvailability,
+        usernameAvailability
+    ]);
 
     useEffect(() => {
         resetForm();
-    }, [resetForm, userData, resetFullname, fullnameDirty, usernameDirty, resetUsername, emailDirty, resetEmail, bioDirty, resetBio, socialDirty, resetSocial, passwordDirty, resetPassword]);
+    }, [userData, resetForm]);
 
     const handleLogout = async () => {
         try {
             await axios.post("/api/logout", {}, { withCredentials: true });
             dispatch(logoutUser());
             router.push("/velocity/login");
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
         } catch {
             toast({
                 title: "user loged out",
@@ -231,8 +259,12 @@ const Page = () => {
             await axios.post("/api/user/delete", {}, { withCredentials: true });
             toast({
                 title: "Account status",
-                description: `Account deletion successfull, we miss you.`,
+                description: "Account deletion successful, we miss you ❤️.",
             })
+            router.push("/")
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
         } catch {
             toast({
                 variant: "destructive",
@@ -284,6 +316,7 @@ const Page = () => {
                     <div>Socials:</div>
                     <div>Password:</div>
                     <div className="invisible">Reset form :</div>
+                    <div className="invisible">Reset Password:</div>
                     <div>Connect to Google:</div>
                     <div>Reset Stats:</div>
                     <div>Account Deletion:</div>
@@ -299,14 +332,14 @@ const Page = () => {
                         <input {...registerUsername('username')} type="text" className="rounded bg-neutral-900 px-2 w-96" placeholder="Username" onChange={e => checkUsernameAvailability(e.target.value)} />
                         <button type="submit" className="bg-slate-950 rounded-md px-2 text-slate-400">Update</button>
                         {errorsUsername.username?.message && <span className="text-xs text-red-500">{errorsUsername.username.message}</span>}
-                        {(usernameAvailability !== null && usernameAvailability && !errorsUsername.username) && (<span>{usernameAvailability && "✅ available"}</span>)}
+                        {(usernameAvailability !== null && usernameAvailability && !errorsUsername.username) && (<span>{usernameAvailability && "✅"}</span>)}
                     </form>
 
                     <form onSubmit={handleEmailSubmit((data) => handleSubmitForm('email', data))} className="space-x-2">
                         <input {...registerEmail('email')} type="text" className="rounded bg-neutral-900 px-2 w-96" placeholder="Email" onChange={e => checkEmailAvailability(e.target.value)} />
                         <button type="submit" className="bg-slate-950 rounded-md px-2 text-slate-400">Update</button>
                         {errorsEmail.email?.message && <span className="text-xs text-red-500">{errorsEmail.email.message}</span>}
-                        {(emailAvailability && emailAvailability !== null && !errorsEmail.email) && (<span>{emailAvailability && "✅ available"}</span>)}
+                        {(emailAvailability && emailAvailability !== null && !errorsEmail.email) && (<span>{emailAvailability && "✅"}</span>)}
                     </form>
 
                     <form onSubmit={handleBioSubmit((data) => handleSubmitForm('bio', data))} className="space-x-2">
@@ -328,14 +361,22 @@ const Page = () => {
                         {(errorsPassword.oldPassword?.message || errorsPassword.newPassword?.message)
                             && <span className="text-xs text-red-500">{errorsPassword.oldPassword?.message || errorsPassword.newPassword?.message}</span>}
                     </form>
+                    <div className="space-x-2">
+                        <button className="space-x-2 px-4 rounded-md bg-slate-950 font-bold text-slate-400 tracking-widest transform hover:scale-105 hover:bg-slate-900 transition-colors duration-200">
+                            <Link href={'/velocity/forget-password'}>Forgot password?</Link>
+                        </button>
+                    </div>
+
                     <button onClick={resetForm} className="space-x-2 px-4 rounded-md bg-slate-950 font-bold text-white tracking-widest transform hover:scale-105 hover:bg-slate-900 transition-colors duration-200">
                         Clear Form
                     </button>
+
                     <div className="space-x-2">
                         <button className="space-x-2 px-4 rounded-md bg-slate-950 font-bold text-yellow-400 tracking-widest transform hover:scale-105 hover:bg-slate-900 transition-colors duration-200">
                             Link Google
                         </button>
                     </div>
+
                     <div className="space-x-6">
                         <AlertDialog>
                             <AlertDialogTrigger className="space-x-2 px-4 rounded-md bg-slate-950 font-bold text-red-400 tracking-widest transform hover:scale-105 hover:bg-slate-900 transition-colors duration-200">

@@ -21,3 +21,13 @@ export const TURNSTILE_SECRET_KEY = process.env.TURNSTILE_SECRET_KEY as string;
 
 export const UPSTASH_REDIS_URL = process.env.UPSTASH_REDIS_REST_URL as string
 export const UPSTASH_REDIS_TOKEN = process.env.UPSTASH_REDIS_REST_TOKEN as string
+
+export const FORGOT_PASSWORD_TOKEN_EXPIRATION = 1000 * 60 * 60;
+
+export const RESEND_KEY = process.env.RESEND_API_KEY as string;
+
+export const HMAC_SECRET = process.env.HMAC_SECRET as string;
+export const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY as string;
+
+export const NEXT_PUBLIC_HMAC_KEY = process.env.NEXT_PUBLIC_HMAC_KEY as string;
+export const NEXT_PUBLIC_ENCRYPTION_KEY = process.env.NEXT_PUBLIC_ENCRYPTION_KEY as string;

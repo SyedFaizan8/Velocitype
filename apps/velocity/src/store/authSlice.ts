@@ -1,3 +1,4 @@
+import { encryptFrontend } from "@/utils/encryptFrontend";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
@@ -24,7 +25,20 @@ const initialState: AuthState = {
 export const loginUser = createAsyncThunk("auth/login",
     async (data: { email: string; password: string }, { rejectWithValue }) => {
         try {
-            const response = await axios.post("/api/login", data);
+            const { error, iv, ciphertext, signature } = await encryptFrontend(data);
+            if (error) throw error
+
+            const response = await axios.post("/api/login",
+                {
+                    data: ciphertext,
+                    iv
+                },
+                {
+                    headers: {
+                        "x-signature": signature,
+                    },
+                });
+
             return response.data.data;
         } catch (error) {
             if (axios.isAxiosError(error)) return rejectWithValue(error.response?.data?.message || "Login failed");
@@ -68,6 +82,10 @@ const authSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
+            .addCase(loginUser.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
             .addCase(loginUser.fulfilled, (state, action) => {
                 state.user = action.payload;
                 state.loading = false;
@@ -79,6 +97,7 @@ const authSlice = createSlice({
             })
             .addCase(fetchUser.pending, (state) => {
                 state.loading = true;
+                state.error = null;
             })
             .addCase(fetchUser.fulfilled, (state, action) => {
                 state.user = action.payload;

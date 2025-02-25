@@ -3,13 +3,20 @@ import { registerSchema } from "@repo/zod";
 import { prisma } from "@/lib/prisma";
 import { ApiResponse, ApiError } from "@/utils/apiResponse";
 import { hashPassword } from "@/utils/auth";
+import { decryptBackend } from "@/utils/decryptBackend";
 
 export async function POST(req: NextRequest) {
 
     try {
-        const body = await req.json();
+        const { error, status, decryptedBody } = await decryptBackend(req)
+        if (error) {
+            return NextResponse.json(
+                new ApiError(status, error),
+                { status: status }
+            );
+        }
 
-        const validationResult = registerSchema.safeParse(body);
+        const validationResult = registerSchema.safeParse(decryptedBody);
         if (!validationResult.success) {
             return NextResponse.json(new ApiError(400, validationResult.error.errors[0].message), {
                 status: 400,

@@ -9,6 +9,7 @@ interface InputFieldProps<T extends FieldValues> {
     placeholder: string;
     errors: FieldErrors<T>;
     onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    className?: string;
 }
 
 const InputField = <T extends FieldValues>({
@@ -18,6 +19,7 @@ const InputField = <T extends FieldValues>({
     placeholder,
     errors,
     onChange,
+    className
 }: InputFieldProps<T>) => {
 
     const registeredProps = register(name);
@@ -36,7 +38,7 @@ const InputField = <T extends FieldValues>({
         <div className="w-full">
             <input
                 {...registeredProps}
-                className="rounded py-1 px-2 w-full bg-slate-900"
+                className={`rounded py-1 px-2 w-full ${className} bg-slate-900`}
                 type={type}
                 placeholder={placeholder}
                 onChange={debouncedOnChange}

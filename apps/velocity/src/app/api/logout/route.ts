@@ -24,8 +24,8 @@ export async function POST(req: NextRequest) {
             { status: 200 }
         );
 
-        response.cookies.set("accessToken", "", { ...accessTokenOptions, maxAge: 0 });
-        response.cookies.set("refreshToken", "", { ...refreshTokenOptions, maxAge: 0 });
+        response.cookies.set("accessToken", "", { ...accessTokenOptions, maxAge: 0, expires: new Date(0) });
+        response.cookies.set("refreshToken", "", { ...refreshTokenOptions, maxAge: 0, expires: new Date(0) });
 
         return response;
     } catch (error) {

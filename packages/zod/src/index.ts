@@ -51,3 +51,20 @@ export const resultSchema = z.object({
     totalChars: z.number(),
     totalWords: z.number()
 })
+
+export const resetPassword = z.object({
+    token: z.string(),
+    password: z.string().min(6, 'at least 6 characters'),
+    confirmPassword: z.string()
+}).refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords must match",
+    path: ['confirmPassword']
+})
+
+export const resetPasswordFrontend = z.object({
+    password: z.string().min(6, 'at least 6 characters'),
+    confirmPassword: z.string(),
+}).refine((data) => data.password === data.confirmPassword, {
+    message: 'Passwords must match',
+    path: ['confirmPassword'],
+})

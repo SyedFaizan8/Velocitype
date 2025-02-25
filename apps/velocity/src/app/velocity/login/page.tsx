@@ -1,6 +1,6 @@
 "use client"
 
-import { Google, Login, Register } from "@/components/Icons"
+import { Google, Login, Register, Loading } from "@/components/Icons"
 import { useCallback, useEffect, useState } from "react"
 import { useForm } from "react-hook-form";
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -15,6 +15,8 @@ import { toast } from "@/hooks/use-toast";
 import { useAvailability } from "@/hooks/useAvalibility";
 import Turnstile from "react-turnstile";
 import { TURNSTILE_SITE_KEY } from "@/utils/constants";
+import Link from "next/link";
+import { encryptFrontend } from "@/utils/encryptFrontend";
 
 interface FormValues {
     fullname: string;
@@ -31,9 +33,10 @@ interface LoginValues {
 
 const Page = () => {
     const dispatch = useAppDispatch();
-    const { user, error } = useAppSelector((state) => state.auth);
+    const { user, error, loading } = useAppSelector((state) => state.auth);
     const router = useRouter();
     const [token, setToken] = useState<string | null>(null);
+    const [signupLoading, setSignupLoading] = useState<boolean | null>(null);
 
     useEffect(() => {
         if (!user) dispatch(fetchUser())
@@ -65,12 +68,15 @@ const Page = () => {
     } = useAvailability();
 
     const onSubmit = async (data: FormValues) => {
+        setSignupLoading(true);
 
         if (!token) {
             toast({
                 variant: "destructive",
-                title: "Please complete the CAPTCHA."
+                title: "Please complete the CAPTCHA.",
+                description: "CAPTCHA Failed"
             })
+            setSignupLoading(false);
             return;
         }
 
@@ -84,6 +90,7 @@ const Page = () => {
                     description: error.response?.data?.message || "An error occurred during CAPTCHA verification."
                 });
             }
+            setSignupLoading(false);
         }
 
         if (!usernameAvailability) {
@@ -92,16 +99,35 @@ const Page = () => {
                 title: "username is taken",
                 description: "try different username"
             })
+            setSignupLoading(false);
         } else if (!emailAvailability) {
             toast({
                 variant: "destructive",
                 title: "email is taken ",
                 description: "try different email"
             })
+            setSignupLoading(false);
         } else if (usernameAvailability && emailAvailability) {
             try {
-                const response = await axios.post("/api/register", data);
-                if (response.data) onLogin({ email: data.email, password: data.password });
+
+                const { error, iv, ciphertext, signature } = await encryptFrontend(data);
+                if (error) {
+                    toast({
+                        title: "Something went wrong while encrypting"
+                    })
+                }
+
+                const response = await axios.post("/api/register",
+                    {
+                        data: ciphertext,
+                        iv
+                    },
+                    {
+                        headers: { "x-signature": signature },
+                    });
+                if (response.data) {
+                    onLogin({ email: data.email, password: data.password });
+                }
             } catch (error) {
                 if (axios.isAxiosError(error)) {
                     toast({
@@ -109,6 +135,7 @@ const Page = () => {
                         title: error?.response?.data || error.message,
                     })
                 }
+                setSignupLoading(false)
             }
         }
     }
@@ -199,8 +226,13 @@ const Page = () => {
                     onVerify={(token: string) => setToken(token)}
                 />
 
-                <button type="submit" className="py-1 flex bg-slate-500 text-black font-extrabold rounded-md gap-2 w-1/2 justify-center items-center hover:bg-slate-600 hover:text-white transition space-x-2 px-4  tracking-widest transform hover:scale-105 duration-200">
-                    <Register /> Sign Up
+                <button type="submit" disabled={signupLoading !== null && signupLoading} className="py-1 flex bg-slate-500 text-black font-extrabold rounded-md gap-2 w-1/2 justify-center items-center hover:bg-slate-600 hover:text-white transition space-x-2 px-4  tracking-widest transform hover:scale-105 duration-200">
+                    {signupLoading ? <span className="animate-spin py-1 font-bold"><Loading /></span>
+                        : <span className="flex space-x-2 font-bold">
+                            <span className="mt-1"><Register /></span>
+                            <span>Sign Up</span>
+                        </span>
+                    }
                 </button>
             </form>
 
@@ -225,8 +257,17 @@ const Page = () => {
                     placeholder="password"
                     errors={errorsLogin}
                 />
-                <button type="submit" className="py-1 flex bg-slate-500 text-black font-extrabold rounded-md gap-2 w-1/2 justify-center items-center hover:bg-slate-600 hover:text-white transition  space-x-2 px-4  tracking-widest transform hover:scale-105 duration-200">
-                    <Login /> Sign In</button>
+                <button type="submit" disabled={loading} className="py-1 flex bg-slate-500 text-black font-extrabold rounded-md gap-2 w-1/2 justify-center items-center hover:bg-slate-600 hover:text-white transition  space-x-2 px-4  tracking-widest transform hover:scale-105 duration-200">
+                    {signupLoading === null && loading ? <span className="animate-spin py-1"><Loading /></span>
+                        : <span className="flex space-x-2 font-bold">
+                            <span className="mt-1"><Login /></span>
+                            <span>Sign In</span>
+                        </span>
+                    }
+                </button>
+                <span className="text-slate-500 flex justify-end w-1/2 text-sm font-bold">
+                    <Link href={'/velocity/forget-password'}>forgot password?</Link>
+                </span>
             </form>
         </div >
     )

@@ -18,13 +18,13 @@ export const countErrors = (actual: string, expected: string) => {
 export const calculateAccuracyPercentage = (errors: number, total: number): number => {
     if (total > 0) {
         const corrects = total - errors;
-        return (corrects / total) * 100;
+        return Math.max(0, (corrects / total) * 100);
     }
     return 0;
 };
 
 export const calculateWPM = (totalTyped: number, errors: number): number => {
-    return Math.max(0, Math.round(((totalTyped - errors) / 5) * 4))
+    return Math.max(0, Math.floor(((totalTyped - errors) / 5) * 4))
 }
 
 export const formatPercentage = (percentage: number) => {
@@ -50,5 +50,6 @@ export const formatTime = (seconds: number): string => {
 export const liveWPM = (totalTyped: number, seconds: number): number => {
     const elapsedTime = TEST_DURATION - seconds;
     if (elapsedTime <= 0) return 0;
-    return Math.round((totalTyped / 5) * (60 / elapsedTime));
+    const wpm = Math.round((totalTyped / 5) * (60 / elapsedTime))
+    return wpm <= 0 ? 0 : wpm;
 }

@@ -57,7 +57,20 @@ export async function GET(
 
         const userRank = user.leaderboard
             ? (await prisma.leaderboard.count({
-                where: { highest_wpm: { gt: user.leaderboard?.highest_wpm } },
+                where: {
+                    OR: [
+                        { highest_wpm: { gt: user.leaderboard.highest_wpm } },
+                        {
+                            highest_wpm: user.leaderboard.highest_wpm,
+                            highest_accuracy: { gt: user.leaderboard.highest_accuracy }
+                        },
+                        {
+                            highest_wpm: user.leaderboard.highest_wpm,
+                            highest_accuracy: user.leaderboard.highest_accuracy,
+                            achieved_at: { gt: user.leaderboard.achieved_at }
+                        }
+                    ]
+                },
             })) + 1
             : null;
 

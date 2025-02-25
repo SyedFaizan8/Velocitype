@@ -10,7 +10,9 @@ const nextConfig: NextConfig = {
       }
     ]
   },
-  transpilePackages: ["@repo/zod"] //no use in prod
+  ...(process.env.NODE_ENV === "development" && { transpilePackages: ["@repo/zod"] }),
+  reactStrictMode: false,
+  // transpilePackages: ["@repo/zod"] //no use in prod
 };
 
 export default nextConfig;

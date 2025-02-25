@@ -22,7 +22,9 @@ export async function GET(req: NextRequest) {
         const skip = (page - 1) * take;
 
         const leaderboard = await prisma.leaderboard.findMany({
-            orderBy: { highest_wpm: "desc" },
+            orderBy: {
+                highest_wpm: "desc"
+            },
             skip,
             take,
             select: {
@@ -46,7 +48,7 @@ export async function GET(req: NextRequest) {
         }
 
         await redis.json.set(cacheKey, '$', leaderboard);
-        await redis.expire(cacheKey, 300)
+        await redis.expire(cacheKey, 60)
 
         return NextResponse.json(
             new ApiResponse(200, leaderboard, "Leaderboard data found"),

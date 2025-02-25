@@ -3,19 +3,26 @@ import { prisma } from "@/lib/prisma";
 import { ApiError, ApiResponse } from "@/utils/apiResponse";
 import { resultSchema } from "@repo/zod";
 import { getUserIdFromRequest } from "@/utils/auth";
+import { decryptBackend } from "@/utils/decryptBackend";
 
 export async function POST(req: NextRequest) {
     try {
         const user_id = await getUserIdFromRequest(req);
-
         if (!user_id) {
             return NextResponse.json(new ApiError(401, "Unauthorized"), {
                 status: 401,
             });
         }
 
-        const body = await req.json();
-        const validationResult = resultSchema.safeParse(body);
+        const { error, status, decryptedBody } = await decryptBackend(req)
+        if (error) {
+            return NextResponse.json(
+                new ApiError(status, error),
+                { status: status }
+            );
+        }
+
+        const validationResult = resultSchema.safeParse(decryptedBody);
         if (!validationResult.success) {
             return NextResponse.json(
                 new ApiError(400, "Invalid input data"),
@@ -34,7 +41,7 @@ export async function POST(req: NextRequest) {
                 total_words_typed: { increment: totalWords },
             },
             create: {
-                user_id: user_id,
+                user_id,
                 total_tests_taken: 1,
                 total_letters_typed: totalChars,
                 total_words_typed: totalWords,
