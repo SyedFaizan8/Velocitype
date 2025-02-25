@@ -28,7 +28,19 @@ const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
                 setError("Image must be less than 5MB");
                 return false;
             }
-            return true;
+
+            const img = new Image();
+            const objectUrl = URL.createObjectURL(file);
+            img.onload = () => {
+                URL.revokeObjectURL(objectUrl);
+            };
+            img.onerror = () => {
+                setError("Upload Proper Image");
+                URL.revokeObjectURL(objectUrl);
+                return false
+            };
+            img.src = objectUrl;
+            return true
         };
 
         return (

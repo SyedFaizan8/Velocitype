@@ -1,7 +1,7 @@
 import { ENCRYPTION_KEY, HMAC_SECRET } from "@/utils/constants";
 import crypto from "crypto";
 
-export function verifyHMAC(payload: any, signature: string): boolean {
+export function verifyHMAC<T>(payload: T, signature: string): boolean {
     const hmac = crypto.createHmac("sha256", HMAC_SECRET);
     hmac.update(JSON.stringify(payload));
     const digest = hmac.digest("hex");

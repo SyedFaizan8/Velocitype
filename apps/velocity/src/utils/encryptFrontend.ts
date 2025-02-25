@@ -1,8 +1,7 @@
 import { encryptData, generateHMAC } from "@/lib/cryptoClient";
 import { NEXT_PUBLIC_ENCRYPTION_KEY, NEXT_PUBLIC_HMAC_KEY } from "./constants";
 
-export const encryptFrontend = async (payload: any) => {
-
+export const encryptFrontend = async <T>(payload: T) => {
     try {
         // Generate HMAC signature for the raw payload
         const signature = await generateHMAC(payload, NEXT_PUBLIC_HMAC_KEY);
@@ -13,11 +12,9 @@ export const encryptFrontend = async (payload: any) => {
             NEXT_PUBLIC_ENCRYPTION_KEY
         );
 
-        return { error: null, iv, ciphertext, signature }
+        return { error: null, iv, ciphertext, signature };
 
     } catch (error) {
-
-        return { error }
-
+        return { error };
     }
-}
+};

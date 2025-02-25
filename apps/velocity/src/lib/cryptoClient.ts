@@ -1,4 +1,4 @@
-export async function generateHMAC(payload: any, key: string): Promise<string> {
+export async function generateHMAC<T>(payload: T, key: string): Promise<string> {
     const encoder = new TextEncoder();
     const data = encoder.encode(JSON.stringify(payload));
     const cryptoKey = await window.crypto.subtle.importKey(
