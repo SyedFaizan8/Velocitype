@@ -26,7 +26,7 @@ export const updatePasswordSchema = z.object({
 });
 
 export const dpSchema = z.object({
-    imageUrl: z.string().url('Invalid URL'),
+    imageId: z.string()
 });
 
 export const registerSchema = z.object({

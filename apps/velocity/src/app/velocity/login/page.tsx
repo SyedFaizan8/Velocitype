@@ -1,6 +1,6 @@
 "use client"
 
-import { Google, Login, Register, Loading } from "@/components/Icons"
+import { Login, Register, Loading } from "@/components/Icons"
 import { useCallback, useEffect, useState } from "react"
 import { useForm } from "react-hook-form";
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -239,10 +239,6 @@ const Page = () => {
 
             <form onSubmit={handleSubmitLogin(onLogin)} className="flex flex-col justify-center items-center space-y-3">
                 <div className="flex gap-2 w-1/2 text-xl"><span className="pt-1"><Login /></span>login</div>
-                <button className="py-1 flex bg-slate-500 text-black font-extrabold rounded-md gap-2 w-1/2 justify-center items-center hover:bg-slate-600 hover:text-white transition space-x-2 px-4  tracking-widest transform hover:scale-105 duration-200">
-                    <span className="p-1 flex "><Google /></span>
-                </button>
-                <div className="w-2/5 text-center">or</div>
                 <div className="w-1/2">
                     <InputField
                         register={registerLogin}

@@ -7,21 +7,34 @@ import { changeSound } from "@/store/soundSlice"
 import TooltipIcon from "./TooltipIcon";
 import useIsMobile from "@/hooks/useIsMobile";
 import Image from "next/image";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { fetchUser } from "@/store/authSlice";
 import { Howler } from 'howler';
+import { bringDpUrlFromFileId } from "@/utils/addTranformation";
 
 const Header = () => {
     const { sound } = useAppSelector(state => state.sound)
     const { user, initialized } = useAppSelector(state => state.auth)
     const isMobile = useIsMobile();
     const dispatch = useAppDispatch();
+    const [imageUrl, setImageUrl] = useState<string | null>(null);
 
     useEffect(() => {
         if (!initialized) {
             dispatch(fetchUser());
         }
     }, [initialized, dispatch]);
+
+    useEffect(() => {
+        if (user?.imageId) {
+            bringDpUrlFromFileId(user.imageId)
+                .then((url) => setImageUrl(url))
+                .catch((error) => {
+                    console.error("Error fetching image URL", error);
+                    setImageUrl(null);
+                });
+        }
+    }, [user?.imageId]);
 
     const handleToggleSound = () => {
         dispatch(changeSound());
@@ -104,9 +117,9 @@ const Header = () => {
                                 : <TooltipIcon icon={<Mute />} tooltipText="sound off" />}
                         </div>
                         <Link href={`/velocity/user/${user ? user.username : ""}`}>
-                            {user?.imageUrl
+                            {imageUrl
                                 ? <div className="pt-1">
-                                    <Image className="rounded-full h-7 w-7  cursor-pointer" src={user.imageUrl} alt="user" height={100} width={100} />
+                                    <Image className="rounded-full h-7 w-7  cursor-pointer" src={imageUrl} alt="user" height={100} width={100} />
                                 </div>
                                 : <div className="hover:text-slate-200 cursor-pointer pt-2 md:text-2xl text-sm">
                                     <TooltipIcon icon={<User />} tooltipText="profile" />

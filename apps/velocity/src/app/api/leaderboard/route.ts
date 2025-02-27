@@ -31,7 +31,7 @@ export async function GET(req: NextRequest) {
                 user: {
                     select: {
                         username: true,
-                        imageUrl: true,
+                        imageId: true,
                     },
                 },
                 highest_wpm: true,

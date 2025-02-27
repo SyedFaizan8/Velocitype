@@ -1,6 +1,6 @@
 export interface UserNameType {
     username: string;
-    imageUrl: URL | string | null;
+    imageId: string | null;
 }
 
 export interface LeaderboardType {

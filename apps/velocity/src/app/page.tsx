@@ -38,6 +38,9 @@ const Home = () => {
       event.preventDefault();
       restart();
     }
+    if (event.key === "Quote") {
+      event.preventDefault();
+    }
     if (event.getModifierState("CapsLock")) setIsCapsLockOn(true);
     else setIsCapsLockOn(false);
   }

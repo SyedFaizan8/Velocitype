@@ -14,7 +14,6 @@ import {
     FaUserCircle as UserLeaderboard,
     FaGlobe as Site,
     FaLink as Link,
-    FaGoogle as Google,
     FaEye as Show,
     FaEyeSlash as Hide
 
@@ -23,6 +22,7 @@ import { HiSpeakerXMark as Mute, HiSpeakerWave as Speaker } from "react-icons/hi
 import { FaFlag as Report, FaUserPlus as Register } from "react-icons/fa6";
 import { BiLogIn as Login } from "react-icons/bi";
 import { AiOutlineLoading3Quarters as Loading } from "react-icons/ai";
+import { FcRemoveImage as Remove } from "react-icons/fc";
 
 export {
     Info,
@@ -43,9 +43,9 @@ export {
     Report,
     Edit,
     Register,
-    Google,
     Login,
     Show,
     Hide,
-    Loading
+    Loading,
+    Remove
 };

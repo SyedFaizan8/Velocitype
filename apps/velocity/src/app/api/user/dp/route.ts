@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { dpSchema } from "@repo/zod";
 import { NextRequest, NextResponse } from "next/server";
 import { decryptBackend } from "@/utils/decryptBackend";
+import { removeImageFromImagekit } from "@/utils/addTranformation";
 
 export async function POST(req: NextRequest) {
     try {
@@ -31,12 +32,21 @@ export async function POST(req: NextRequest) {
             );
         }
 
-        const { imageUrl } = validationResult.data;
+        const { imageId } = validationResult.data;
+
+        const findUserImage = await prisma.user.findUnique({
+            where: { user_id },
+            select: { imageId: true }
+        })
+
+        if (findUserImage && findUserImage.imageId) {
+            await removeImageFromImagekit(findUserImage.imageId);
+        }
 
         const updatedUser = await prisma.user.update({
             where: { user_id },
-            data: { imageUrl: imageUrl.trim() },
-            select: { imageUrl: true },
+            data: { imageId },
+            select: { imageId: true },
         });
 
         return NextResponse.json(new ApiResponse(200, updatedUser, "Profile picture updated successfully"), { status: 200 });

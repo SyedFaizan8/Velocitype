@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import Image from "next/image";
 import { Crown, UserLeaderboard } from "@/components/Icons";
 import axios from "axios";
 import { toast } from "@/hooks/use-toast";
@@ -9,6 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { LeaderboardType } from "@/utils/types/leaderboardTypes";
 import { USERS_PER_PAGE } from "@/utils/constants"
 import { useRouter } from "next/navigation";
+import LeaderboardImage from "@/components/LeaderboardImage";
 
 
 const Page = () => {
@@ -103,21 +103,10 @@ const Page = () => {
                                         )}
                                     </div>
                                     <div className="p-1 cursor-pointer space-x-2 w-8/12 md:w-4/12 flex items-center">
-                                        {user.imageUrl &&
-                                            typeof user.imageUrl === "string" &&
-                                            user.imageUrl.length > 0 ? (
-                                            <Image
-                                                width={24}
-                                                height={24}
-                                                src={user.imageUrl}
-                                                alt={user.username}
-                                                className="inline rounded-full w-6 h-6"
-                                            />
-                                        ) : (
-                                            <div className="rounded-full text-2xl">
+                                        {user.imageId ? <LeaderboardImage imageId={user.imageId} username={user.username} />
+                                            : (<div className="rounded-full text-2xl">
                                                 <UserLeaderboard />
-                                            </div>
-                                        )}
+                                            </div>)}
                                         <span>{user.username}</span>
                                     </div>
                                     <div className="p-1 w-2/12 cursor-pointer flex items-center">{highest_wpm}</div>

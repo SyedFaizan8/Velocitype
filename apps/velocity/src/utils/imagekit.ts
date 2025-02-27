@@ -1,10 +1,10 @@
 import ImageKit from "imagekit";
-import { IMAGEKIT_PRIVATE_KEY, IMAGEKIT_PUBLIC_KEY, IMAGEKIT_URL_ENDPOINT } from "@/utils/constants"
+import { NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY, NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT } from "@/utils/constants"
 
 const imagekit = new ImageKit({
-  publicKey: IMAGEKIT_PUBLIC_KEY,
-  privateKey: IMAGEKIT_PRIVATE_KEY,
-  urlEndpoint: IMAGEKIT_URL_ENDPOINT,
+  publicKey: NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY,
+  privateKey: "private_2zAIAzdngE7zPnioYH99n1L91uY=",
+  urlEndpoint: NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT,
 });
 
 export default imagekit;

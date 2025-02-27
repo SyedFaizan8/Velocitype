@@ -17,7 +17,7 @@ export interface HighestRank {
 }
 
 export interface User {
-    imageUrl: string;
+    imageId: string;
     fullname: string;
     username: string;
     created_at: string | Date;

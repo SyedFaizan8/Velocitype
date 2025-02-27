@@ -29,18 +29,29 @@ const FileUpload = forwardRef<HTMLInputElement, FileUploadProps>(
                 return false;
             }
 
-            const img = new Image();
-            const objectUrl = URL.createObjectURL(file);
-            img.onload = () => {
-                URL.revokeObjectURL(objectUrl);
-            };
-            img.onerror = () => {
-                setError("Upload Proper Image");
-                URL.revokeObjectURL(objectUrl);
-                return false
-            };
-            img.src = objectUrl;
-            return true
+            const isValidImage = new Promise<boolean>((resolve) => {
+                const img = new Image();
+                const objectUrl = URL.createObjectURL(file);
+                img.onload = () => {
+                    URL.revokeObjectURL(objectUrl);
+                    resolve(true);
+                };
+                img.onerror = () => {
+                    URL.revokeObjectURL(objectUrl);
+                    resolve(false);
+                };
+                img.src = objectUrl;
+            });
+
+            isValidImage.then((valid) => {
+                if (!valid) {
+                    setError("Upload Proper Image");
+                    return false;
+                }
+                setError(null);
+                return true;
+            });
+            return true;
         };
 
         return (

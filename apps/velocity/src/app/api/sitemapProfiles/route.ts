@@ -8,7 +8,7 @@ export async function GET() {
             take: 10000,
             select: {
                 username: true,
-                imageUrl: true,
+                imageId: true,
             },
         });
 

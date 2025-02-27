@@ -17,7 +17,7 @@ model User {
   password             String
   refreshToken         String?
   website              String?
-  imageUrl             String?
+  imageId              String?
   resetPasswordToken   String?
   resetPasswordExpires DateTime?
   created_at           DateTime  @default(now())

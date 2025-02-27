@@ -1,7 +1,5 @@
 "use client";
 
-//personal route
-
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/store/reduxHooks";

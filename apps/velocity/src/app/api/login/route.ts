@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
                 user_id: true,
                 password: true,
                 username: true,
-                imageUrl: true,
+                imageId: true,
             },
         });
 

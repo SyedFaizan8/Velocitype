@@ -1,8 +1,27 @@
+import imagekit from "@/utils/imagekit"
 
-export const addTransformationToImageKitURL = (imageURL: string, transformation: string): string => {
-    const url = new URL(imageURL);
-    const parts = url.pathname.split('/');
-    parts.splice(2, 0, transformation);
+export const bringImageUrlFromFileId = async (fileId: string): Promise<string | null> => {
+    const fileDetails = await imagekit.getFileDetails(fileId);
+    if (fileDetails.fileType === "non-image") {
+        await removeImageFromImagekit(fileId);
+        return null
+    } else {
+        const parts = fileDetails.url.split("/syedfaizan/");
+        return `${parts[0]}/syedfaizan/tr:h-400,w-400/${parts[1]}`;
+    }
+}
 
-    return `${url.origin}${parts.join('/')}`;
+export const bringDpUrlFromFileId = async (fileId: string): Promise<string | null> => {
+    const fileDetails = await imagekit.getFileDetails(fileId);
+    const parts = fileDetails.url.split("/syedfaizan/");
+    return `${parts[0]}/syedfaizan/tr:h-200,w-200/${parts[1]}`;
+}
+
+export const removeImageFromImagekit = async (fileId: string) => {
+    try {
+        await imagekit.deleteFile(fileId)
+        return { success: true }
+    } catch (error) {
+        return { error }
+    }
 }

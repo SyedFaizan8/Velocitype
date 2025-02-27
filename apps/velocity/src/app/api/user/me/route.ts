@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
 
         const userData = await prisma.user.findUnique({
             where: { user_id },
-            select: { user_id: true, username: true, imageUrl: true },
+            select: { user_id: true, username: true, imageId: true },
         });
 
         if (!userData) {

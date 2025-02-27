@@ -1,5 +1,5 @@
 export interface UserProfile {
-    imageUrl: string | null;
+    imageId: string | null;
     fullname: string | null;
     username: string;
     email: string;
@@ -33,7 +33,7 @@ export interface UpdatePasswordFormDataType {
 }
 
 export interface ImageUrlType {
-    imageUrl: string | URL;
+    imageId: string | URL;
 }
 
 export type UserUpdateData =

@@ -1,8 +1,8 @@
 "use client";
 
 import FileUpload from "@/components/FileUpload";
-import { Edit, Loading, UserLeaderboard } from "@/components/Icons";
-import { addTransformationToImageKitURL } from "@/utils/addTranformation";
+import { Edit, Loading, Remove, UserLeaderboard } from "@/components/Icons";
+import { bringImageUrlFromFileId } from "@/utils/addTranformation";
 import { authenticator } from "@/utils/imagekitAuth";
 import { ImageKitProvider } from "imagekitio-next";
 import { IKUploadResponse } from "imagekitio-next/dist/types/components/IKUpload/props";
@@ -43,7 +43,7 @@ import {
     UpdatePasswordFormData,
     UsernameFormData
 } from "@/utils/types/formTypes";
-import { urlEndpoint, publicKey } from "@/utils/constants"
+import { NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT, NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY } from "@/utils/constants"
 import { UserProfile, UserUpdateData } from "@/utils/types/settingsTypes"
 import { useAvailability } from "@/hooks/useAvalibility";
 import Link from "next/link";
@@ -85,6 +85,10 @@ const Page = () => {
                 }
             );
             setUserData(response.data.data);
+            if (response.data.data && response.data.data.imageId) {
+                const image = await bringImageUrlFromFileId(response.data.data.imageId)
+                setImageUrl(image)
+            }
         } catch {
             toast({
                 variant: "destructive",
@@ -109,10 +113,11 @@ const Page = () => {
     }, [user, bringProfile]);
 
     const onSuccess = async (res: IKUploadResponse) => {
-        const transformation = "tr:h-500,w-500";
-        const transformUrl = addTransformationToImageKitURL(res.url, transformation);
-        setImageUrl(transformUrl);
-        handleSubmitForm('dp', { imageUrl: transformUrl })
+        const transformImageUrl = await bringImageUrlFromFileId(res.fileId);
+        if (transformImageUrl !== null) {
+            setImageUrl(transformImageUrl);
+            handleSubmitForm('dp', { imageId: res.fileId })
+        }
     };
 
     const handleSubmitForm = async (url: string, data: UserUpdateData) => {
@@ -196,7 +201,6 @@ const Page = () => {
         if (userData && !bioDirty) resetBio({ bio: userData.bio || "" })
         if (userData && !socialDirty) resetSocial({ website: userData.website || "" });
         if (userData && !passwordDirty) resetPassword({ oldPassword: "", newPassword: "" });
-        if (userData?.imageUrl) setImageUrl(userData.imageUrl)
         if (emailAvailability && setEmailAvailability) setEmailAvailability(null);
         if (usernameAvailability && setUsernameAvailability) setUsernameAvailability(null);
     }, [
@@ -222,6 +226,29 @@ const Page = () => {
     useEffect(() => {
         resetForm();
     }, [userData, resetForm]);
+
+    const removeDp = async () => {
+        try {
+            await axios.post("/api/user/remove-dp", {}, { withCredentials: true });
+            toast({
+                title: "Dp removed successfully",
+            })
+            setImageUrl(null)
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                toast({
+                    variant: "destructive",
+                    title: "Something went wrong while removing dp",
+                    description: error.response?.data.message
+                })
+            } else {
+                toast({
+                    variant: "destructive",
+                    title: "Something went wront while removing dp"
+                })
+            }
+        }
+    }
 
     const handleLogout = async () => {
         try {
@@ -281,15 +308,21 @@ const Page = () => {
             <button onClick={handleLogout} className="text-xl bg-slate-900 px-3 rounded absolute top-2 -right-9 space-x-2  font-bold text-yellow-400 tracking-widest transform hover:scale-105 hover:bg-slate-900 transition-colors duration-200">
                 Logout
             </button>
-            <ImageKitProvider publicKey={publicKey} urlEndpoint={urlEndpoint} authenticator={authenticator}>
+            <ImageKitProvider publicKey={NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY} urlEndpoint={NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT} authenticator={authenticator}>
                 <div className="flex flex-col h-auto justify-center items-center py-2 w-full">
                     <div className="space-y-2 flex flex-col justify-center items-center">
                         <span className="text-8xl text-center">
                             {uploading ? <Loading className="animate-spin text-8xl" /> : (imageUrl ? <Image height={100} width={100} src={imageUrl} alt={"user"} className="rounded-full" /> : <UserLeaderboard />)}
                         </span>
-                        <div className="bg-slate-900 px-1 flex justify-center rounded-md items-center space-x-2 relative text-end  font-bold text-slate-400 tracking-widest transform hover:scale-105 hover:bg-slate-900 transition-colors duration-200">
-                            <Edit />
-                            <button disabled={uploading} onClick={() => fileUploadRef.current?.click()}>Upload</button>
+                        <div className="flex space-x-2">
+                            <div className="bg-slate-900 px-1 flex justify-center rounded-md items-center space-x-2 relative text-end  font-bold text-slate-400 tracking-widest transform hover:scale-105 hover:bg-slate-900 transition-colors duration-200">
+                                <Edit />
+                                <button disabled={uploading} onClick={() => fileUploadRef.current?.click()}>Upload</button>
+                            </div>
+                            {imageUrl && <div className="bg-slate-900 px-1 flex justify-center rounded-md items-center space-x-2 relative text-end  font-bold text-slate-400 tracking-widest transform hover:scale-105 hover:bg-slate-900 transition-colors duration-200">
+                                <Remove />
+                                <button onClick={removeDp}>Remove</button>
+                            </div>}
                         </div>
                     </div>
                     <FileUpload
@@ -301,6 +334,7 @@ const Page = () => {
                                 toast({
                                     variant: "destructive",
                                     title: error,
+                                    description: "please upload a proper image Or remove this to use default one"
                                 })
                             }
                         }}

@@ -3,6 +3,7 @@ import type { UserData } from '@/utils/types/profileTypes';
 import { baseUrl } from '@/utils/constants';
 import { isAxiosError } from 'axios';
 import { fetchProfile } from './fetchProfile';
+import { bringImageUrlFromFileId } from './addTranformation';
 
 export async function getProfileMetadata(profile: string): Promise<Metadata> {
     try {
@@ -13,6 +14,10 @@ export async function getProfileMetadata(profile: string): Promise<Metadata> {
             ? `${user.fullname} (@${user.username}) | Velocitype`
             : `Profile | Velocitype`;
         const description = `View ${user.username}'s profile on Velocitype.`;
+        let imageUrl = null;
+        if (user && user.imageId) {
+            imageUrl = await bringImageUrlFromFileId(user.imageId)
+        }
 
         return {
             title,
@@ -22,9 +27,7 @@ export async function getProfileMetadata(profile: string): Promise<Metadata> {
                 description,
                 images: [
                     {
-                        url:
-                            user.imageUrl ||
-                            `${baseUrl}/images/logo_blue.png`,
+                        url: imageUrl || `${baseUrl}/images/logo_blue.png`,
                         alt: `${user.fullname || user.username}'s profile picture`,
                     },
                 ],
@@ -36,9 +39,7 @@ export async function getProfileMetadata(profile: string): Promise<Metadata> {
                 description,
                 images: [
                     {
-                        url:
-                            user.imageUrl ||
-                            `${baseUrl}/images/logo_blue.png`,
+                        url: imageUrl || `${baseUrl}/images/logo_blue.png`,
                         alt: `${user.fullname || user.username}'s profile picture`,
                     },
                 ],

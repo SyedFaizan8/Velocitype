@@ -5,7 +5,7 @@ import axios from "axios";
 interface User {
     user_id: string;
     username: string;
-    imageUrl: string;
+    imageId: string;
 }
 
 interface AuthState {

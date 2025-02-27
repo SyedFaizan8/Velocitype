@@ -1,4 +1,6 @@
-import React, { useCallback } from 'react';
+"use client"
+
+import React, { useCallback, useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { UserLeaderboard, Link as InternalLink, Site } from '@/components/Icons';
@@ -8,6 +10,7 @@ import { HyperText } from '@/components/ui/hyper-text';
 import { toast } from '@/hooks/use-toast';
 import { formatTime } from '@/utils/helpers';
 import type { UserData } from '@/utils/types/profileTypes';
+import { bringImageUrlFromFileId } from '@/utils/addTranformation';
 
 interface UserProfileProps {
     userData: UserData;
@@ -18,7 +21,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ userData }) => {
     const {
         stats,
         leaderboard,
-        imageUrl,
+        imageId,
         username,
         created_at,
         bio,
@@ -26,12 +29,22 @@ const UserProfile: React.FC<UserProfileProps> = ({ userData }) => {
         fullname,
     } = userData.user;
 
+    const [imageUrl, setImageUrl] = useState<string | null>(null);
+
     const totalTestsTaken = stats.total_tests_taken.toString();
     const totalTimeTyping = formatTime((stats.total_tests_taken || 0) * 15);
     const totalLettersTyped = stats.total_letters_typed.toString();
     const totalWordsTyped = stats.total_words_typed.toString();
     const highestAccuracy = leaderboard?.highest_accuracy?.toString() ?? '';
     const totalTest = stats.total_tests_taken > 100 ? 100 : stats.total_tests_taken;
+
+    useEffect(() => {
+        const bringImage = async () => {
+            const image = await bringImageUrlFromFileId(imageId)
+            setImageUrl(image)
+        }
+        if (imageId) bringImage();
+    }, [imageId])
 
     const handleCopy = useCallback(async () => {
         let link = window.location.href;
