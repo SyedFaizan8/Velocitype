@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { ApiResponse, ApiError } from "@/utils/apiResponse";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
     try {
         const sitemapProfile = await prisma.user.findMany({
