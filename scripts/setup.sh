@@ -19,43 +19,40 @@ set -e
 
 echo "=== Starting velociType Setup ==="
 
+# Define directories
+ROOT_DIR=$(pwd)
+VELOCITY_DIR="apps/velocity"
+WEB_DIR="apps/web"
+
 # 1. Install dependencies in the monorepo root
 echo "Installing root dependencies..."
 npm install
 
 # 2. Install dependencies in the web app directory
-if [ -d "apps/velocity" ]; then
-  echo "Installing dependencies in apps/web..."
-  cd apps/velocity
+if [ -d "$VELOCITY_DIR" ]; then
+  echo "Installing dependencies in $VELOCITY_DIR..."
+  cd $VELOCITY_DIR
   npm install
-  cd ../..
+  cd $ROOT_DIR
 else
-  echo "Directory apps/velocity not found. Please check your repository structure."
+  echo "Directory $VELOCITY_DIR not found. Please check your repository structure."
   exit 1
 fi
 
 # 3. Configure environment variables
-# Check if a .env file exists in apps/web; if not, copy from .env.example
-if [ ! -f "apps/web/.env" ]; then
-  if [ -f "apps/web/.env.example" ]; then
-    echo "Creating .env file in apps/velocity from .env.example..."
-    cp apps/web/.env.example apps/velocity/.env
-    echo "Please review and update apps/velocity/.env with your local configuration."
-  else
-    echo "No .env or .env.example file found in apps/velocity. Exiting."
-    exit 1
+# Check if a .env file exists in $WEB_DIR; if not, copy from .env.example
+for ENV_FILE in ".env" ".env.local"; do
+  if [ ! -f "$WEB_DIR/$ENV_FILE" ]; then
+    if [ -f "$WEB_DIR/$ENV_FILE.example" ]; then
+      echo "Creating $ENV_FILE file in $VELOCITY_DIR from $ENV_FILE.example..."
+      cp "$WEB_DIR/$ENV_FILE.example" "$VELOCITY_DIR/$ENV_FILE"
+      echo "Please review and update $VELOCITY_DIR/$ENV_FILE with your local configuration."
+    else
+      echo "No $ENV_FILE or $ENV_FILE.example file found in $VELOCITY_DIR. Exiting."
+      exit 1
+    fi
   fi
-fi
-if [ ! -f "apps/web/.env.local" ]; then
-  if [ -f "apps/web/.env.local.example" ]; then
-    echo "Creating .env file in apps/velocity from .env.local.example..."
-    cp apps/web/.env.example apps/velocity/.env.local
-    echo "Please review and update apps/velocity/.env.local with your local configuration."
-  else
-    echo "No .env.local or .env.local.example file found in apps/velocity. Exiting."
-    exit 1
-  fi
-fi
+done
 
 # 4. Set up the database
 echo "Generating Prisma client..."
