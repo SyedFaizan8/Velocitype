@@ -18,7 +18,14 @@ export async function POST(req: NextRequest) {
             );
         }
 
+
         const validationResult = resetPassword.safeParse(decryptedBody);
+        if (!validationResult.data?.token) {
+            return NextResponse.json(
+                new ApiError(400, "Token is required for password reset"),
+                { status: 400 }
+            );
+        }
         if (!validationResult.success) {
             return NextResponse.json(
                 new ApiError(400, "Invalid input data"),

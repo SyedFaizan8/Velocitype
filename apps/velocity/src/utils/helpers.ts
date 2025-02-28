@@ -1,5 +1,3 @@
-import { TEST_DURATION } from "./constants";
-
 export const isKeyboardCodeAllowed = (code: string) => {
     const allowedCodes = ["Backspace", "Space", "Minus", "Comma", "Period", "Quote", "Semicolon", "Colon", "Quote", "Slash", "Digit1", "Digit2"];
     return code.startsWith("Key") || code.startsWith("Digit") || allowedCodes.includes(code);
@@ -23,8 +21,9 @@ export const calculateAccuracyPercentage = (errors: number, total: number): numb
     return 0;
 };
 
-export const calculateWPM = (totalTyped: number, errors: number): number => {
-    return Math.max(0, Math.floor(((totalTyped - errors) / 5) * 4))
+export const calculateWPM = (totalTyped: number, errors: number, timer: number): number => {
+    const multiplier = timer === 15 ? 4 : 1;
+    return Math.max(0, Math.floor(((totalTyped - errors) / 5) * multiplier))
 }
 
 export const formatPercentage = (percentage: number) => {
@@ -47,8 +46,8 @@ export const formatTime = (seconds: number): string => {
     return result.join(" ");
 }
 
-export const liveWPM = (totalTyped: number, seconds: number): number => {
-    const elapsedTime = TEST_DURATION - seconds;
+export const liveWPM = (totalTyped: number, seconds: number, timer: number): number => {
+    const elapsedTime = timer - seconds;
     if (elapsedTime <= 0) return 0;
     const wpm = Math.round((totalTyped / 5) * (60 / elapsedTime))
     return wpm <= 0 ? 0 : wpm;

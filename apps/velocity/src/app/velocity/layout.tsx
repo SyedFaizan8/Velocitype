@@ -4,8 +4,13 @@ import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import { motion } from "framer-motion";
 import { Toaster } from "@/components/ui/toaster"
+import MobileNotice from "@/components/MobileNotice";
+import useIsMobile from "@/hooks/useIsMobile";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+
+    const isMobile = useIsMobile();
+    if (isMobile) return <MobileNotice />
 
     return (
         <>

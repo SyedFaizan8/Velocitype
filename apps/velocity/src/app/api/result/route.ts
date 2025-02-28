@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
             );
         }
 
-        const { wpm, accuracy, totalChars, totalWords } = validationResult.data;
+        const { wpm, accuracy, totalChars, totalWords, timer } = validationResult.data;
         let newHighscore = false;
 
         const stats = await prisma.totalStatistics.upsert({
@@ -39,12 +39,14 @@ export async function POST(req: NextRequest) {
                 total_tests_taken: { increment: 1 },
                 total_letters_typed: { increment: totalChars },
                 total_words_typed: { increment: totalWords },
+                total_time_typing: { increment: timer }
             },
             create: {
                 user_id,
                 total_tests_taken: 1,
                 total_letters_typed: totalChars,
                 total_words_typed: totalWords,
+                total_time_typing: timer
             },
         });
 
@@ -70,26 +72,30 @@ export async function POST(req: NextRequest) {
             where: { user_id },
         });
 
-        if (!userLeaderboard) {
-            await prisma.leaderboard.create({
-                data: {
-                    user_id,
-                    highest_wpm: wpm,
-                    highest_accuracy: accuracy,
-                    achieved_at: new Date(),
-                },
-            });
-            newHighscore = true;
-        } else if (wpm > userLeaderboard.highest_wpm || (wpm >= userLeaderboard.highest_wpm && accuracy >= userLeaderboard.highest_accuracy.toNumber())) {
-            await prisma.leaderboard.update({
-                where: { user_id },
-                data: {
-                    highest_wpm: wpm,
-                    highest_accuracy: accuracy,
-                    achieved_at: new Date(),
-                },
-            });
-            newHighscore = true;
+        if (accuracy >= 50) {
+            if (!userLeaderboard) {
+                await prisma.leaderboard.create({
+                    data: {
+                        user_id,
+                        highest_wpm: wpm,
+                        highest_accuracy: accuracy,
+                        time: timer,
+                        achieved_at: new Date(),
+                    },
+                });
+                newHighscore = true;
+            } else if (wpm > userLeaderboard.highest_wpm || (wpm >= userLeaderboard.highest_wpm && accuracy >= userLeaderboard.highest_accuracy.toNumber())) {
+                await prisma.leaderboard.update({
+                    where: { user_id },
+                    data: {
+                        highest_wpm: wpm,
+                        highest_accuracy: accuracy,
+                        time: timer,
+                        achieved_at: new Date(),
+                    },
+                });
+                newHighscore = true;
+            }
         }
 
         return NextResponse.json(

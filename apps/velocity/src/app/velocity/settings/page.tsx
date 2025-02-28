@@ -351,7 +351,6 @@ const Page = () => {
                     <div>Password:</div>
                     <div className="invisible">Reset form :</div>
                     <div className="invisible">Reset Password:</div>
-                    <div>Connect to Google:</div>
                     <div>Reset Stats:</div>
                     <div>Account Deletion:</div>
                 </div>
@@ -404,12 +403,6 @@ const Page = () => {
                     <button onClick={resetForm} className="space-x-2 px-4 rounded-md bg-slate-950 font-bold text-white tracking-widest transform hover:scale-105 hover:bg-slate-900 transition-colors duration-200">
                         Clear Form
                     </button>
-
-                    <div className="space-x-2">
-                        <button className="space-x-2 px-4 rounded-md bg-slate-950 font-bold text-yellow-400 tracking-widest transform hover:scale-105 hover:bg-slate-900 transition-colors duration-200">
-                            Link Google
-                        </button>
-                    </div>
 
                     <div className="space-x-6">
                         <AlertDialog>

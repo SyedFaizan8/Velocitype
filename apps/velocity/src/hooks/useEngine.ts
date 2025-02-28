@@ -5,13 +5,12 @@ import { countErrors } from "../utils/helpers";
 import useCountdown from "./useCountdown";
 import useWords from "./useWords";
 import useTypings from "./useTypings";
-import { TEST_DURATION } from "@/utils/constants";
 
 export type State = "start" | "run" | "finish";
 
-const useEngine = () => {
+const useEngine = (timer: number) => {
     const [state, setState] = useState<State>("start");
-    const { timeLeft, startCountdown, resetCountdown } = useCountdown(TEST_DURATION);
+    const { timeLeft, startCountdown, resetCountdown } = useCountdown(timer);
     const { words, updateWords } = useWords();
     const { cursor, typed, clearTyped, totalTyped, resetTotalTyped } = useTypings(state !== "finish");
 

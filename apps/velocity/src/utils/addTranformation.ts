@@ -1,15 +1,39 @@
 import imagekit from "@/utils/imagekit"
 
+const fileDetailsCache: { [key: string]: any } = {};
+
+setInterval(() => {
+    for (const key in fileDetailsCache) {
+        delete fileDetailsCache[key];
+    }
+}, 60000);
+
 export const bringImageUrlFromFileId = async (fileId: string): Promise<string | null> => {
-    const fileDetails = await imagekit.getFileDetails(fileId);
+    if (!fileDetailsCache[fileId]) {
+        fileDetailsCache[fileId] = await imagekit.getFileDetails(fileId);
+    }
+
+    const fileDetails = fileDetailsCache[fileId];
+
     if (fileDetails.fileType === "non-image") {
         await removeImageFromImagekit(fileId);
-        return null
+        return null;
     } else {
         const parts = fileDetails.url.split("/syedfaizan/");
         return `${parts[0]}/syedfaizan/tr:h-400,w-400/${parts[1]}`;
     }
 }
+
+// export const bringImageUrlFromFileId = async (fileId: string): Promise<string | null> => {
+//     const fileDetails = await imagekit.getFileDetails(fileId);
+//     if (fileDetails.fileType === "non-image") {
+//         await removeImageFromImagekit(fileId);
+//         return null
+//     } else {
+//         const parts = fileDetails.url.split("/syedfaizan/");
+//         return `${parts[0]}/syedfaizan/tr:h-400,w-400/${parts[1]}`;
+//     }
+// }
 
 export const bringDpUrlFromFileId = async (fileId: string): Promise<string | null> => {
     const fileDetails = await imagekit.getFileDetails(fileId);

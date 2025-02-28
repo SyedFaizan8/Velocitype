@@ -58,6 +58,7 @@ export async function POST(req: NextRequest) {
                 total_tests_taken: 0,
                 total_letters_typed: 0,
                 total_words_typed: 0,
+                total_time_typing: 0,
             },
         });
 

@@ -132,7 +132,7 @@ const Page = () => {
                 if (axios.isAxiosError(error)) {
                     toast({
                         variant: "destructive",
-                        title: error?.response?.data || error.message,
+                        title: error?.response?.data.message || error.message,
                     })
                 }
                 setSignupLoading(false)

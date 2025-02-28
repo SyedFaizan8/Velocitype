@@ -36,6 +36,7 @@ export async function GET(req: NextRequest) {
                 },
                 highest_wpm: true,
                 highest_accuracy: true,
+                time: true,
                 achieved_at: true,
             },
         });

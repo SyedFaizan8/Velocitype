@@ -4,6 +4,10 @@ const useCountdown = (initialSeconds: number) => {
     const [timeLeft, setTimeLeft] = useState(initialSeconds);
     const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
+    useEffect(() => {
+        setTimeLeft(initialSeconds);
+    }, [initialSeconds]);
+
     const startCountdown = useCallback(() => {
         if (intervalRef.current) return;
         intervalRef.current = setInterval(() => {

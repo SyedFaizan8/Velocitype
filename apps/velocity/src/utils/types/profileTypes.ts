@@ -3,6 +3,7 @@ export interface UserStats {
     total_tests_taken: number;
     total_letters_typed: number;
     total_words_typed: number;
+    total_time_typing: number;
 }
 
 export interface HistoryEntry {

@@ -10,9 +10,21 @@ const nextConfig: NextConfig = {
       }
     ]
   },
-  ...(process.env.NODE_ENV === "development" && { transpilePackages: ["@repo/zod"] }),
   reactStrictMode: false,
-  // transpilePackages: ["@repo/zod"] //no use in prod
+  ...(process.env.NODE_ENV === "development" && { transpilePackages: ["@repo/zod"] }),
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'X-Frame-Options',
+            value: 'DENY'
+          }
+        ]
+      }
+    ]
+  }
 };
 
 export default nextConfig;

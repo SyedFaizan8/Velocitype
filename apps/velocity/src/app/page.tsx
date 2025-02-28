@@ -11,6 +11,7 @@ import Header from '@/components/Header';
 import useEngine from '@/hooks/useEngine';
 import useIsMobile from '@/hooks/useIsMobile';
 import { Mute, Refresh, Speaker } from '@/components/Icons';
+import MobileNotice from "@/components/MobileNotice"
 
 import { useAppDispatch, useAppSelector } from "@/store/reduxHooks";
 import { setTypingStats } from "@/store/typingSlice";
@@ -23,8 +24,9 @@ const Home = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const { sound } = useAppSelector(state => state.sound);
+  const [timer, setTimer] = useState<number>(15)
 
-  const { words, typed, timeLeft, errors, state, restart, totalTyped } = useEngine();
+  const { words, typed, timeLeft, errors, state, restart, totalTyped } = useEngine(timer);
   const [isCapsLockOn, setIsCapsLockOn] = useState(false);
 
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -56,12 +58,13 @@ const Home = () => {
     if (state === "finish") {
       dispatch(
         setTypingStats({
-          wpm: calculateWPM(totalTyped, errors),
+          wpm: calculateWPM(totalTyped, errors, timer),
           accuracy: calculateAccuracyPercentage(errors, totalTyped),
-          raw: Math.floor((totalTyped / 5) * 4),
+          raw: Math.floor((totalTyped / 5) * (timer === 15 ? 4 : 1)),
           totalLetters: Math.max(0, totalTyped),
           totalWords: Math.round(totalTyped / 5),
           errors: errors,
+          timer
         })
       );
 
@@ -69,12 +72,14 @@ const Home = () => {
     }
   }, [state, dispatch, errors, router, totalTyped]);
 
-  const progressPercentage = ((15 - timeLeft) / 15) * 100;
+  const progressPercentage = ((timer - timeLeft) / timer) * 100;
 
   const handleToggleSound = () => {
     dispatch(changeSound());
     if (!sound) Howler.unload();
   };
+
+  if (isMobile) return <MobileNotice />
 
   return (
     <div>
@@ -87,27 +92,31 @@ const Home = () => {
       >
       </div>
       }
-      {
-        state !== "run" ?
-          <Header />
-          : <div
-            className="flex justify-between">
-            <Link href="/">
-              <div className="text-slate-500 font-bold cursor-pointer md:text-3xl text-lg ">velociType</div>
-            </Link>
-            <div
-              className={`hover:text-slate-200 cursor-pointer pt-2 md:text-2xl text-md ${sound ? "text-yellow-200" : "text-slate-500"}`}
-              onClick={handleToggleSound}
-            >
-              {sound ? <Speaker /> : <Mute />}
-            </div>
-          </div >
+      {state !== "run" ?
+        <Header />
+        : <div
+          className="flex justify-between">
+          <Link href="/">
+            <div className="text-slate-500 font-bold cursor-pointer md:text-3xl text-lg ">velociType</div>
+          </Link>
+          <div
+            className={`hover:text-slate-200 cursor-pointer pt-2 md:text-2xl text-md ${sound ? "text-yellow-200" : "text-slate-500"}`}
+            onClick={handleToggleSound}
+          >
+            {sound ? <Speaker /> : <Mute />}
+          </div>
+        </div >
       }
-      <div className="w-full md:px-10 px-6 h-[80vh] flex flex-col justify-center items-center">
+      <div className="w-full md:px-10 px-6 h-[80vh] flex flex-col justify-center items-center relative">
+        {state !== "run" && state !== "finish" ? <div className="text-slate-400 bg-slate-900 px-6 py-2 rounded-lg text-lg space-x-6 absolute top-12">
+          <span className='text-yellow-400'>timer:</span>
+          <button className={`${timer === 15 ? "text-yellow-400" : null}`} onClick={() => setTimer(15)}>15</button>
+          <button className={`${timer === 60 ? "text-yellow-400" : null}`} onClick={() => setTimer(60)}>60</button>
+        </div> : null}
         <div className="w-full flex justify-between items-center h-10">
-          <h2 className="text-yellow-400 font-medium text-lg">{state === "run" ? "Time " + timeLeft : ""}</h2>
-          <h2 className="text-yellow-400 font-medium text-lg">
-            {state === "run" ? <span className='text-slate-500'>{`wpm ${liveWPM(totalTyped, timeLeft)}`}</span> : null}
+          <h2 className="text-yellow-400 font-medium text-3xl">{state === "run" ? timeLeft : ""}</h2>
+          <h2 className="text-yellow-400 font-medium text-xl">
+            {state === "run" ? <span className='text-slate-500'>{`wpm ${liveWPM(totalTyped, timeLeft, timer)}`}</span> : null}
           </h2>
         </div>
         <div className="relative md:text-3xl text-lg leading-relaxed h-56">
@@ -149,14 +158,11 @@ const Home = () => {
         )}
       </div>
 
-      {
-        !isMobile &&
-        <div className='w-full hidden md:flex justify-center items-center space-x-1 text-sm text-slate-500 '>
-          <span className="bg-slate-500 rounded-sm px-1 text-xs text-white">tab</span>
-          <span>-</span>
-          <span>restart</span>
-        </div>
-      }
+      <div className='w-full hidden md:flex justify-center items-center space-x-1 text-sm text-slate-500 '>
+        <span className="bg-slate-500 rounded-sm px-1 text-xs text-white">tab</span>
+        <span>-</span>
+        <span>restart</span>
+      </div>
 
       <AnimatePresence>
         {state !== "run" ? (

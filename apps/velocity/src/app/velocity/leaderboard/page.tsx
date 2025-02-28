@@ -62,18 +62,19 @@ const Page = () => {
 
     return (
         <div className="w-full text-center max-h-full md:px-20 h-5/6">
-            <h1 className="text-xl md:text-4xl text-slate-500 mb-2 ">
+            <h1 className="text-4xl text-slate-500 mb-2">
                 All-Time Leaderboard
-                <div className="text-base">updated every minute</div>
+                <div className="text-base">Updated every minute</div>
             </h1>
             <div>
                 <div className="w-full p-2 md:p-4">
                     <div className="flex text-left text-sm md:text-xl text-slate-500 font-semibold border-b pb-1">
                         <div className="flex items-center justify-center p-1 w-2/12 md:w-1/12">#</div>
                         <div className="flex items-center p-1 w-8/12 md:w-4/12">name</div>
-                        <div className="flex items-center w-2/12">wpm</div>
+                        <div className="flex items-center w-1/12">wpm</div>
                         <div className="hidden md:flex items-center w-2/12">accuracy</div>
                         <div className="hidden md:flex items-center w-3/12">date</div>
+                        <div className="hidden md:flex items-center w-1/12">time</div>
                     </div>
                     <div className="overflow-auto md:h-[330px] scroll-smooth scrollbar-thin scrollbar-thumb-slate-500 scrollbar-track-transparent">
                         {data
@@ -86,7 +87,7 @@ const Page = () => {
                                 }
                                 return b.highest_wpm - a.highest_wpm;
                             })
-                            .map(({ user, highest_wpm, highest_accuracy, achieved_at }, index) => (
+                            .map(({ user, highest_wpm, highest_accuracy, achieved_at, time }, index) => (
                                 <div
                                     onClick={() => onSubmit(user.username)}
                                     key={index}
@@ -109,12 +110,15 @@ const Page = () => {
                                             </div>)}
                                         <span>{user.username}</span>
                                     </div>
-                                    <div className="p-1 w-2/12 cursor-pointer flex items-center">{highest_wpm}</div>
+                                    <div className="p-1 w-1/12 cursor-pointer flex items-center">{highest_wpm}</div>
                                     <div className="hidden md:flex p-1 w-2/12 items-center cursor-pointer">
                                         {highest_accuracy}%
                                     </div>
                                     <div className="hidden md:flex p-1 w-3/12 items-center cursor-pointer">
                                         {new Date(achieved_at).toLocaleString()}
+                                    </div>
+                                    <div className="hidden md:flex p-1 w-1/12 items-center cursor-pointer">
+                                        {time}s
                                     </div>
                                 </div>
                             ))}

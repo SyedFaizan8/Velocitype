@@ -44,6 +44,7 @@ model TotalStatistics {
   total_tests_taken   Int
   total_letters_typed Int
   total_words_typed   Int
+  total_time_typing   Int
 
   user User @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
 
@@ -54,6 +55,7 @@ model Leaderboard {
   user_id          String   @id
   highest_wpm      Int
   highest_accuracy Decimal  @db.Decimal(5, 2)
+  time             Int
   achieved_at      DateTime @default(now())
 
   user User @relation(fields: [user_id], references: [user_id], onDelete: Cascade)

@@ -5,7 +5,6 @@ import InputField from "@/components/form/InputField";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { emailSchema } from "@repo/zod";
 import { useForm } from "react-hook-form";
-import { useAvailability } from "@/hooks/useAvalibility";
 import { toast } from "@/hooks/use-toast";
 import axios from "axios";
 import { encryptFrontend } from "@/utils/encryptFrontend";
@@ -28,8 +27,6 @@ const Page = () => {
         mode: "onBlur",
     });
 
-    const { emailAvailability, checkEmailAvailability } = useAvailability();
-
     useEffect(() => {
         let timer: NodeJS.Timeout;
         if (isWaiting) {
@@ -48,45 +45,38 @@ const Page = () => {
     }, [isWaiting]);
 
     const onSubmit = async (data: FormValues) => {
-        if (emailAvailability && emailAvailability !== null) {
-            toast({
-                variant: "destructive",
-                title: "User with this email does not exist."
-            })
-        } else {
-            try {
-                setIsWaiting(true);
+        try {
+            setIsWaiting(true);
 
-                const { error, iv, ciphertext, signature } = await encryptFrontend(data);
-                if (error) {
-                    toast({
-                        title: "Something went wrong while encrypting"
-                    })
-                    setIsWaiting(false)
-                }
-
-                const response = await axios.post("/api/forgot-password",
-                    {
-                        data: ciphertext,
-                        iv
-                    },
-                    {
-                        headers: { "x-signature": signature }
-                    });
-                if (response.data) {
-                    toast({
-                        title: "Verification sent to the email successfully"
-                    })
-                }
-            } catch (error) {
-                if (axios.isAxiosError(error)) {
-                    toast({
-                        variant: "destructive",
-                        title: error?.response?.data || error.message,
-                    })
-                }
-                setIsWaiting(false);
+            const { error, iv, ciphertext, signature } = await encryptFrontend(data);
+            if (error) {
+                toast({
+                    title: "Something went wrong while encrypting"
+                })
+                setIsWaiting(false)
             }
+
+            const response = await axios.post("/api/forgot-password",
+                {
+                    data: ciphertext,
+                    iv
+                },
+                {
+                    headers: { "x-signature": signature }
+                });
+            if (response.data) {
+                toast({
+                    title: "Verification sent to the email successfully"
+                })
+            }
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                toast({
+                    variant: "destructive",
+                    title: error?.response?.data.message || error.message,
+                })
+            }
+            setIsWaiting(false);
         }
     };
 
@@ -101,11 +91,7 @@ const Page = () => {
                         placeholder="Email"
                         errors={errors}
                         className="border-2 border-slate-500"
-                        onChange={(e) => checkEmailAvailability(e.target.value)}
                     />
-                    <span className="ml-2 text-lg w-8 flex justify-center absolute right-0 top-1">
-                        {(emailAvailability && emailAvailability !== null) && "❌"}
-                    </span>
                 </div>
                 <button
                     type="submit"

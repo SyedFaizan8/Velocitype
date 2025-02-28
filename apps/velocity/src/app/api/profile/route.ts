@@ -28,6 +28,7 @@ export async function GET(
                         total_tests_taken: true,
                         total_letters_typed: true,
                         total_words_typed: true,
+                        total_time_typing: true
                     },
                 },
                 leaderboard: {

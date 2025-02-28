@@ -11,6 +11,10 @@ import { toast } from '@/hooks/use-toast';
 import { formatTime } from '@/utils/helpers';
 import type { UserData } from '@/utils/types/profileTypes';
 import { bringImageUrlFromFileId } from '@/utils/addTranformation';
+import axios from 'axios';
+import { logoutUser } from '@/store/authSlice';
+import { useAppDispatch } from '@/store/reduxHooks';
+import { useRouter } from 'next/navigation';
 
 interface UserProfileProps {
     userData: UserData;
@@ -30,9 +34,12 @@ const UserProfile: React.FC<UserProfileProps> = ({ userData }) => {
     } = userData.user;
 
     const [imageUrl, setImageUrl] = useState<string | null>(null);
+    const [user, setUser] = useState<boolean>(false)
+    const dispatch = useAppDispatch();
+    const router = useRouter();
 
     const totalTestsTaken = stats.total_tests_taken.toString();
-    const totalTimeTyping = formatTime((stats.total_tests_taken || 0) * 15);
+    const totalTimeTyping = formatTime(stats.total_time_typing || 0);
     const totalLettersTyped = stats.total_letters_typed.toString();
     const totalWordsTyped = stats.total_words_typed.toString();
     const highestAccuracy = leaderboard?.highest_accuracy?.toString() ?? '';
@@ -44,6 +51,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ userData }) => {
             setImageUrl(image)
         }
         if (imageId) bringImage();
+        if (window.location.href.includes('/user/')) setUser(true);
     }, [imageId])
 
     const handleCopy = useCallback(async () => {
@@ -55,144 +63,165 @@ const UserProfile: React.FC<UserProfileProps> = ({ userData }) => {
         });
     }, []);
 
+    const handleLogout = async () => {
+        try {
+            await axios.post("/api/logout", {}, { withCredentials: true });
+            dispatch(logoutUser());
+            router.push("/velocity/login");
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        } catch {
+            toast({
+                title: "user loged out",
+                description: "successfull"
+            })
+        }
+    };
+
     return (
-        <div className="w-full h-full space-y-2 py-2 flex flex-col justify-center">
-            <div className="w-full space-y-2 h-full flex flex-col justify-center">
-                <div className="grid grid-cols-10 w-full bg-slate-900 rounded-t-xl">
-                    {/* Profile Header */}
-                    <div className="flex flex-col justify-center col-span-4 border border-r-slate-800 border-r-8 px-2 space-y-2 py-5">
-                        <div className="flex space-x-5 pl-5">
-                            <div className="text-7xl">
-                                {imageUrl ? (
-                                    <Image
-                                        className="rounded-full h-30 w-30"
-                                        src={imageUrl}
-                                        alt="Profile picture"
-                                        width={100}
-                                        height={100}
-                                    />
-                                ) : (
-                                    <UserLeaderboard />
-                                )}
+        <>
+            <div className="w-full h-full space-y-2 py-2 flex flex-col justify-center relative">
+                {user ? <button onClick={handleLogout} className="text-xl bg-slate-900 px-3 rounded absolute -top-6 right-10 space-x-2  font-bold text-yellow-400 tracking-widest transform hover:scale-105 hover:bg-slate-900 transition-colors duration-200">
+                    Logout
+                </button > : null}
+                <div className="w-full space-y-2 h-full flex flex-col justify-center">
+                    <div className="grid grid-cols-10 w-full bg-slate-900 rounded-t-xl">
+                        {/* Profile Header */}
+                        <div className="flex flex-col justify-center col-span-4 border border-r-slate-800 border-r-8 px-2 space-y-2 py-5">
+                            <div className="flex space-x-5 pl-5">
+                                <div className="text-7xl">
+                                    {imageUrl ? (
+                                        <Image
+                                            className="rounded-full h-30 w-30"
+                                            src={imageUrl}
+                                            alt="Profile picture"
+                                            width={100}
+                                            height={100}
+                                        />
+                                    ) : (
+                                        <UserLeaderboard />
+                                    )}
+                                </div>
+                                <div className="flex flex-col justify-center">
+                                    <p className="text-xl text-yellow-500">{fullname}</p>
+                                    <span className="text-sm text-slate-500 flex space-x-1">
+                                        <span>id:</span>
+                                        <HyperText className="text-white" animateOnHover={false}>
+                                            {username}
+                                        </HyperText>
+                                    </span>
+                                    <span className="text-xs text-slate-500 flex space-x-1">
+                                        <span>joined:</span>
+                                        <HyperText className="text-white" animateOnHover={false}>
+                                            {new Date(created_at).toDateString()}
+                                        </HyperText>
+                                    </span>
+                                </div>
                             </div>
-                            <div className="flex flex-col justify-center">
-                                <p className="text-xl text-yellow-500">{fullname}</p>
-                                <span className="text-sm text-slate-500 flex space-x-1">
-                                    <span>id:</span>
-                                    <HyperText className="text-white" animateOnHover={false}>
-                                        {username}
-                                    </HyperText>
-                                </span>
-                                <span className="text-xs text-slate-500 flex space-x-1">
-                                    <span>joined:</span>
-                                    <HyperText className="text-white" animateOnHover={false}>
-                                        {new Date(created_at).toDateString()}
-                                    </HyperText>
-                                </span>
+                            <div className="pl-5">
+                                <p className="text-sm text-slate-500">
+                                    {bio ? 'bio :' : null}{' '}
+                                    <span className="text-white">{bio}</span>
+                                </p>
+                            </div>
+                            <div className="pl-5 flex justify-start items-center">
+                                <div className="space-x-2">
+                                    {website && (
+                                        <Link href={website} target="_blank" rel="noopener noreferrer">
+                                            <TooltipIcon icon={<Site />} tooltipText="Website" />
+                                        </Link>
+                                    )}
+                                </div>
                             </div>
                         </div>
-                        <div className="pl-5">
-                            <p className="text-sm text-slate-500">
-                                {bio ? 'bio :' : null}{' '}
-                                <span className="text-white">{bio}</span>
-                            </p>
-                        </div>
-                        <div className="pl-5 flex justify-start items-center">
-                            <div className="space-x-2">
-                                {website && (
-                                    <Link href={website} target="_blank" rel="noopener noreferrer">
-                                        <TooltipIcon icon={<Site />} tooltipText="Website" />
-                                    </Link>
-                                )}
-                            </div>
-                        </div>
-                    </div>
 
-                    <div className="col-span-3 text-slate-500 text-start border border-r-slate-800 border-r-8 pl-6 pr-4 py-2 space-y-2 flex flex-col justify-center">
-                        <div className="flex items-center space-x-4 text-lg">
-                            <h1>Test Completed</h1>
-                            <div className="text-yellow-500">
-                                <HyperText animateOnHover={false}>
-                                    {totalTestsTaken}
-                                </HyperText>
-                            </div>
-                        </div>
-                        <div className="flex items-center space-x-4 text-lg">
-                            <h1>Time Typing</h1>
-                            <div className="text-yellow-500">
-                                <HyperText animateOnHover={false}>
-                                    {totalTimeTyping}
-                                </HyperText>
-                            </div>
-                        </div>
-                        <div className="flex items-center space-x-4 text-lg">
-                            <h1>Characters Typed</h1>
-                            <div className="text-yellow-500">
-                                <HyperText animateOnHover={false}>
-                                    {totalLettersTyped}
-                                </HyperText>
-                            </div>
-                        </div>
-                        <div className="flex items-center space-x-4 text-lg">
-                            <h1>Words Typed</h1>
-                            <div className="text-yellow-500">
-                                <HyperText animateOnHover={false}>
-                                    {totalWordsTyped}
-                                </HyperText>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="relative flex col-span-3 border text-center items-center justify-center p-8 space-x-3">
-                        <span onClick={handleCopy} className="cursor-pointer absolute right-0 top-0 p-3">
-                            <TooltipIcon icon={<InternalLink />} tooltipText="Copy Profile Link" />
-                        </span>
-                        <div>
-                            <h1 className="text-lg">All-Time-Leaderboard</h1>
-                            <div className="flex justify-center items-center">
-                                <div className="text-yellow-500 text-5xl">
+                        <div className="col-span-3 text-slate-500 text-start border border-r-slate-800 border-r-8 pl-6 pr-4 py-2 space-y-2 flex flex-col justify-center">
+                            <div className="flex items-center space-x-4 text-lg">
+                                <h1>Test Completed</h1>
+                                <div className="text-yellow-500">
                                     <HyperText animateOnHover={false}>
-                                        {userData.userRank ? userData.userRank.toString() : 'New User'}
+                                        {totalTestsTaken}
                                     </HyperText>
                                 </div>
                             </div>
-                            {leaderboard && (
-                                <div className="flex space-x-4 text-sm">
-                                    <div>
-                                        <p className='text-slate-400'>WPM</p>
-                                        <div className="text-yellow-500">
-                                            <HyperText animateOnHover={false}>
-                                                {leaderboard.highest_wpm ? leaderboard.highest_wpm.toString() : ''}
-                                            </HyperText>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <p className='text-slate-400'>Accuracy</p>
-                                        <div className="text-yellow-500">
-                                            <HyperText animateOnHover={false}>
-                                                {highestAccuracy + '%'}
-                                            </HyperText>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <p className='text-slate-400'>Date</p>
-                                        <div className="text-yellow-500">
-                                            <HyperText animateOnHover={false}>
-                                                {leaderboard.achieved_at ? new Date(leaderboard.achieved_at).toLocaleDateString() : ''}
-                                            </HyperText>
-                                        </div>
+                            <div className="flex items-center space-x-4 text-lg">
+                                <h1>Time Typing</h1>
+                                <div className="text-yellow-500">
+                                    <HyperText animateOnHover={false}>
+                                        {totalTimeTyping}
+                                    </HyperText>
+                                </div>
+                            </div>
+                            <div className="flex items-center space-x-4 text-lg">
+                                <h1>Characters Typed</h1>
+                                <div className="text-yellow-500">
+                                    <HyperText animateOnHover={false}>
+                                        {totalLettersTyped}
+                                    </HyperText>
+                                </div>
+                            </div>
+                            <div className="flex items-center space-x-4 text-lg">
+                                <h1>Words Typed</h1>
+                                <div className="text-yellow-500">
+                                    <HyperText animateOnHover={false}>
+                                        {totalWordsTyped}
+                                    </HyperText>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="relative flex col-span-3 border text-center items-center justify-center p-8 space-x-3">
+                            <span onClick={handleCopy} className="cursor-pointer absolute right-0 top-0 p-3">
+                                <TooltipIcon icon={<InternalLink />} tooltipText="Copy Profile Link" />
+                            </span>
+                            <div>
+                                <h1 className="text-lg">All-Time-Leaderboard</h1>
+                                <div className="flex justify-center items-center">
+                                    <div className="text-yellow-500 text-5xl">
+                                        <HyperText animateOnHover={false}>
+                                            {userData.userRank ? userData.userRank.toString() : 'New User'}
+                                        </HyperText>
                                     </div>
                                 </div>
-                            )}
+                                {leaderboard && (
+                                    <div className="flex space-x-4 text-sm">
+                                        <div>
+                                            <p className='text-slate-400'>WPM</p>
+                                            <div className="text-yellow-500">
+                                                <HyperText animateOnHover={false}>
+                                                    {leaderboard.highest_wpm ? leaderboard.highest_wpm.toString() : ''}
+                                                </HyperText>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <p className='text-slate-400'>Accuracy</p>
+                                            <div className="text-yellow-500">
+                                                <HyperText animateOnHover={false}>
+                                                    {highestAccuracy + '%'}
+                                                </HyperText>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <p className='text-slate-400'>Date</p>
+                                            <div className="text-yellow-500">
+                                                <HyperText animateOnHover={false}>
+                                                    {leaderboard.achieved_at ? new Date(leaderboard.achieved_at).toLocaleDateString() : ''}
+                                                </HyperText>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div className="w-full">
-                    <Chart userData={userData.user.history} totalTest={totalTest} />
+                    <div className="w-full">
+                        <Chart userData={userData.user.history} totalTest={totalTest} />
+                    </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 };
 
