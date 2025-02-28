@@ -1,5 +1,6 @@
 import imagekit from "@/utils/imagekit"
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const fileDetailsCache: { [key: string]: any } = {};
 
 setInterval(() => {
@@ -23,17 +24,6 @@ export const bringImageUrlFromFileId = async (fileId: string): Promise<string | 
         return `${parts[0]}/syedfaizan/tr:h-400,w-400/${parts[1]}`;
     }
 }
-
-// export const bringImageUrlFromFileId = async (fileId: string): Promise<string | null> => {
-//     const fileDetails = await imagekit.getFileDetails(fileId);
-//     if (fileDetails.fileType === "non-image") {
-//         await removeImageFromImagekit(fileId);
-//         return null
-//     } else {
-//         const parts = fileDetails.url.split("/syedfaizan/");
-//         return `${parts[0]}/syedfaizan/tr:h-400,w-400/${parts[1]}`;
-//     }
-// }
 
 export const bringDpUrlFromFileId = async (fileId: string): Promise<string | null> => {
     const fileDetails = await imagekit.getFileDetails(fileId);

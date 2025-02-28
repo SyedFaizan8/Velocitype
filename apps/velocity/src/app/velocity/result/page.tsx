@@ -72,7 +72,7 @@ const Page = () => {
                 })
             }
         }
-    }, [accuracy, totalLetters, totalWords, wpm])
+    }, [accuracy, totalLetters, totalWords, wpm, timer])
 
     useEffect(() => {
         const handleSendData = async () => {
