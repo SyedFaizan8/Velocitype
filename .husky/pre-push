@@ -1,0 +1,4 @@
+echo "\n🌍🚀 \033[1;35mPushing your code to the universe...\033[0m 🌍🚀"
+echo "🔍 Running final checks before deployment! 🛡️"
+echo "⏳ Hang tight, making sure everything is polished! ✨\n"
+npm run build
