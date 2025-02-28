@@ -1,88 +1,172 @@
-# Turborepo starter
+<img src="https://velocitype.syedfaizan.in/images/logo_blue.png" alt="velociType Logo" width="600" />
 
-This Turborepo starter is maintained by the Turborepo core team.
+# Velocitype: Speed Typing Analytics Platform 🦖⌨️
 
-## Using this example
+_velociType is a Next.js-based speed typing analytics platform that lets users test, track, and improve their typing skills. With timed challenges (15-second and 60-second tests), users can measure their words per minute (WPM), track their progress, and compete on global leaderboards. The platform offers detailed user profiles with comprehensive statistics and historical performance charts._
 
-Run the following command:
+[![Next.js](https://img.shields.io/badge/Next.js-14.0.0-black?logo=next.js)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?logo=typescript)](https://www.typescriptlang.org/)
+[![TurboRepo](https://img.shields.io/badge/TurboRepo-1.10-purple)](https://turbo.build/)
 
-```sh
-npx create-turbo@latest
+## 🚀 Core Features
+
+1. **Typing Challenges**
+
+   - **Speed Run (15s):**
+     - Quick test designed for immediate feedback.
+   - **Marathon (60s):**
+     - Longer test capturing endurance and sustained typing performance.
+
+2. **User Analytics**
+
+   - **Profile Dashboard:**
+     - Total tests completed (15s/60s)
+     - Lifetime characters and words typed
+     - Accuracy percentage
+     - WPM progression chart (displaying results from the last 0 to 100 tests)
+     - Additional info such as user ID, profile photo, name, date joined, and leaderboard rank
+
+3. **Competitive System**
+
+   - Real-time leaderboards
+   - Global ranking and personal best tracking
+
+4. **Profile Management**
+   - Users can update, delete, or reset their profiles through a dedicated settings page.
+
+## ⚙️ Tech Stack Architecture
+
+### Frontend & UI
+
+- **Next.js:** Server-side rendering and React-based frontend.
+- **TurboRepo:** Monorepo structure for efficient project management.
+- **TypeScript:** Provides type safety across the entire codebase.
+- **React, Tailwind CSS, shadcn:** Rapid and responsive UI development.
+- **Redux Toolkit:** Manages application state.
+- **React Icons:** Provides a rich set of icons.
+- **Recharts & Howler:** For performance charts and sound effects respectively.
+
+### Backend & Data Management
+
+- **Prisma & PostgreSQL:** ORM and database management.
+- **JWT:** Secure authentication.
+- **Zod:** Schema validation (maintained as a separate package).
+- **Upstash (Redis):** Rate limiting and caching for leaderboard data.
+- **Cloudflare Turnstile:** CAPTCHA security to protect against bots.
+- **End-to-End Encryption:** Uses an inbuilt crypto module and HMAC for securing requests.
+
+### Additional Integrations
+
+- **React Mail & Resend Mail:** Handle password reset tokens and email notifications.
+- **ImageKit:** Manages image hosting and optimization.
+- **Usedebaounce:** Checks the availability of email/username during profile updates.
+- **Axios:** Facilitates HTTP requests.
+- **Husky:** Ensures consistent code quality through Git hooks.
+
+```mermaid
+graph TD
+     A[User] -->|Interacts| B[Next.js Frontend]
+     B -->|API Requests| C[Next.js API Routes]
+     C -->|ORM| D[Prisma]
+     D -->|Database Operations| E[(PostgreSQL)]
+     C -->|Caching & Rate Limiting| F[(Upstash Redis)]
+     C -->|Authentication| G[JWT]
+     B -->|UI Components| H[React, Tailwind CSS, shadcn]
+     B -->|Charts & Sounds| I[Recharts, Howler]
+     C -->|Email Handling| J[React Mail & Resend Mail]
+     B -->|Image Processing| K[ImageKit]
 ```
 
-## What's inside?
+## 🛠️ Local Setup (Critical Path)
 
-This Turborepo includes the following packages/apps:
+### Prerequisites
 
-### Apps and Packages
+- Node.js v18+
+- PostgreSQL 16+
+- Redis (or an Upstash account)
+- ImageKit account (for handling media assets)
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+### Step-by-Step Instructions
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+1. **Clone the Repository**
 
-### Utilities
+   Open your terminal and run:
 
-This Turborepo has some additional tools already setup for you:
+   ```bash
+   git clone https://github.com/SyedFaizan8/velocitype.git
+   cd velocitype
+   ```
 
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
+2. **Install Dependencies**
 
-### Build
+   Since the project is organized as a TurboRepo monorepo, install all dependencies from the root:
 
-To build all apps and packages, run the following command:
+   ```bash
+   npm install
+   ```
 
+   Then, navigate to the web application directory and install its dependencies:
+
+   ```bash
+   cd apps/velocity && npm install
+   ```
+
+3. **Configure Environment Variables**
+
+   Copy the example environment file and update it with your local configuration:
+
+   ```bash
+   cp .env.example .env
+   cp .env.local.example .env.local
+   # Fill API keys
+   ```
+
+4. **Database Setup**
+
+   Generate the Prisma client and push your schema to the PostgreSQL database:
+
+   ```bash
+   npx prisma generate
+   npx prisma db push
+   ```
+
+5. **Start the Development Server**
+
+   ```bash
+   npm run dev
+   ```
+
+   This will start both the Next.js frontend and API routes. You should be able to access the application at http://localhost:3000.
+
+6. **Verify Installation**
+   - Open your browser and visit http://localhost:3000.
+   - Create a test account.
+   - Run a typing test (either the 15-second or 60-second challenge) and observe the statistics update.
+   - Check that the leaderboard, profile dashboard, and performance charts are rendering correctly.
+   - Test email functionalities (e.g., password reset) to ensure proper integration.
+
+### Troubleshooting Common Issues
+
+- **Database Connection Failures:**
+  - Ensure your PostgreSQL server is running.
+  - Verify that the credentials in your .env file are correct.
+- **Redis Errors:**
+  - Confirm that Redis is running locally or check your Upstash configuration.
+- **Captcha Failures:**
+  - Make sure your Cloudflare Turnstile keys in .env match your account details.
+
+### For a Quick Start with Sample Data, Use the Provided Demo Setup Script:
+
+```bash
+./scripts/setup-demo.sh
 ```
-cd my-turborepo
-pnpm build
-```
 
-### Develop
+_(Ensure the script is executable with `chmod +x ./scripts/setup-demo.sh`)_
 
-To develop all apps and packages, run the following command:
+## 📬 Contact
 
-```
-cd my-turborepo
-pnpm dev
-```
+For any inquiries or feedback, please reach out to me at [contact@syedfaizan.in](mailto:contact@syedfaizan.in)
 
-### Remote Caching
-
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
-
-Turborepo can use a technique known as [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-```
-cd my-turborepo
-npx turbo login
-```
-
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-```
-npx turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turbo.build/repo/docs/core-concepts/monorepos/running-tasks)
-- [Caching](https://turbo.build/repo/docs/core-concepts/caching)
-- [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching)
-- [Filtering](https://turbo.build/repo/docs/core-concepts/monorepos/filtering)
-- [Configuration Options](https://turbo.build/repo/docs/reference/configuration)
-- [CLI Usage](https://turbo.build/repo/docs/reference/command-line-reference)
-
-## License
+## 📜 License
 
 [MIT License](LICENSE)

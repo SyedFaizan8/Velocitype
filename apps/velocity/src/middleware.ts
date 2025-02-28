@@ -6,8 +6,8 @@ import redis from "@/lib/redisClient";
 const ratelimit = new Ratelimit({
     redis,
     limiter: Ratelimit.slidingWindow(100, '15 m'),
-    analytics: true
-})
+    analytics: process.env.NODE_ENV === "production"
+});
 
 export async function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
