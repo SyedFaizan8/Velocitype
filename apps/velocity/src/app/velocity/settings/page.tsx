@@ -187,12 +187,12 @@ const Page = () => {
         defaultValues: { fullname: "" },
     });
 
-    const { register: registerUsername, handleSubmit: handleUsernameSubmit, reset: resetUsername, formState: { errors: errorsUsername, isDirty: usernameDirty } } = useForm<UsernameFormData>({
+    const { register: registerUsername, handleSubmit: handleUsernameSubmit, reset: resetUsername, formState: { errors: errorsUsername } } = useForm<UsernameFormData>({
         resolver: zodResolver(usernameSchema),
         defaultValues: { username: "" },
     });
 
-    const { register: registerEmail, handleSubmit: handleEmailSubmit, reset: resetEmail, formState: { errors: errorsEmail, isDirty: emailDirty } } = useForm<EmailFormData>({
+    const { register: registerEmail, handleSubmit: handleEmailSubmit, reset: resetEmail, formState: { errors: errorsEmail } } = useForm<EmailFormData>({
         resolver: zodResolver(emailSchema),
         defaultValues: { email: "" },
     });
