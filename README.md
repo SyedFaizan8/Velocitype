@@ -129,35 +129,6 @@ return Math.max(0, (corrects / total) * 100);
 - **Corrects**: The count of correct characters (total - errors).
 - The formula calculates the percentage of correctly typed characters, ensuring the accuracy never falls below 0%.
 
-# Diagrams
-
-### WPM Calculation Diagram
-
-```mermaid
-flowchart TD
-    A[Total Letters Typed] --> B[Divide by 5]
-    B --> C[Raw Words Count]
-    C --> D[Divide by Total Time (min)]
-    D --> E[Raw WPM]
-
-    F[Total Errors] --> G[Divide by Total Time (min)]
-    G --> H[Errors per Minute]
-
-    E --> I[Subtract Errors per Minute]
-    I --> J[Real WPM]
-```
-
-### Accuracy Calculation Diagram
-
-```mermaid
-flowchart TD
-    K[Total Characters Typed] --> L[Subtract Errors]
-    L --> M[Correct Characters]
-    M --> N[Divide by Total Characters]
-    N --> O[Multiply by 100]
-    O --> P[Accuracy Percentage]
-```
-
 ## 🛠️ Local Setup (Critical Path)
 
 ### Prerequisites
