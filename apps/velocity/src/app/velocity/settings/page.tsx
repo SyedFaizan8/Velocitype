@@ -187,12 +187,12 @@ const Page = () => {
         defaultValues: { fullname: "" },
     });
 
-    const { register: registerUsername, handleSubmit: handleUsernameSubmit, reset: resetUsername, formState: { errors: errorsUsername } } = useForm<UsernameFormData>({
+    const { register: registerUsername, handleSubmit: handleUsernameSubmit, reset: resetUsername, formState: { errors: errorsUsername, isDirty: usernameDirty } } = useForm<UsernameFormData>({
         resolver: zodResolver(usernameSchema),
         defaultValues: { username: "" },
     });
 
-    const { register: registerEmail, handleSubmit: handleEmailSubmit, reset: resetEmail, formState: { errors: errorsEmail } } = useForm<EmailFormData>({
+    const { register: registerEmail, handleSubmit: handleEmailSubmit, reset: resetEmail, formState: { errors: errorsEmail, isDirty: emailDirty } } = useForm<EmailFormData>({
         resolver: zodResolver(emailSchema),
         defaultValues: { email: "" },
     });
@@ -213,15 +213,15 @@ const Page = () => {
 
     const resetForm = useCallback(() => {
         if (userData) {
-            resetFullname({ fullname: userData.fullname || "" })
-            resetUsername({ username: userData.username || "" })
-            resetEmail({ email: userData.email || "" })
-            resetBio({ bio: userData.bio || "" })
+            resetFullname({ fullname: userData.fullname || "" });
+            resetUsername({ username: userData.username || "" });
+            resetEmail({ email: userData.email || "" });
+            resetBio({ bio: userData.bio || "" });
             resetSocial({ website: userData.website || "" });
             resetPassword({ oldPassword: "", newPassword: "" });
         }
-        if (emailAvailability && setEmailAvailability) setEmailAvailability(null);
-        if (usernameAvailability && setUsernameAvailability) setUsernameAvailability(null);
+        if (setEmailAvailability) setEmailAvailability(null);
+        if (setUsernameAvailability) setUsernameAvailability(null);
     }, [
         userData,
         resetFullname,
@@ -232,8 +232,6 @@ const Page = () => {
         resetPassword,
         setEmailAvailability,
         setUsernameAvailability,
-        emailAvailability,
-        usernameAvailability
     ]);
 
     useEffect(() => {
