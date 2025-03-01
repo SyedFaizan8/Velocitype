@@ -1,4 +1,3 @@
-import Footer from './Footer';
 import Link from 'next/link';
 
 const MobileNotice = () => {
@@ -19,9 +18,6 @@ const MobileNotice = () => {
                     This website is best experienced on a PC. Please switch to a desktop
                     browser for full functionality.
                 </p>
-            </div>
-            <div className='absolute bottom-0'>
-                <Footer />
             </div>
         </div >
     );

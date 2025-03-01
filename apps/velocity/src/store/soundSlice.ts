@@ -12,9 +12,7 @@ const sound = createSlice({
     name: "sound",
     initialState,
     reducers: {
-        changeSound: (
-            state,
-        ) => {
+        changeSound: (state) => {
             state.sound = !state.sound;
         }
     },

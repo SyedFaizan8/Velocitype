@@ -14,6 +14,7 @@ import confetti from "canvas-confetti";
 import { toast } from "@/hooks/use-toast";
 import { Separator } from "@/components/ui/separator"
 import { encryptFrontend } from "@/utils/encryptFrontend";
+import TooltipIcon from "@/components/TooltipIcon";
 
 const Page = () => {
     const { wpm, accuracy, raw, totalLetters, totalWords, errors, timer } = useAppSelector((state) => state.typing);
@@ -168,8 +169,8 @@ const Page = () => {
                             <HyperText className="text-yellow-500 text-6xl" animateOnHover={false}>{formatPercentage(accuracy).toString()}</HyperText>
                         </div>
                         <Separator className="bg-slate-300" />
-                        <div className="flex  space-x-3">
-                            <strong className="text-neutral-300 text-4xl">raw</strong>
+                        <div className="flex  space-x-3 cursor-pointer">
+                            <strong className="text-neutral-300 text-4xl"><TooltipIcon icon="raw" tooltipText="wpm excluding errors" /></strong>
                             <HyperText className="text-yellow-500 text-4xl" animateOnHover={false}>{raw.toString()}</HyperText>
                         </div>
                     </div>
@@ -200,15 +201,15 @@ const Page = () => {
                         className="z-10 block rounded px-8 py-2 text-white text-xl"
                         onClick={handleRestart}
                     >
-                        <Refresh />
+                        <TooltipIcon icon={<Refresh />} tooltipText="Restart" />
                     </button>
                 </div>
                 {!user && <div className="text-yellow-300 text-2xl animate-pulse text-center"> Login to track Progress </div>}
             </div>
-            <div className='z-10 w-full hidden md:flex justify-center items-center space-x-2 text-sm text-white '>
-                <span className="bg-slate-500 rounded-sm px-1 text-xs">tab</span>
-                <span className="text-xs">or</span>
-                <span className="bg-slate-500 rounded-sm px-1 text-xs">enter</span>
+            <div className='z-10 w-full hidden md:flex justify-center items-center space-x-2 text-md text-white '>
+                <span className="bg-slate-500 rounded-sm px-1 text-sm">tab</span>
+                <span className="text-sm">or</span>
+                <span className="bg-slate-500 rounded-sm px-1 text-sm">enter</span>
                 <span>- restart</span>
             </div>
         </div >

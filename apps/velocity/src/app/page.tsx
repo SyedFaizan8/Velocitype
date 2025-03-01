@@ -1,29 +1,24 @@
 "use client"
 
 import { useEffect, useRef, useState } from 'react'
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 import Caret from '@/components/Caret';
-import Footer from '@/components/Footer';
-import Header from '@/components/Header';
 import useEngine from '@/hooks/useEngine';
 import useIsMobile from '@/hooks/useIsMobile';
-import { Mute, Refresh, Speaker } from '@/components/Icons';
+import { Refresh } from '@/components/Icons';
 import MobileNotice from "@/components/MobileNotice"
 
 import { useAppDispatch, useAppSelector } from "@/store/reduxHooks";
 import { setTypingStats } from "@/store/typingSlice";
 import { calculateAccuracyPercentage, calculateWPM, liveWPM } from '@/utils/helpers';
-import { changeSound } from "@/store/soundSlice"
-import { Howler } from 'howler';
+import TooltipIcon from '@/components/TooltipIcon';
 
 const Home = () => {
   const isMobile = useIsMobile();
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const { sound } = useAppSelector(state => state.sound);
   const [timer, setTimer] = useState<number>(15)
 
   const { words, typed, timeLeft, errors, state, restart, totalTyped } = useEngine(timer);
@@ -74,38 +69,19 @@ const Home = () => {
 
   const progressPercentage = ((timer - timeLeft) / timer) * 100;
 
-  const handleToggleSound = () => {
-    dispatch(changeSound());
-    if (!sound) Howler.unload();
-  };
-
   if (isMobile) return <MobileNotice />
 
   return (
     <div>
-      {timeLeft > 0 && <div
-        className="h-1 bg-yellow-500 transition-all ease-linear duration-1000 fixed top-0 left-0 rounded-br-full"
-        style={{
-          width: `${progressPercentage}%`,
-          // background: "linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet)"
-        }}
-      >
-      </div>
-      }
-      {state !== "run" ?
-        <Header />
-        : <div
-          className="flex justify-between">
-          <Link href="/">
-            <div className="text-slate-500 font-bold cursor-pointer md:text-3xl text-lg ">velociType</div>
-          </Link>
-          <div
-            className={`hover:text-slate-200 cursor-pointer pt-2 md:text-2xl text-md ${sound ? "text-yellow-200" : "text-slate-500"}`}
-            onClick={handleToggleSound}
-          >
-            {sound ? <Speaker /> : <Mute />}
-          </div>
-        </div >
+      {timeLeft > 0 &&
+        <div
+          className="h-1 bg-yellow-500 transition-all ease-linear duration-1000 fixed top-0 left-0 rounded-br-full"
+          style={{
+            width: `${progressPercentage}%`,
+            // background: "linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet)"
+          }}
+        >
+        </div>
       }
       <div className="w-full md:px-10 px-6 h-[80vh] flex flex-col justify-center items-center relative">
         {state !== "run" && state !== "finish" ? <div className="text-slate-400 bg-slate-900 px-6 py-2 rounded-lg text-lg space-x-6 absolute top-12">
@@ -142,7 +118,7 @@ const Home = () => {
           className="block rounded px-8 py-2 hover:text-white mx-auto mt-10 text-slate-500 text-xl"
           onClick={handleClick}
         >
-          <Refresh />
+          <TooltipIcon icon={<Refresh />} tooltipText="Restart" />
         </button>
 
         {isCapsLockOn && (
@@ -158,27 +134,12 @@ const Home = () => {
         )}
       </div>
 
-      <div className='w-full hidden md:flex justify-center items-center space-x-1 text-sm text-slate-500 '>
-        <span className="bg-slate-500 rounded-sm px-1 text-xs text-white">tab</span>
+      <div className='w-full hidden md:flex justify-center items-center space-x-1 text-md text-slate-500 '>
+        <span className="bg-slate-500 rounded-sm px-2 text-sm text-white">tab</span>
         <span>-</span>
         <span>restart</span>
       </div>
-
-      <AnimatePresence>
-        {state !== "run" ? (
-          <motion.div
-            key="footer"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
-          >
-            <Footer />
-          </motion.div>
-        ) : null}
-      </AnimatePresence>
-
-    </div >
+    </div>
   )
 }
 

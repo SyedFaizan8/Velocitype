@@ -15,9 +15,15 @@ import { bringDpUrlFromFileId } from "@/utils/addTranformation";
 const Header = () => {
     const { sound } = useAppSelector(state => state.sound)
     const { user, initialized } = useAppSelector(state => state.auth)
+    const { position } = useAppSelector(state => state.position);
     const isMobile = useIsMobile();
     const dispatch = useAppDispatch();
     const [imageUrl, setImageUrl] = useState<string | null>(null);
+    const [run, setRun] = useState<string | null>(position);
+
+    useEffect(() => {
+        setRun(position);
+    }, [run, position])
 
     useEffect(() => {
         if (!initialized) {
@@ -41,65 +47,62 @@ const Header = () => {
         if (!sound) Howler.unload();
     };
 
-    return (
-        <div className="z-10 relative w-full flex justify-between md:text-3xl text-lg text-slate-500 ">
-            <div className="flex md:space-x-5 space-x-3">
-                <div>
-                    <Link href="/">
-                        <div className="text-white font-bold cursor-pointer ">
-                            velociType
-                        </div>
-                    </Link>
+    if (run === "run" && !isMobile) {
+        return (
+            <div className="flex justify-between">
+                <Link href="/">
+                    <div className="text-slate-500 font-bold cursor-pointer md:text-3xl text-lg ">VelociType</div>
+                </Link>
+                <div
+                    className={`hover:text-slate-200 cursor-pointer pt-2 md:text-2xl text-md ${sound ? "text-yellow-200" : "text-slate-500"}`}
+                    onClick={handleToggleSound}
+                >
+                    {sound ? <Speaker /> : <Mute />}
                 </div>
-                <AnimatePresence>
-                    <motion.div
-                        key="header"
-                        initial={{ opacity: 0, y: -20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 20 }}
-                        transition={{ duration: 0.3, ease: "easeInOut" }}
-                        className="flex md:space-x-5 space-x-3">
+            </div>
+        )
+    } else if (!isMobile) {
+        return (
+            <div className="z-10 relative w-full flex justify-between md:text-3xl text-lg text-slate-500 ">
+                <div className="flex md:space-x-5 space-x-3">
+                    <div>
                         <Link href="/">
-                            <div className="hover:text-slate-200 cursor-pointer pt-2 md:text-2xl text-md">
-                                <TooltipIcon icon={<Keyboard />} tooltipText="home" />
+                            <div className="text-white font-bold cursor-pointer ">
+                                velociType
                             </div>
                         </Link>
-                        <Link href="/velocity/information">
-                            <div className="hover:text-slate-200 cursor-pointer pt-2 md:text-xl text-sm">
-                                <TooltipIcon icon={<Info />} tooltipText="information" />
-                            </div>
-                        </Link>
-                        <Link href="/velocity/leaderboard">
-                            <div className="hover:text-slate-200 cursor-pointer pt-2 md:text-2xl text-md">
-                                <TooltipIcon icon={<LeaderBoard />} tooltipText="leaderboard" />
-                            </div>
-                        </Link>
-                        <Link href="/velocity/settings">
-                            <div className="hover:text-slate-200 cursor-pointer pt-2 md:text-2xl text-md">
-                                <TooltipIcon icon={<Settings />} tooltipText="settings" />
-                            </div>
-                        </Link>
-                        {isMobile && <div className="flex space-x-3">
-                            <Link href={`/velocity/user/${user && user.username}`}>
-                                <div className="hover:text-slate-200 cursor-pointer pt-2 md:text-2xl text-sm">
-                                    <TooltipIcon icon={<User />} tooltipText="profile" />
+                    </div>
+                    <AnimatePresence>
+                        <motion.div
+                            key="header"
+                            initial={{ opacity: 0, y: -20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: 20 }}
+                            transition={{ duration: 0.3, ease: "easeInOut" }}
+                            className="flex md:space-x-5 space-x-3">
+                            <Link href="/">
+                                <div className="hover:text-slate-200 cursor-pointer pt-2 md:text-2xl text-md">
+                                    <TooltipIcon icon={<Keyboard />} tooltipText="home" />
                                 </div>
                             </Link>
-                            <div
-                                className={`hover:text-slate-200 cursor-pointer pt-2 md:text-2xl text-md ${sound ? "text-yellow-200" : "text-slate-500"}`}
-                                onClick={handleToggleSound}
-                            >
-                                {sound ?
-                                    <TooltipIcon icon={<Speaker />} tooltipText="sound On" />
-                                    : <TooltipIcon icon={<Mute />} tooltipText="sound off" />}
-                            </div>
-                        </div>
-                        }
-                    </motion.div>
-                </AnimatePresence>
-            </div >
-            {
-                !isMobile &&
+                            <Link href="/velocity/information">
+                                <div className="hover:text-slate-200 cursor-pointer pt-2 md:text-xl text-sm">
+                                    <TooltipIcon icon={<Info />} tooltipText="information" />
+                                </div>
+                            </Link>
+                            <Link href="/velocity/leaderboard">
+                                <div className="hover:text-slate-200 cursor-pointer pt-2 md:text-2xl text-md">
+                                    <TooltipIcon icon={<LeaderBoard />} tooltipText="leaderboard" />
+                                </div>
+                            </Link>
+                            <Link href="/velocity/settings">
+                                <div className="hover:text-slate-200 cursor-pointer pt-2 md:text-2xl text-md">
+                                    <TooltipIcon icon={<Settings />} tooltipText="settings" />
+                                </div>
+                            </Link>
+                        </motion.div>
+                    </AnimatePresence>
+                </div >
                 <AnimatePresence>
                     <motion.div
                         key="header"
@@ -128,9 +131,9 @@ const Header = () => {
                         </Link>
                     </motion.div>
                 </AnimatePresence>
-            }
-        </div >
-    )
+            </div >
+        )
+    } else return null
 }
 
 export default Header

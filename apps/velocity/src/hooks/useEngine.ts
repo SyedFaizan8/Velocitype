@@ -5,6 +5,8 @@ import { countErrors } from "../utils/helpers";
 import useCountdown from "./useCountdown";
 import useWords from "./useWords";
 import useTypings from "./useTypings";
+import { useAppDispatch } from "@/store/reduxHooks";
+import { changePosition } from "@/store/positionSlice";
 
 export type State = "start" | "run" | "finish";
 
@@ -13,6 +15,7 @@ const useEngine = (timer: number) => {
     const { timeLeft, startCountdown, resetCountdown } = useCountdown(timer);
     const { words, updateWords } = useWords();
     const { cursor, typed, clearTyped, totalTyped, resetTotalTyped } = useTypings(state !== "finish");
+    const dispatch = useAppDispatch();
 
     const [errors, setErrors] = useState(0);
 
@@ -23,6 +26,7 @@ const useEngine = (timer: number) => {
         resetCountdown();
         resetTotalTyped();
         setState("start");
+        dispatch(changePosition("start"))
         setErrors(0);
         updateWords();
         clearTyped();
@@ -37,6 +41,7 @@ const useEngine = (timer: number) => {
     useEffect(() => {
         if (isStarting) {
             setState("run");
+            dispatch(changePosition("run"))
             startCountdown();
         }
     }, [isStarting, startCountdown]);
@@ -45,6 +50,7 @@ const useEngine = (timer: number) => {
     useEffect(() => {
         if (!timeLeft && state === "run") {
             setState("finish");
+            dispatch(changePosition("finish"))
             sumErrors();
         }
     }, [timeLeft, state, sumErrors]);

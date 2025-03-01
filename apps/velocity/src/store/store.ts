@@ -1,13 +1,15 @@
 import { configureStore } from "@reduxjs/toolkit";
 import typingReducer from "@/store/typingSlice";
 import soundReducer from "@/store/soundSlice";
-import authReducer from "@/store/authSlice"
+import authReducer from "@/store/authSlice";
+import positionReducer from "@/store/positionSlice"
 
 export const store = configureStore({
     reducer: {
         typing: typingReducer,
         sound: soundReducer,
-        auth: authReducer
+        auth: authReducer,
+        position: positionReducer
     },
 });
 

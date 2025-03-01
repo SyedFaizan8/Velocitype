@@ -13,7 +13,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAppDispatch, useAppSelector } from "@/store/reduxHooks";
 import { useRouter } from "next/navigation";
-import { fetchUser, logoutUser } from "@/store/authSlice";
+import { fetchUser, logoutUser, newUsernameSet } from "@/store/authSlice";
 import { useToast } from "@/hooks/use-toast";
 import { SettingsSkeleton } from "@/components/skeleton/SettingsSkeleton"
 import {
@@ -44,7 +44,7 @@ import {
     UsernameFormData
 } from "@/utils/types/formTypes";
 import { NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT, NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY } from "@/utils/constants"
-import { UserProfile, UserUpdateData } from "@/utils/types/settingsTypes"
+import { UsernameFormDataType, UserProfile, UserUpdateData } from "@/utils/types/settingsTypes"
 import { useAvailability } from "@/hooks/useAvalibility";
 import Link from "next/link";
 import { encryptFrontend } from "@/utils/encryptFrontend";
@@ -89,7 +89,13 @@ const Page = () => {
                 const image = await bringImageUrlFromFileId(response.data.data.imageId)
                 setImageUrl(image)
             }
-        } catch {
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                toast({
+                    variant: "destructive",
+                    title: error.response?.data.message
+                })
+            }
             toast({
                 variant: "destructive",
                 title: "something went wrong while fetching profile"
@@ -155,62 +161,69 @@ const Page = () => {
                     title: "Update Done",
                     description: `${url} is updated`,
                 })
+                const { username } = data as UsernameFormDataType;
+                if (url === "username") dispatch(newUsernameSet(username))
+                else await bringProfile()
             }
-        } catch {
-            toast({
-                variant: "destructive",
-                title: "Uh oh! Something went wrong.",
-                description: `There was a problem with your request.`,
-            })
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                toast({
+                    variant: "destructive",
+                    title: "Uh oh! Something went wrong.",
+                    description: error.response?.data.message,
+                })
+            } else {
+                toast({
+                    variant: "destructive",
+                    title: "Uh oh! Something went wrong.",
+                    description: `There was a problem with your request.`,
+                })
+            }
         }
     };
 
-    const { register: registerFullname, handleSubmit: handleFullnameSubmit, reset: resetFullname, formState: { errors: errorsFullname, isDirty: fullnameDirty } } = useForm<FullnameFormData>({
+    const { register: registerFullname, handleSubmit: handleFullnameSubmit, reset: resetFullname, formState: { errors: errorsFullname } } = useForm<FullnameFormData>({
         resolver: zodResolver(fullnameSchema),
         defaultValues: { fullname: "" },
     });
 
-    const { register: registerUsername, handleSubmit: handleUsernameSubmit, reset: resetUsername, formState: { errors: errorsUsername, isDirty: usernameDirty } } = useForm<UsernameFormData>({
+    const { register: registerUsername, handleSubmit: handleUsernameSubmit, reset: resetUsername, formState: { errors: errorsUsername } } = useForm<UsernameFormData>({
         resolver: zodResolver(usernameSchema),
         defaultValues: { username: "" },
     });
 
-    const { register: registerEmail, handleSubmit: handleEmailSubmit, reset: resetEmail, formState: { errors: errorsEmail, isDirty: emailDirty } } = useForm<EmailFormData>({
+    const { register: registerEmail, handleSubmit: handleEmailSubmit, reset: resetEmail, formState: { errors: errorsEmail } } = useForm<EmailFormData>({
         resolver: zodResolver(emailSchema),
         defaultValues: { email: "" },
     });
 
-    const { register: registerBio, handleSubmit: handleBioSubmit, reset: resetBio, formState: { errors: errorsBio, isDirty: bioDirty } } = useForm<BioFormData>({
+    const { register: registerBio, handleSubmit: handleBioSubmit, reset: resetBio, formState: { errors: errorsBio } } = useForm<BioFormData>({
         resolver: zodResolver(bioSchema),
         defaultValues: { bio: "" },
     });
 
-    const { register: registerSocials, handleSubmit: handleSocialsSubmit, reset: resetSocial, formState: { errors: errorsSocials, isDirty: socialDirty } } = useForm<SocialsFormData>({
+    const { register: registerSocials, handleSubmit: handleSocialsSubmit, reset: resetSocial, formState: { errors: errorsSocials } } = useForm<SocialsFormData>({
         resolver: zodResolver(socialSchema),
         defaultValues: { website: "" },
     });
 
-    const { register: registerPassword, handleSubmit: handlePasswordSubmit, reset: resetPassword, formState: { errors: errorsPassword, isDirty: passwordDirty } } = useForm<UpdatePasswordFormData>({
+    const { register: registerPassword, handleSubmit: handlePasswordSubmit, reset: resetPassword, formState: { errors: errorsPassword } } = useForm<UpdatePasswordFormData>({
         resolver: zodResolver(updatePasswordSchema),
     });
 
     const resetForm = useCallback(() => {
-        if (userData && !fullnameDirty) resetFullname({ fullname: userData.fullname || "" })
-        if (userData && !usernameDirty) resetUsername({ username: userData.username || "" })
-        if (userData && !emailDirty) resetEmail({ email: userData.email || "" })
-        if (userData && !bioDirty) resetBio({ bio: userData.bio || "" })
-        if (userData && !socialDirty) resetSocial({ website: userData.website || "" });
-        if (userData && !passwordDirty) resetPassword({ oldPassword: "", newPassword: "" });
+        if (userData) {
+            resetFullname({ fullname: userData.fullname || "" })
+            resetUsername({ username: userData.username || "" })
+            resetEmail({ email: userData.email || "" })
+            resetBio({ bio: userData.bio || "" })
+            resetSocial({ website: userData.website || "" });
+            resetPassword({ oldPassword: "", newPassword: "" });
+        }
         if (emailAvailability && setEmailAvailability) setEmailAvailability(null);
         if (usernameAvailability && setUsernameAvailability) setUsernameAvailability(null);
     }, [
         userData,
-        fullnameDirty,
-        usernameDirty,
-        emailDirty,
-        bioDirty,
-        socialDirty,
-        passwordDirty,
         resetFullname,
         resetUsername,
         resetEmail,
@@ -225,7 +238,7 @@ const Page = () => {
 
     useEffect(() => {
         resetForm();
-    }, [userData, resetForm]);
+    }, [userData]);
 
     const removeDp = async () => {
         try {
@@ -394,13 +407,14 @@ const Page = () => {
                         {(errorsPassword.oldPassword?.message || errorsPassword.newPassword?.message)
                             && <span className="text-xs text-red-500">{errorsPassword.oldPassword?.message || errorsPassword.newPassword?.message}</span>}
                     </form>
+
                     <div className="space-x-2">
                         <button className="space-x-2 px-4 rounded-md bg-slate-950 font-bold text-slate-400 tracking-widest transform hover:scale-105 hover:bg-slate-900 transition-colors duration-200">
                             <Link href={'/velocity/forget-password'}>Forgot password?</Link>
                         </button>
                     </div>
 
-                    <button onClick={resetForm} className="space-x-2 px-4 rounded-md bg-slate-950 font-bold text-white tracking-widest transform hover:scale-105 hover:bg-slate-900 transition-colors duration-200">
+                    <button type="button" onClick={resetForm} className="space-x-2 px-4 rounded-md bg-slate-950 font-bold text-white tracking-widest transform hover:scale-105 hover:bg-slate-900 transition-colors duration-200">
                         Clear Form
                     </button>
 
