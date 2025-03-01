@@ -238,7 +238,7 @@ const Page = () => {
 
     useEffect(() => {
         resetForm();
-    }, [userData]);
+    }, [userData, resetForm]);
 
     const removeDp = async () => {
         try {

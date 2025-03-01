@@ -10,7 +10,7 @@ import useIsMobile from '@/hooks/useIsMobile';
 import { Refresh } from '@/components/Icons';
 import MobileNotice from "@/components/MobileNotice"
 
-import { useAppDispatch, useAppSelector } from "@/store/reduxHooks";
+import { useAppDispatch } from "@/store/reduxHooks";
 import { setTypingStats } from "@/store/typingSlice";
 import { calculateAccuracyPercentage, calculateWPM, liveWPM } from '@/utils/helpers';
 import TooltipIcon from '@/components/TooltipIcon';

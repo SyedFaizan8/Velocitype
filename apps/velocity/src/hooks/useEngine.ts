@@ -30,7 +30,7 @@ const useEngine = (timer: number) => {
         setErrors(0);
         updateWords();
         clearTyped();
-    }, [clearTyped, updateWords, resetCountdown, resetTotalTyped]);
+    }, [clearTyped, updateWords, resetCountdown, resetTotalTyped, dispatch]);
 
     const sumErrors = useCallback(() => {
         const wordsReached = words.substring(0, Math.min(cursor, words.length));
@@ -44,7 +44,7 @@ const useEngine = (timer: number) => {
             dispatch(changePosition("run"))
             startCountdown();
         }
-    }, [isStarting, startCountdown]);
+    }, [isStarting, startCountdown, dispatch]);
 
     // when the time is up, we've finished
     useEffect(() => {
@@ -53,7 +53,7 @@ const useEngine = (timer: number) => {
             dispatch(changePosition("finish"))
             sumErrors();
         }
-    }, [timeLeft, state, sumErrors]);
+    }, [timeLeft, state, sumErrors, dispatch]);
 
     /**
      * when the current words are all filled up,
