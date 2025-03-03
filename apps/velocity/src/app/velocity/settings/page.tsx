@@ -13,7 +13,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAppDispatch, useAppSelector } from "@/store/reduxHooks";
 import { useRouter } from "next/navigation";
-import { fetchUser, logoutUser, newUsernameSet } from "@/store/authSlice";
+import { logoutUser, newUsernameSet } from "@/store/authSlice";
 import { useToast } from "@/hooks/use-toast";
 import { SettingsSkeleton } from "@/components/skeleton/SettingsSkeleton"
 import {

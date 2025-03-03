@@ -10,7 +10,7 @@ import PasswordInput from "@/components/form/PasswordInput";
 import InputField from "@/components/form/InputField";
 import { useAppDispatch, useAppSelector } from "@/store/reduxHooks";
 import { useRouter } from "next/navigation";
-import { fetchUser, loginUser } from "@/store/authSlice";
+import { loginUser } from "@/store/authSlice";
 import { toast } from "@/hooks/use-toast";
 import { useAvailability } from "@/hooks/useAvalibility";
 import Turnstile from "react-turnstile";
