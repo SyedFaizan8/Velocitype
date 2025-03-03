@@ -9,6 +9,7 @@ import { LeaderboardType } from "@/utils/types/leaderboardTypes";
 import { USERS_PER_PAGE } from "@/utils/constants"
 import { useRouter } from "next/navigation";
 import LeaderboardImage from "@/components/LeaderboardImage";
+import TooltipIcon from "@/components/TooltipIcon";
 
 
 const Page = () => {
@@ -97,28 +98,34 @@ const Page = () => {
                                     <div className="p-1 flex cursor-pointer justify-center items-center w-2/12 md:w-1/12">
                                         {index === 0 ? (
                                             <div className="flex items-center justify-center text-xl">
-                                                <Crown />
+                                                <TooltipIcon icon={<Crown />} tooltipText="click to open profile" />
                                             </div>
                                         ) : (
-                                            <span>{index + 1}</span>
+                                            <span>
+                                                <TooltipIcon icon={`${index + 1}`} tooltipText="click to open profile" />
+                                            </span>
                                         )}
                                     </div>
                                     <div className="p-1 cursor-pointer space-x-2 w-8/12 md:w-4/12 flex items-center">
                                         {user.imageId ? <LeaderboardImage imageId={user.imageId} username={user.username} />
                                             : (<div className="rounded-full text-2xl">
-                                                <UserLeaderboard />
+                                                <TooltipIcon icon={<UserLeaderboard />} tooltipText="click to open profile" />
                                             </div>)}
-                                        <span>{user.username}</span>
+                                        <span>
+                                            <TooltipIcon icon={`${user.username}`} tooltipText="click to open profile" />
+                                        </span>
                                     </div>
-                                    <div className="p-1 w-1/12 cursor-pointer flex items-center">{highest_wpm}</div>
+                                    <div className="p-1 w-1/12 cursor-pointer flex items-center">
+                                        <TooltipIcon icon={`${highest_wpm}`} tooltipText="click to open profile" />
+                                    </div>
                                     <div className="hidden md:flex p-1 w-2/12 items-center cursor-pointer">
-                                        {highest_accuracy}%
+                                        <TooltipIcon icon={`${highest_accuracy + "%"}`} tooltipText="click to open profile" />
                                     </div>
                                     <div className="hidden md:flex p-1 w-3/12 items-center cursor-pointer">
-                                        {new Date(achieved_at).toLocaleString()}
+                                        <TooltipIcon icon={`${new Date(achieved_at).toLocaleString()}`} tooltipText="click to open profile" />
                                     </div>
                                     <div className="hidden md:flex p-1 w-1/12 items-center cursor-pointer">
-                                        {time}s
+                                        <TooltipIcon icon={`${time + "s"}`} tooltipText="click to open profile" />
                                     </div>
                                 </div>
                             ))}

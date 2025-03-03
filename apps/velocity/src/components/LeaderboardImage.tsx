@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { bringDpUrlFromFileId } from "@/utils/addTranformation";
 import { UserLeaderboard } from "./Icons";
+import TooltipIcon from "./TooltipIcon";
 
 type LeaderboardImageProps = {
     imageId: string;
@@ -33,13 +34,19 @@ const LeaderboardImage = ({ imageId, username }: LeaderboardImageProps) => {
     );
 
     return (
-        <Image
-            width={24}
-            height={24}
-            src={src}
-            alt={username}
-            className="inline rounded-full w-6 h-6"
+        <TooltipIcon
+            icon={
+                <Image
+                    width={24}
+                    height={24}
+                    src={src}
+                    alt={username}
+                    className="inline rounded-full w-6 h-6"
+                />
+            }
+            tooltipText="click to open profile"
         />
+
     );
 };
 

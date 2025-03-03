@@ -71,8 +71,8 @@ const Page = () => {
     } = useAvailability();
 
     const findUser = useCallback(async () => {
-        await dispatch(fetchUser());
-    }, [dispatch])
+        if (!user) await dispatch(fetchUser());
+    }, [dispatch, user])
 
     const bringProfile = useCallback(async () => {
         try {

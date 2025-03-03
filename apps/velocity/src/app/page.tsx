@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 
@@ -10,25 +10,56 @@ import useIsMobile from '@/hooks/useIsMobile';
 import { Refresh } from '@/components/Icons';
 import MobileNotice from "@/components/MobileNotice"
 
-import { useAppDispatch } from "@/store/reduxHooks";
+import { useAppDispatch, useAppSelector } from "@/store/reduxHooks";
 import { setTypingStats } from "@/store/typingSlice";
 import { calculateAccuracyPercentage, calculateWPM, liveWPM } from '@/utils/helpers';
 import TooltipIcon from '@/components/TooltipIcon';
+
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog"
+import { fetchUser } from '@/store/authSlice';
 
 const Home = () => {
   const isMobile = useIsMobile();
   const router = useRouter();
   const dispatch = useAppDispatch();
   const [timer, setTimer] = useState<number>(15)
+  const { user, loading, initialized } = useAppSelector(state => state.auth);
 
   const { words, typed, timeLeft, errors, state, restart, totalTyped } = useEngine(timer);
   const [isCapsLockOn, setIsCapsLockOn] = useState(false);
+  const [open, setOpen] = useState<boolean>(false);
 
   const buttonRef = useRef<HTMLButtonElement>(null);
   const handleClick = () => {
     buttonRef.current?.blur();
     restart();
   }
+
+  const findUser = useCallback(async () => {
+    await dispatch(fetchUser());
+  }, [dispatch])
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      if (initialized && !loading && !user) setOpen(true)
+    };
+    checkAuth();
+  }, [user, router, loading, initialized]);
+
+  useEffect(() => {
+    if (!initialized) findUser();
+  }, [initialized, dispatch, findUser]);
+
+
 
   const handleKeyDown = (event: KeyboardEvent) => {
     if (event.key === "Tab") {
@@ -75,7 +106,7 @@ const Home = () => {
     <div>
       {timeLeft > 0 &&
         <div
-          className="h-1 bg-yellow-500 transition-all ease-linear duration-1000 fixed top-0 left-0 rounded-br-full"
+          className="h-1 bg-yellow-500  transition-all ease-linear duration-1000 fixed top-0 left-0 rounded-br-full"
           style={{
             width: `${progressPercentage}%`,
             // background: "linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet)"
@@ -85,7 +116,7 @@ const Home = () => {
       }
       <div className="w-full md:px-10 px-6 h-[80vh] flex flex-col justify-center items-center relative">
         {state !== "run" && state !== "finish" ? <div className="text-slate-400 bg-slate-900 px-6 py-2 rounded-lg text-lg space-x-6 absolute top-12">
-          <span className='text-yellow-400'>timer:</span>
+          <span>timer:</span>
           <button className={`${timer === 15 ? "text-yellow-400" : null}`} onClick={() => setTimer(15)}>15</button>
           <button className={`${timer === 60 ? "text-yellow-400" : null}`} onClick={() => setTimer(60)}>60</button>
         </div> : null}
@@ -133,13 +164,33 @@ const Home = () => {
           </motion.div>
         )}
       </div>
-
+      <AlertDialog open={open} onOpenChange={setOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Log In Required</AlertDialogTitle>
+            <AlertDialogDescription>
+              You need to log in to continue. Please log in or cancel to go back.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setOpen(false)}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={() => {
+              router.push("/velocity/login");
+              setOpen(false);
+            }}>
+              Log In
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
       <div className='w-full hidden md:flex justify-center items-center space-x-1 text-md text-slate-500 '>
         <span className="bg-slate-500 rounded-sm px-2 text-sm text-white">tab</span>
         <span>-</span>
         <span>restart</span>
       </div>
-    </div>
+    </div >
   )
 }
 
