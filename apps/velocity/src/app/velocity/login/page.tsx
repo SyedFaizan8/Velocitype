@@ -38,10 +38,6 @@ const Page = () => {
     const [token, setToken] = useState<string | null>(null);
     const [signupLoading, setSignupLoading] = useState<boolean | null>(null);
 
-    useEffect(() => {
-        if (!user) dispatch(fetchUser())
-    }, [user, router, dispatch])
-
     const {
         register: registerRegister,
         handleSubmit: handleSubmitRegister,

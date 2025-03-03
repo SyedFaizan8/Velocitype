@@ -44,22 +44,12 @@ const Home = () => {
     restart();
   }
 
-  const findUser = useCallback(async () => {
-    await dispatch(fetchUser());
-  }, [dispatch])
-
   useEffect(() => {
     const checkAuth = async () => {
       if (initialized && !loading && !user) setOpen(true)
     };
     checkAuth();
-  }, [user, router, loading, initialized]);
-
-  useEffect(() => {
-    if (!initialized) findUser();
-  }, [initialized, dispatch, findUser]);
-
-
+  }, [user, loading, initialized]);
 
   const handleKeyDown = (event: KeyboardEvent) => {
     if (event.key === "Tab") {
@@ -115,7 +105,7 @@ const Home = () => {
         </div>
       }
       <div className="w-full md:px-10 px-6 h-[80vh] flex flex-col justify-center items-center relative">
-        {state !== "run" && state !== "finish" ? <div className="text-slate-400 bg-slate-900 px-6 py-2 rounded-lg text-lg space-x-6 absolute top-12">
+        {(state !== "run" && state !== "finish" && words) ? <div className="text-slate-400 bg-slate-900 px-6 py-2 rounded-lg text-lg space-x-6 absolute top-12">
           <span>timer:</span>
           <button className={`${timer === 15 ? "text-yellow-400" : null}`} onClick={() => setTimer(15)}>15</button>
           <button className={`${timer === 60 ? "text-yellow-400" : null}`} onClick={() => setTimer(60)}>60</button>

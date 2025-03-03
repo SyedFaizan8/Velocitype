@@ -34,10 +34,6 @@ export default function Page() {
     useEffect(() => {
         const fetchProfile = async () => {
             if (initialized && !loading && !user) {
-                toast({
-                    variant: "destructive",
-                    title: "Please login to visit the profile"
-                })
                 router.push("/velocity/login");
             } else if (user) {
                 await bringProfile();

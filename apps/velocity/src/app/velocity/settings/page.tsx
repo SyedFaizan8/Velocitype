@@ -70,10 +70,6 @@ const Page = () => {
         setUsernameAvailability
     } = useAvailability();
 
-    const findUser = useCallback(async () => {
-        if (!user) await dispatch(fetchUser());
-    }, [dispatch, user])
-
     const bringProfile = useCallback(async () => {
         try {
             if (!user?.username) return;
@@ -109,10 +105,6 @@ const Page = () => {
         };
         checkAuth();
     }, [user, router, loading, initialized]);
-
-    useEffect(() => {
-        if (!initialized) findUser();
-    }, [initialized, dispatch, findUser]);
 
     useEffect(() => {
         if (user?.username) bringProfile()
