@@ -1,5 +1,5 @@
 {
-  "name": "new_velocitype",
+  "name": "velocitype",
   "private": true,
   "scripts": {
     "build": "turbo run build",
