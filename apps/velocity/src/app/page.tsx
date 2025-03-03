@@ -154,7 +154,7 @@ const Home = () => {
         )}
       </div>
       <AlertDialog open={open} onOpenChange={setOpen}>
-        <AlertDialogContent>
+        <AlertDialogContent className="bg-slate-800">
           <AlertDialogHeader>
             <AlertDialogTitle>Log In Required</AlertDialogTitle>
             <AlertDialogDescription>
