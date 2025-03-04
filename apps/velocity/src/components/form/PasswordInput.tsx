@@ -11,9 +11,10 @@ interface PasswordInputProps<T extends FieldValues> {
     errors: FieldErrors<T>;
     className?: string;
     inputClassName?: string;
+    autoComplete?: string;
 }
 
-const PasswordInput = <T extends FieldValues>({ register, name, placeholder, errors, className = "", inputClassName = "" }: PasswordInputProps<T>) => {
+const PasswordInput = <T extends FieldValues>({ register, name, placeholder, errors, className = "", inputClassName = "", autoComplete = "on" }: PasswordInputProps<T>) => {
     const [showPassword, setShowPassword] = useState(false);
 
     return (
@@ -24,6 +25,7 @@ const PasswordInput = <T extends FieldValues>({ register, name, placeholder, err
                     {...register(name)}
                     className={`rounded py-1 px-2 bg-slate-900 w-full pr-10 ${inputClassName}`}
                     placeholder={placeholder}
+                    autoComplete={autoComplete}
                 />
                 <span
                     className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer"

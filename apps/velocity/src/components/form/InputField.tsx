@@ -10,6 +10,7 @@ interface InputFieldProps<T extends FieldValues> {
     errors: FieldErrors<T>;
     onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
     className?: string;
+    autoComplete?: string;
 }
 
 const InputField = <T extends FieldValues>({
@@ -19,7 +20,8 @@ const InputField = <T extends FieldValues>({
     placeholder,
     errors,
     onChange,
-    className
+    className,
+    autoComplete = "on"
 }: InputFieldProps<T>) => {
 
     const registeredProps = register(name);
@@ -42,6 +44,7 @@ const InputField = <T extends FieldValues>({
                 type={type}
                 placeholder={placeholder}
                 onChange={debouncedOnChange}
+                autoComplete={autoComplete}
             />
             <AnimatePresence>
                 {errors[name] && (

@@ -158,7 +158,7 @@ const Page = () => {
 
     return (
         <div className="grid grid-cols-2 h-full w-full">
-            <form onSubmit={handleSubmitRegister(onSubmit)} className="w-full flex flex-col justify-center items-center space-y-3">
+            <form onSubmit={handleSubmitRegister(onSubmit)} className="w-full flex flex-col justify-center items-center space-y-3" autoComplete="off">
 
                 <div className="flex gap-2 w-1/2 text-xl">
                     <span className="pt-1"><Register /></span>register
@@ -170,6 +170,7 @@ const Page = () => {
                         name="fullname"
                         placeholder="full name"
                         errors={errorsRegister}
+                        autoComplete="off"
                     />
                 </div>
 
@@ -180,6 +181,7 @@ const Page = () => {
                         placeholder="username"
                         errors={errorsRegister}
                         onChange={(e) => checkUsernameAvailability(e.target.value)}
+                        autoComplete="off"
                     />
                     {(usernameAvailability !== null && usernameAvailability && !errorsRegister.username) && (
                         <span className="ml-2 text-lg w-8 flex justify-center">
@@ -195,6 +197,7 @@ const Page = () => {
                         placeholder="email"
                         errors={errorsRegister}
                         onChange={(e) => checkEmailAvailability(e.target.value)}
+                        autoComplete="off"
                     />
                     {(emailAvailability !== null && emailAvailability && !errorsRegister.email) && (
                         <span className="ml-2 text-lg w-8 flex justify-center ">
@@ -208,12 +211,14 @@ const Page = () => {
                     name="password"
                     placeholder="password"
                     errors={errorsRegister}
+                    autoComplete="new-password"
                 />
                 <PasswordInput<FormValues>
                     register={registerRegister}
                     name="confirmPassword"
                     placeholder="retype password"
                     errors={errorsRegister}
+                    autoComplete="new-password"
                 />
 
                 <Turnstile
