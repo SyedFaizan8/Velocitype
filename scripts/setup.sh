@@ -17,7 +17,13 @@
 # Exit immediately if a command exits with a non-zero status.
 set -e
 
-echo "=== Starting velociType Setup ==="
+# Define colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+echo -e "${GREEN}=== Starting VelociType Setup ===${NC}"
 
 # Define directories
 ROOT_DIR=$(pwd)
@@ -25,17 +31,17 @@ VELOCITY_DIR="apps/velocity"
 WEB_DIR="apps/web"
 
 # 1. Install dependencies in the monorepo root
-echo "Installing root dependencies..."
+echo -e "${YELLOW}Installing root dependencies...${NC}"
 npm install
 
 # 2. Install dependencies in the web app directory
 if [ -d "$VELOCITY_DIR" ]; then
-  echo "Installing dependencies in $VELOCITY_DIR..."
+  echo -e "${YELLOW}Installing dependencies in $VELOCITY_DIR...${NC}"
   cd $VELOCITY_DIR
   npm install
   cd $ROOT_DIR
 else
-  echo "Directory $VELOCITY_DIR not found. Please check your repository structure."
+  echo -e "${RED}Directory $VELOCITY_DIR not found. Please check your repository structure.${NC}"
   exit 1
 fi
 
@@ -44,36 +50,26 @@ fi
 for ENV_FILE in ".env" ".env.local"; do
   if [ ! -f "$WEB_DIR/$ENV_FILE" ]; then
     if [ -f "$WEB_DIR/$ENV_FILE.example" ]; then
-      echo "Creating $ENV_FILE file in $VELOCITY_DIR from $ENV_FILE.example..."
+      echo -e "${YELLOW}Creating $ENV_FILE file in $VELOCITY_DIR from $ENV_FILE.example...${NC}"
       cp "$WEB_DIR/$ENV_FILE.example" "$VELOCITY_DIR/$ENV_FILE"
-      echo "Please review and update $VELOCITY_DIR/$ENV_FILE with your local configuration."
+      echo -e "${YELLOW}Please review and update $VELOCITY_DIR/$ENV_FILE with your local configuration.${NC}"
     else
-      echo "No $ENV_FILE or $ENV_FILE.example file found in $VELOCITY_DIR. Exiting."
+      echo -e "${RED}No $ENV_FILE or $ENV_FILE.example file found in $VELOCITY_DIR. Exiting.${NC}"
       exit 1
     fi
   fi
 done
 
-# 4. Set up the database
-echo "Generating Prisma client..."
-npx prisma generate
+# Prompt the user to fill in the .env and .env.local files with API keys and other configurations
+echo -e "${YELLOW}Please fill in the $VELOCITY_DIR/.env and $VELOCITY_DIR/.env.local files with the necessary API keys and configurations.${NC}"
+echo -e "${YELLOW}For example, you might need to add entries like:${NC}"
+echo -e "${YELLOW}API_KEY=your_api_key_here${NC}"
+echo -e "${YELLOW}DATABASE_URL=your_database_url_here${NC}"
+echo -e "${YELLOW}REDIS_URL=your_redis_url_here${NC}"
+echo -e "${YELLOW}After updating the files, you can proceed with the setup.${NC}"
 
-echo "Pushing Prisma schema to the database..."
-npx prisma db push
-
-# Optional: Seed the database if a seed script is available.
-if [ -f "prisma/seed.js" ] || [ -f "prisma/seed.ts" ]; then
-  echo "Seeding the database..."
-  npx prisma db seed
-else
-  echo "No seed script found. Skipping seeding."
-fi
-
-# 5. Start the development server using TurboRepo
-echo "Starting the development server..."
-npx turbo dev
-
-# =======================================================
-# Setup complete!
-# Access the site at http://localhost:3000
-# =======================================================
+echo -e "${GREEN}=== Setup Complete ===${NC}"
+echo -e "${YELLOW}Then, run the following commands:${NC}"
+echo -e "${YELLOW}npx prisma generate${NC}"
+echo -e "${YELLOW}npx prisma db push${NC}"
+echo -e "${YELLOW}npm run dev${NC}"

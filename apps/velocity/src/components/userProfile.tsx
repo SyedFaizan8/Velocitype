@@ -31,6 +31,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ userData }) => {
         bio,
         website,
         fullname,
+        history
     } = userData.user;
 
     const [imageUrl, setImageUrl] = useState<string | null>(null);
@@ -44,6 +45,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ userData }) => {
     const totalWordsTyped = stats.total_words_typed.toString();
     const highestAccuracy = leaderboard?.highest_accuracy?.toString() ?? '';
     const totalTest = stats.total_tests_taken > 100 ? 100 : stats.total_tests_taken;
+    const averageWpm = history ? Math.round(history.reduce((acc, curr) => acc + curr.wpm, 0) / history.length) : null;
 
     useEffect(() => {
         const bringImage = async () => {
@@ -217,7 +219,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ userData }) => {
                     </div>
 
                     <div className="w-full">
-                        <Chart userData={userData.user.history} totalTest={totalTest} />
+                        <Chart userData={history} totalTest={totalTest} average={averageWpm} />
                     </div>
                 </div>
             </div>

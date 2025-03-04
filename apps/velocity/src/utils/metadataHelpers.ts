@@ -11,9 +11,9 @@ export async function getProfileMetadata(profile: string): Promise<Metadata> {
         const user = userData.user;
 
         const title = user.fullname
-            ? `${user.fullname} (@${user.username}) | Velocitype`
-            : `Profile | Velocitype`;
-        const description = `View ${user.username}'s profile on Velocitype.`;
+            ? `${user.fullname} (@${user.username}) | VelociType`
+            : `Profile | VelociType`;
+        const description = `View ${user.username}'s profile on VelociType.`;
         let imageUrl = null;
         if (user && user.imageId) {
             imageUrl = await bringImageUrlFromFileId(user.imageId)
@@ -49,8 +49,8 @@ export async function getProfileMetadata(profile: string): Promise<Metadata> {
         console.error('Error generating profile metadata:', error);
         if (isAxiosError(error)) console.log("something went wrong in metadat", error)
         return {
-            title: 'Profile | Velocitype',
-            description: 'Profile page on Velocitype',
+            title: 'Profile | VelociType',
+            description: 'Profile page on VelociType',
         };
     }
 }

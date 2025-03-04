@@ -68,7 +68,7 @@ const Header = () => {
                     <div>
                         <Link href="/">
                             <div className="text-white font-bold cursor-pointer ">
-                                velociType
+                                VelociType
                             </div>
                         </Link>
                     </div>

@@ -1,8 +1,8 @@
-<img src="https://velocitype.syedfaizan.in/images/logo_blue.png" alt="velociType Logo" width="600" />
+<img src="https://velocitype.syedfaizan.in/images/logo_blue.png" alt="VelociType Logo" width="600" />
 
-# Velocitype: Speed Typing Analytics Platform 🦖⌨️
+# VelociType: Speed Typing Analytics Platform 🦖⌨️
 
-_velociType is a Next.js-based speed typing analytics platform that lets users test, track, and improve their typing skills. With timed challenges (15-second and 60-second tests), users can measure their words per minute (WPM), track their progress, and compete on global leaderboards. The platform offers detailed user profiles with comprehensive statistics and historical performance charts._
+_VelociType is a Next.js-based speed typing analytics platform that lets users test, track, and improve their typing skills. With timed challenges (15-second and 60-second tests), users can measure their words per minute (WPM), track their progress, and compete on global leaderboards. The platform offers detailed user profiles with comprehensive statistics and historical performance charts._
 
 [![Next.js](https://img.shields.io/badge/Next.js-14.0.0-black?logo=next.js)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?logo=typescript)](https://www.typescriptlang.org/)
@@ -207,10 +207,20 @@ return Math.max(0, (corrects / total) * 100);
 - **Captcha Failures:**
   - Make sure your Cloudflare Turnstile keys in .env match your account details.
 
-### For a Quick Start with Sample Data, Use the Provided Demo Setup Script:
+### Quick Start
+
+To get started quickly, use the provided demo setup script:
 
 ```bash
 ./scripts/setup-demo.sh
+```
+
+Then, run the following commands:
+
+```bash
+npx prisma generate
+npx prisma db push
+npm run dev
 ```
 
 _(Ensure the script is executable with `chmod +x ./scripts/setup-demo.sh`)_

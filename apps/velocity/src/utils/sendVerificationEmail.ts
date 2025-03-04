@@ -6,7 +6,7 @@ export async function sendVerificationEmail(username: string, email: string, url
         const { data, error } = await resend.emails.send({
             from: 'noreply@velocitype.syedfaizan.in',
             to: [email],
-            subject: 'Password Reset Request | velociType',
+            subject: 'Password Reset Request | VelociType',
             react: ResetPasswordEmail({ resetUrl: url, name: username })
         });
 

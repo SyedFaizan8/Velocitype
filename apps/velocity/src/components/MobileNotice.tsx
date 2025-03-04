@@ -6,7 +6,7 @@ const MobileNotice = () => {
             <div className='absolute top-2'>
                 <Link href="/">
                     <div className="text-white font-bold cursor-pointer text-3xl ">
-                        velociType
+                        VelociType
                     </div>
                 </Link>
             </div>

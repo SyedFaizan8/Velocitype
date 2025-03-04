@@ -2,9 +2,9 @@ import type { MetadataRoute } from 'next'
 
 export default function manifest(): MetadataRoute.Manifest {
     return {
-        name: 'Velocitype',
-        short_name: 'Velocitype',
-        description: 'Velocitype – Speed Typing Challenge & Progress Tracker',
+        name: 'VelociType',
+        short_name: 'VelociType',
+        description: 'VelociType – Speed Typing Challenge & Progress Tracker',
         start_url: '/',
         display: 'standalone',
         background_color: '#ffffff',

@@ -1,0 +1,27 @@
+# Exclude node_modules folders in the root and all subdirectories (apps, packages, etc.)
+node_modules
+**/node_modules
+
+**/dist
+**/.turbo
+**/.next
+
+# Exclude Git files and directories
+.git
+.gitignore
+**/.gitignore
+
+# env files igonring
+**/.env.*
+.env.*
+
+# Optionally exclude Docker configuration files if you don't need them in the image
+docker/
+Dockerfile
+docker-compose.yml
+
+.favicon
+.logo
+.turbo
+.video
+.husky

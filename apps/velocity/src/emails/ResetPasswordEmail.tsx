@@ -10,7 +10,7 @@ const ResetPasswordEmail = ({ resetUrl, name }: ResetPasswordEmailProps): React.
     return (
         <Container style={containerStyle}>
             <Section style={sectionStyle}>
-                <Text style={{ ...headingStyle, fontFamily: 'monospace', color: '#0070f3' }}>velociType</Text>
+                <Text style={{ ...headingStyle, fontFamily: 'monospace', color: '#0070f3' }}>VelociType</Text>
                 <Text style={headingStyle}>Password Reset Request</Text>
                 <Text style={textStyle}>Hi {name},</Text>
                 <Text style={textStyle}>
