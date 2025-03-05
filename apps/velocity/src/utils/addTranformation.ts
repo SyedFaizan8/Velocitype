@@ -1,41 +1,44 @@
-import imagekit from "@/utils/imagekit"
+import imagekit from "@/utils/imagekit";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const fileDetailsCache: { [key: string]: any } = {};
 
 setInterval(() => {
-    for (const key in fileDetailsCache) {
-        delete fileDetailsCache[key];
-    }
+    Object.keys(fileDetailsCache).forEach(key => delete fileDetailsCache[key]);
 }, 60000);
 
-export const bringImageUrlFromFileId = async (fileId: string): Promise<string | null> => {
+const getFileDetails = async (fileId: string) => {
     if (!fileDetailsCache[fileId]) {
-        fileDetailsCache[fileId] = await imagekit.getFileDetails(fileId);
+        const fileDetail = await imagekit();
+        fileDetailsCache[fileId] = await fileDetail.getFileDetails(fileId);
     }
+    return fileDetailsCache[fileId];
+};
 
-    const fileDetails = fileDetailsCache[fileId];
+export const bringImageUrlFromFileId = async (fileId: string): Promise<string | null> => {
+    const fileDetails = await getFileDetails(fileId);
 
     if (fileDetails.fileType === "non-image") {
         await removeImageFromImagekit(fileId);
         return null;
     } else {
-        const parts = fileDetails.url.split("/syedfaizan/");
-        return `${parts[0]}/syedfaizan/tr:h-400,w-400/${parts[1]}`;
+        const [baseUrl, path] = fileDetails.url.split("/syedfaizan/");
+        return `${baseUrl}/syedfaizan/tr:h-400,w-400/${path}`;
     }
-}
+};
 
 export const bringDpUrlFromFileId = async (fileId: string): Promise<string | null> => {
-    const fileDetails = await imagekit.getFileDetails(fileId);
-    const parts = fileDetails.url.split("/syedfaizan/");
-    return `${parts[0]}/syedfaizan/tr:h-200,w-200/${parts[1]}`;
-}
+    const fileDetails = await getFileDetails(fileId);
+    const [baseUrl, path] = fileDetails.url.split("/syedfaizan/");
+    return `${baseUrl}/syedfaizan/tr:h-200,w-200/${path}`;
+};
 
 export const removeImageFromImagekit = async (fileId: string) => {
     try {
-        await imagekit.deleteFile(fileId)
-        return { success: true }
+        const deleting = await imagekit();
+        await deleting.deleteFile(fileId);
+        return { success: true };
     } catch (error) {
-        return { error }
+        return { error };
     }
-}
+};
