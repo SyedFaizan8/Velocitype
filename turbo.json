@@ -9,6 +9,7 @@
       "env": [
         "ACCESS_SECRET",
          "REFRESH_SECRET",
+         "IMAGEKIT_PRIVATE_KEY",
          "DIRECT_URL",
          "DATABASE_URL",
          "TURNSTILE_SECRET_KEY",
