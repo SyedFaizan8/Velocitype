@@ -13,7 +13,9 @@ export async function GET(req: NextRequest) {
             });
         }
 
-        const authParams = imagekit.getAuthenticationParameters();
+        const authParameter = await imagekit()
+        const authParams = authParameter.getAuthenticationParameters();
+
         return NextResponse.json(
             new ApiResponse(200, authParams, "Imagekit authentication successful"),
             { status: 200 }
