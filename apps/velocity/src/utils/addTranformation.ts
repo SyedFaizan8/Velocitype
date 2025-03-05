@@ -9,8 +9,7 @@ setInterval(() => {
 
 const getFileDetails = async (fileId: string) => {
     if (!fileDetailsCache[fileId]) {
-        const fileDetail = await imagekit();
-        fileDetailsCache[fileId] = await fileDetail.getFileDetails(fileId);
+        fileDetailsCache[fileId] = await imagekit.getFileDetails(fileId);
     }
     return fileDetailsCache[fileId];
 };
@@ -35,8 +34,7 @@ export const bringDpUrlFromFileId = async (fileId: string): Promise<string | nul
 
 export const removeImageFromImagekit = async (fileId: string) => {
     try {
-        const deleting = await imagekit();
-        await deleting.deleteFile(fileId);
+        await imagekit.deleteFile(fileId);
         return { success: true };
     } catch (error) {
         return { error };

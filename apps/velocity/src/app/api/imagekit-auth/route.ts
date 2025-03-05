@@ -13,8 +13,7 @@ export async function GET(req: NextRequest) {
             });
         }
 
-        const authParameter = await imagekit()
-        const authParams = authParameter.getAuthenticationParameters();
+        const authParams = imagekit.getAuthenticationParameters();
 
         return NextResponse.json(
             new ApiResponse(200, authParams, "Imagekit authentication successful"),
