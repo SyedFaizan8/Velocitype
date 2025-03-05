@@ -1,6 +1,6 @@
 export const NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY = process.env.NEXT_PUBLIC_PUBLIC_KEY as string
 export const NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT = process.env.NEXT_PUBLIC_URL_ENDPOINT as string
-export const IMAGEKIT_PRIVATE_KEY = process.env.IMAGEKIT_PRIVATE_KEY as string
+export const IMAGEKIT_PRIVATE_KEY = process.env.IMAGEKIT_PRIVATE_KEY as string;
 
 export const ACCESS_SECRET = process.env.ACCESS_SECRET as string
 export const REFRESH_SECRET = process.env.REFRESH_SECRET as string
