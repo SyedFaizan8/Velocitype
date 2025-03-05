@@ -1,5 +1,10 @@
 import * as z from 'zod';
 
+interface DataType {
+    password: string;
+    confirmPassword: string;
+}
+
 export const fullnameSchema = z.object({
     fullname: z.string().min(3, 'at least 3 characters'),
 });
@@ -35,7 +40,7 @@ export const registerSchema = z.object({
     email: emailSchema.shape.email,
     password: z.string().min(6, 'at least 6 characters'),
     confirmPassword: z.string(),
-}).refine((data) => data.password === data.confirmPassword, {
+}).refine((data: DataType) => data.password === data.confirmPassword, {
     message: 'Passwords must match',
     path: ['confirmPassword'],
 });
@@ -57,7 +62,7 @@ export const resetPassword = z.object({
     token: z.string(),
     password: z.string().min(6, 'at least 6 characters'),
     confirmPassword: z.string()
-}).refine((data) => data.password === data.confirmPassword, {
+}).refine((data: DataType) => data.password === data.confirmPassword, {
     message: "Passwords must match",
     path: ['confirmPassword']
 })
@@ -65,7 +70,7 @@ export const resetPassword = z.object({
 export const resetPasswordFrontend = z.object({
     password: z.string().min(6, 'at least 6 characters'),
     confirmPassword: z.string(),
-}).refine((data) => data.password === data.confirmPassword, {
+}).refine((data: DataType) => data.password === data.confirmPassword, {
     message: 'Passwords must match',
     path: ['confirmPassword'],
 })
