@@ -207,24 +207,6 @@ return Math.max(0, (corrects / total) * 100);
 - **Captcha Failures:**
   - Make sure your Cloudflare Turnstile keys in .env match your account details.
 
-### Quick Start
-
-To get started quickly, use the provided demo setup script:
-
-```bash
-./scripts/setup-demo.sh
-```
-
-Then, run the following commands:
-
-```bash
-npx prisma generate
-npx prisma db push
-npm run dev
-```
-
-_(Ensure the script is executable with `chmod +x ./scripts/setup-demo.sh`)_
-
 ## 📬 Contact
 
 For any inquiries or feedback, please reach out to me at [contact@syedfaizan.in](mailto:contact@syedfaizan.in)
