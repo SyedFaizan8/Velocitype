@@ -40,7 +40,7 @@ const Header = () => {
                     setImageUrl(null);
                 });
         }
-    }, [user?.imageId]);
+    }, [user]);
 
     const handleToggleSound = () => {
         dispatch(changeSound());
