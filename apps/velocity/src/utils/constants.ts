@@ -26,3 +26,6 @@ export const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY as string;
 
 export const NEXT_PUBLIC_HMAC_KEY = process.env.NEXT_PUBLIC_HMAC_KEY as string;
 export const NEXT_PUBLIC_ENCRYPTION_KEY = process.env.NEXT_PUBLIC_ENCRYPTION_KEY as string;
+
+export const POSTHOG_KEY = process.env.NEXT_PUBLIC_POSTHOG_KEY as string;
+export const POSTHOG_HOST = process.env.NEXT_PUBLIC_POSTHOG_HOST as string;

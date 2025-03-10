@@ -17,7 +17,7 @@ const Page = () => {
             <ul className="list-disc list-inside mb-4 text-slate-400">
                 <li>Mandatory: Email, full name, username, and password.</li>
                 <li>Optional: Profile photo, Bio and social links.</li>
-                <li>Cookies: Used to verify login status.</li>
+                <li>Cookies: Used to verify login status and analytics (via Posthog).</li>
             </ul>
             <div className="text-md font-semibold ">2. Usage: <span className=" text-slate-400"> Manage accounts, send communications (e.g., password resets via Resend Mail), and improve our services.</span></div>
             <div className="text-md font-semibold ">3. Security: <span className=" text-slate-400"> We use industry-standard measures, including encryption, to protect your data.</span></div>

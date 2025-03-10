@@ -1,6 +1,6 @@
 {
   "name": "velocity",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -36,6 +36,7 @@
     "lucide-react": "^0.475.0",
     "motion": "^12.4.3",
     "next": "15.1.7",
+    "posthog-js": "^1.230.1",
     "quotesy": "^1.0.10",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

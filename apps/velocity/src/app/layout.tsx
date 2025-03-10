@@ -5,6 +5,7 @@ import Providers from "@/components/Providers";
 import { Toaster } from "@/components/ui/toaster";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { PostHogProvider } from "@/components/PosthogProviders";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -65,16 +66,18 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased dark`}
       >
-        <Providers>
-          <div className="bg-slate-800 text-slate-50 md:py-10	py-2 px-6 md:px-20 min-h-screen max-h-screen tracking-wider font-mono overflow-hidden">
-            <Header />
-            <section className="w-full px-6 h-[80vh] flex flex-col justify-center items-center">
-              {children}
-            </section>
-            <Footer />
-          </div>
-          <Toaster />
-        </Providers>
+        <PostHogProvider>
+          <Providers>
+            <div className="bg-slate-800 text-slate-50 md:py-10	py-2 px-6 md:px-20 min-h-screen max-h-screen tracking-wider font-mono overflow-hidden">
+              <Header />
+              <section className="w-full px-6 h-[80vh] flex flex-col justify-center items-center">
+                {children}
+              </section>
+              <Footer />
+            </div>
+            <Toaster />
+          </Providers>
+        </PostHogProvider>
       </body>
     </html >
   );
