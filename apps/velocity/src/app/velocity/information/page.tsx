@@ -6,6 +6,10 @@ import Link from 'next/link';
 
 const Page = () => {
 
+    const handleCopy = () => {
+        navigator.clipboard.writeText("contact@syedfaizan.in");
+    };
+
     return (
         <div className="h-full w-full flex flex-col justify-center space-y-3">
             <h1 className="text-2xl font-bold ">Welcome to Velocity Typing</h1>
@@ -27,7 +31,8 @@ const Page = () => {
             <div className="mb-4 text-slate-400">
                 We would love to hear from you! If you have any questions, suggestions, or feedback, please feel free to contact us at:
                 <span onClick={() => {
-                    toast({ title: "email copied to clipboard" })
+                    handleCopy();
+                    toast({ title: "email copied to clipboard" });
                 }} className='cursor-pointer text-yellow-200'>
                     <TooltipIcon icon=" contact@syedfaizan.in" tooltipText="double click to copy" />
                 </span>
@@ -37,6 +42,7 @@ const Page = () => {
             <p className="mb-4 text-slate-400">
                 We welcome contributions from the community! If you are interested in contributing to Velocity Typing, please visit our <Link href="https://github.com/syedfaizan8/velocitype" target="_blank" rel="noopener noreferrer" className="text-blue-400">GitHub repository</Link> for more information on how to get started.
             </p>
+
         </div >
     );
 };

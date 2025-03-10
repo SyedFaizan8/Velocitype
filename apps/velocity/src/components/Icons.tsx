@@ -3,7 +3,8 @@ import {
     MdLeaderboard as LeaderBoard,
     MdContactMail as Developer,
     MdRefresh as Refresh,
-    MdEdit as Edit
+    MdEdit as Edit,
+    MdPrivacyTip as Privacy
 } from "react-icons/md";
 import {
     FaInfo as Info,
@@ -47,5 +48,6 @@ export {
     Show,
     Hide,
     Loading,
-    Remove
+    Remove,
+    Privacy
 };
