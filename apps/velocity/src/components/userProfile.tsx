@@ -11,10 +11,6 @@ import { toast } from '@/hooks/use-toast';
 import { formatTime } from '@/utils/helpers';
 import type { UserData } from '@/utils/types/profileTypes';
 import { bringImageUrlFromFileId } from '@/utils/addTranformation';
-import axios from 'axios';
-import { logoutUser } from '@/store/authSlice';
-import { useAppDispatch } from '@/store/reduxHooks';
-import { useRouter } from 'next/navigation';
 
 interface UserProfileProps {
     userData: UserData;
@@ -35,9 +31,6 @@ const UserProfile: React.FC<UserProfileProps> = ({ userData }) => {
     } = userData.user;
 
     const [imageUrl, setImageUrl] = useState<string | null>(null);
-    const [user, setUser] = useState<boolean>(false)
-    const dispatch = useAppDispatch();
-    const router = useRouter();
 
     const totalTestsTaken = stats.total_tests_taken.toString();
     const totalTimeTyping = formatTime(stats.total_time_typing || 0);
@@ -53,7 +46,6 @@ const UserProfile: React.FC<UserProfileProps> = ({ userData }) => {
             setImageUrl(image)
         }
         if (imageId) bringImage();
-        if (window.location.href.includes('/user/')) setUser(true);
     }, [imageId])
 
     const handleCopy = useCallback(async () => {
@@ -65,28 +57,9 @@ const UserProfile: React.FC<UserProfileProps> = ({ userData }) => {
         });
     }, []);
 
-    const handleLogout = async () => {
-        try {
-            await axios.post("/api/logout", {}, { withCredentials: true });
-            dispatch(logoutUser());
-            router.push("/velocity/login");
-            setTimeout(() => {
-                window.location.reload();
-            }, 1000);
-        } catch {
-            toast({
-                title: "user loged out",
-                description: "successfull"
-            })
-        }
-    };
-
     return (
         <>
             <div className="w-full h-full space-y-2 py-2 flex flex-col justify-center relative">
-                {user ? <button onClick={handleLogout} className="text-xl bg-slate-900 px-3 rounded absolute -top-6 right-10 space-x-2  font-bold text-yellow-400 tracking-widest transform hover:scale-105 hover:bg-slate-900 transition-colors duration-200">
-                    Logout
-                </button > : null}
                 <div className="w-full space-y-2 h-full flex flex-col justify-center">
                     <div className="grid grid-cols-10 w-full bg-slate-900 rounded-t-xl">
                         {/* Profile Header */}
