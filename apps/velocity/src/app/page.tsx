@@ -1,8 +1,11 @@
 "use client"
 
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
+
+import axios from 'axios';
+import Turnstile from "react-turnstile";
 
 import Caret from '@/components/Caret';
 import useEngine from '@/hooks/useEngine';
@@ -25,6 +28,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
+import { TURNSTILE_SITE_KEY } from '@/utils/constants';
+import { setError } from '@/store/positionSlice';
 
 const Home = () => {
   const isMobile = useIsMobile();
@@ -37,6 +42,9 @@ const Home = () => {
   const [isCapsLockOn, setIsCapsLockOn] = useState(false);
   const [open, setOpen] = useState<boolean>(false);
 
+  const [loadingScreen, setLoadingScreen] = useState<boolean>(false);
+  const [message, setMessage] = useState<string>('');
+
   const buttonRef = useRef<HTMLButtonElement>(null);
   const handleClick = () => {
     buttonRef.current?.blur();
@@ -44,8 +52,39 @@ const Home = () => {
   }
 
   useEffect(() => {
+    if (navigator.webdriver) {
+      setLoadingScreen(true);
+      setMessage("automation detected")
+      dispatch(setError(true))
+    }
+  });
+
+  const handleSubmitToken = useCallback(async (token: string) => {
+
+    if (!token) {
+      setMessage('Something went wrong, CAPTCHA challenge.');
+      setLoadingScreen(true);
+      dispatch(setError(true))
+      return;
+    }
+
+    try {
+      await axios.post('/api/verify-turnstile', { token });
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        setMessage(error.response?.data?.message || 'An error occurred while verifying CAPTCHA.');
+        setLoadingScreen(true);
+        dispatch(setError(true))
+        return;
+      }
+    }
+
+  }, [dispatch, loadingScreen]);
+
+
+  useEffect(() => {
     const checkAuth = async () => {
-      if (initialized && !loading && !user) setOpen(true)
+      if (initialized && !loading && !user) { setOpen(true); dispatch(setError(true)) }
     };
     checkAuth();
   }, [user, loading, initialized]);
@@ -90,9 +129,29 @@ const Home = () => {
   const progressPercentage = ((timer - timeLeft) / timer) * 100;
 
   if (isMobile) return <MobileNotice />
-
-  return (
+  else if (!isMobile && loadingScreen) return (
+    <div className='flex justify-center items-center flex-col space-y-2'>
+      <p className='text-3xl text-red-500 font-extrabold'>malpractice detected</p>
+      {message ? <p className='text-3xl font-extrabold text-yellow-400'>{message}</p> : null}
+      <p className='text-xl text-white'>Something went wrong please refresh the page...</p>
+      <button
+        tabIndex={-1}
+        className="block rounded px-8 py-2 hover:text-white mx-auto mt-10 text-slate-500 text-xl"
+        onClick={() => window.location.reload()}
+      >
+        <TooltipIcon icon={<Refresh />} tooltipText="Refresh" />
+      </button>
+    </div>
+  )
+  else return (
     <div>
+      <Turnstile
+        theme="dark"
+        sitekey={TURNSTILE_SITE_KEY}
+        onVerify={(token: string) => { if (!loadingScreen) handleSubmitToken(token) }}
+        appearance='interaction-only'
+        className='hidden'
+      />
       {timeLeft > 0 &&
         <div
           className="h-1 bg-yellow-500  transition-all ease-linear duration-1000 fixed top-0 left-0 rounded-br-full"
@@ -162,12 +221,13 @@ const Home = () => {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setOpen(false)}>
+            <AlertDialogCancel onClick={() => { setOpen(false); dispatch(setError(false)) }}>
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction onClick={() => {
               router.push("/velocity/login");
               setOpen(false);
+              dispatch(setError(false))
             }}>
               Log In
             </AlertDialogAction>

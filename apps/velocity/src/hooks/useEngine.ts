@@ -61,7 +61,6 @@ const useEngine = (timer: number) => {
      */
     useEffect(() => {
         if (areWordsFinished) {
-            // console.log("words are finished...");
             sumErrors();
             updateWords();
             clearTyped();

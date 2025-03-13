@@ -3,21 +3,22 @@ import { State } from "@/hooks/useEngine"
 
 interface PositionState {
     position: State | null;
+    error: boolean;
 }
 
 const initialState: PositionState = {
-    position: null
+    position: null,
+    error: false
 };
 
 const position = createSlice({
     name: "position",
     initialState,
     reducers: {
-        changePosition: (state, actions) => {
-            state.position = actions.payload;
-        }
+        changePosition: (state, actions) => { state.position = actions.payload },
+        setError: (state, actions) => { state.error = actions.payload }
     },
 });
 
-export const { changePosition } = position.actions;
+export const { changePosition, setError } = position.actions;
 export default position.reducer;

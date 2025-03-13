@@ -3,16 +3,19 @@ import { isKeyboardCodeAllowed } from "../utils/helpers";
 import { playSound } from "@/utils/soundEffects";
 import { useSelector } from "react-redux";
 import { RootState } from "@/store/store";
+import { useAppSelector } from "@/store/reduxHooks";
 
 const useTypings = (enabled: boolean) => {
   const [cursor, setCursor] = useState(0);
   const [typed, setTyped] = useState<string>("");
   const totalTyped = useRef(0);
   const sound = useSelector((state: RootState) => state.sound.sound);
+  const { error } = useAppSelector(state => state.position);
 
   const keydownHandler = useCallback(
     ({ key, code }: KeyboardEvent) => {
       if (!enabled || !isKeyboardCodeAllowed(code)) return;
+      if (error) return;
       if (sound) playSound(key);
       switch (key) {
         case "Backspace":
@@ -26,7 +29,7 @@ const useTypings = (enabled: boolean) => {
           if (code !== "Space") totalTyped.current += 1;
       }
     },
-    [enabled, sound]
+    [enabled, sound, error]
   );
 
   const clearTyped = useCallback(() => {
