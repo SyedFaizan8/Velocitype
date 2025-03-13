@@ -96,7 +96,7 @@ const UserProfile: React.FC<UserProfileProps> = ({ userData }) => {
                             </div>
                             <div className="pl-5">
                                 <p className="text-sm text-slate-500">
-                                    {bio ? 'bio :' : null}{' '}
+                                    {bio ? 'bio:' : null}{' '}
                                     <span className="text-white">{bio}</span>
                                 </p>
                             </div>
