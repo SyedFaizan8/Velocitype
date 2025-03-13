@@ -10,7 +10,10 @@ export const fullnameSchema = z.object({
 });
 
 export const usernameSchema = z.object({
-    username: z.string().min(3, 'at least 3 characters').regex(/^[a-zA-Z0-9_]+$/, "remove special character")
+    username: z.string()
+        .min(3, 'at least 3 characters')
+        .regex(/^[a-zA-Z0-9_]+$/, "remove special character and no spaces")
+        .toLowerCase()
 });
 
 export const emailSchema = z.object({

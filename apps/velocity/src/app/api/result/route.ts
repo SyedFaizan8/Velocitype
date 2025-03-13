@@ -72,7 +72,7 @@ export async function POST(req: NextRequest) {
             where: { user_id },
         });
 
-        if (accuracy >= 50) {
+        if (accuracy >= 30) {
             if (!userLeaderboard) {
                 await prisma.leaderboard.create({
                     data: {

@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
             return NextResponse.json(new ApiError(409, "User with email already exists"), { status: 409 });
         }
 
-        const existingUserwithUsername = await prisma.user.findUnique({ where: { username } });
+        const existingUserwithUsername = await prisma.user.findUnique({ where: { username: username.toLowerCase() } });
         if (existingUserwithUsername) {
             return NextResponse.json(new ApiError(409, "User with username already exists"), { status: 409 });
         }
@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
         const hashedPassword = await hashPassword(password);
 
         const newUser = await prisma.user.create({
-            data: { fullname, username, email, password: hashedPassword },
+            data: { fullname, username: username.toLowerCase(), email, password: hashedPassword },
             select: { user_id: true },
         });
 

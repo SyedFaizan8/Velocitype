@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
             });
         }
 
-        const trimmedUsername = validation.data.username.trim();
+        const trimmedUsername = validation.data.username.trim().toLowerCase();
 
         const user = await prisma.user.findUnique({
             where: { username: trimmedUsername },

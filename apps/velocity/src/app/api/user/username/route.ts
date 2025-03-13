@@ -34,12 +34,12 @@ export async function POST(req: NextRequest) {
 
         const { username } = validationResult.data;
 
-        const existingUsername = await prisma.user.findUnique({ where: { username: username.trim() } });
+        const existingUsername = await prisma.user.findUnique({ where: { username: username.trim().toLowerCase() } });
         if (existingUsername) return NextResponse.json(new ApiError(400, "Username already exists"), { status: 400 });
 
         const updatedUser = await prisma.user.update({
             where: { user_id },
-            data: { username: username.trim() },
+            data: { username: username.trim().toLowerCase() },
             select: { username: true },
         });
 
