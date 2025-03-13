@@ -131,8 +131,8 @@ const Home = () => {
   if (isMobile) return <MobileNotice />
   else if (!isMobile && loadingScreen) return (
     <div className='flex justify-center items-center flex-col space-y-2'>
-      <p className='text-3xl text-red-500 font-extrabold'>malpractice detected</p>
-      {message ? <p className='text-3xl font-extrabold text-yellow-400'>{message}</p> : null}
+      <p className='text-3xl text-red-500 font-extrabold'>automation detected</p>
+      {message ? <p className='text-xl font-extrabold text-yellow-400'>{message}</p> : null}
       <p className='text-xl text-white'>Something went wrong please refresh the page...</p>
       <button
         tabIndex={-1}
@@ -149,6 +149,16 @@ const Home = () => {
         theme="dark"
         sitekey={TURNSTILE_SITE_KEY}
         onVerify={(token: string) => { if (!loadingScreen) handleSubmitToken(token) }}
+        onError={() => {
+          setLoadingScreen(true);
+          setMessage("Something went wrong with CAPTCHA. This site works well on Edge, Chrome, and Mozilla.")
+          dispatch(setError(true))
+        }}
+        onUnsupported={() => {
+          setLoadingScreen(true);
+          setMessage("Something went wrong with CAPTCHA. This site does not support this browser.")
+          dispatch(setError(true))
+        }}
         appearance='interaction-only'
         className='hidden'
       />
