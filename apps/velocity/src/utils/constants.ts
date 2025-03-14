@@ -29,3 +29,6 @@ export const NEXT_PUBLIC_ENCRYPTION_KEY = process.env.NEXT_PUBLIC_ENCRYPTION_KEY
 
 export const POSTHOG_KEY = process.env.NEXT_PUBLIC_POSTHOG_KEY as string;
 export const POSTHOG_HOST = process.env.NEXT_PUBLIC_POSTHOG_HOST as string;
+
+export const TYPING_VARIANCE_THRESHOLD = 50; // Adjust threshold (in ms) based on testing
+export const MIN_INTERVAL_THRESHOLD = 40; // Minimum average interval to consider (ms)

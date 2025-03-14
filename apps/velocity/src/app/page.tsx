@@ -44,6 +44,7 @@ const Home = () => {
 
   const [loadingScreen, setLoadingScreen] = useState<boolean>(false);
   const [message, setMessage] = useState<string>('');
+  const { error } = useAppSelector(state => state.position)
 
   const buttonRef = useRef<HTMLButtonElement>(null);
   const handleClick = () => {
@@ -52,9 +53,16 @@ const Home = () => {
   }
 
   useEffect(() => {
-    if (navigator.webdriver) {
+    if (error) {
       setLoadingScreen(true);
-      setMessage("automation detected")
+      restart()
+      window.location.reload();
+    }
+  }, [error])
+
+  useEffect(() => {
+    if (window.navigator.webdriver) {
+      setLoadingScreen(true);
       dispatch(setError(true))
     }
   });
@@ -84,7 +92,7 @@ const Home = () => {
 
   useEffect(() => {
     const checkAuth = async () => {
-      if (initialized && !loading && !user) { setOpen(true); dispatch(setError(true)) }
+      if (initialized && !loading && !user) setOpen(true)
     };
     checkAuth();
   }, [user, loading, initialized]);
@@ -231,13 +239,12 @@ const Home = () => {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => { setOpen(false); dispatch(setError(false)) }}>
+            <AlertDialogCancel onClick={() => setOpen(false)}>
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction onClick={() => {
               router.push("/velocity/login");
               setOpen(false);
-              dispatch(setError(false))
             }}>
               Log In
             </AlertDialogAction>
