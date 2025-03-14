@@ -23,14 +23,21 @@ const useTypings = (enabled: boolean) => {
 
       const now = Date.now();
       keystrokeTimestamps.current.push(now);
-      if (keystrokeTimestamps.current.length > 10) {
-        keystrokeTimestamps.current.shift();
-      }
+      if (keystrokeTimestamps.current.length > 10) keystrokeTimestamps.current.shift()
 
       if (keystrokeTimestamps.current.length >= 5) {
-        const intervals = keystrokeTimestamps.current.slice(1).map((time, i) => time - keystrokeTimestamps.current[i]);
-        const average = intervals.reduce((a, b) => a + b, 0) / intervals.length;
-        const variance = intervals.reduce((sum, interval) => sum + Math.pow(interval - average, 2), 0) / intervals.length;
+        // array of time intervals between keystrokes
+        const intervals =
+          keystrokeTimestamps.current.slice(1).map((time, i) => time - keystrokeTimestamps.current[i]);
+
+        // average of intervals
+        const average =
+          intervals.reduce((a, b) => a + b, 0) / intervals.length;
+
+        // Variance close to zero indicates potential automation. sum(interval - average) / length
+        const variance =
+          intervals.reduce((sum, interval) => sum + Math.pow(interval - average, 2), 0) / intervals.length;
+
         if (variance < TYPING_VARIANCE_THRESHOLD && average < MIN_INTERVAL_THRESHOLD) {
           dispatch(setError(true));
           clearTyped()

@@ -55,10 +55,11 @@ const Home = () => {
   useEffect(() => {
     if (error) {
       setLoadingScreen(true);
-      restart()
-      window.location.reload();
+      restart();
+      const reloadTimeout = setTimeout(() => window.location.reload(), 1500);
+      return () => clearTimeout(reloadTimeout);
     }
-  }, [error])
+  }, [error]);
 
   useEffect(() => {
     if (window.navigator.webdriver) {
