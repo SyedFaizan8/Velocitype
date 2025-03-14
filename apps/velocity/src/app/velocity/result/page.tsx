@@ -190,9 +190,9 @@ const Page = () => {
                 <div className="text-center text-neutral-300 mb-4">
                     In {timer} Seconds
                 </div>
-                {(user && accuracy <= 50 && newHighscore) &&
+                {(user && accuracy <= 30 && newHighscore) &&
                     <div className="text-center text-neutral-300 mb-4">
-                        Minimum accuracy must be above 50% to update on the leaderboard.
+                        Minimum accuracy must be above 30% to update on the leaderboard.
                     </div>}
                 <div className="flex justify-center mt-8">
                     <button
