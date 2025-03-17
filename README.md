@@ -115,18 +115,14 @@ $$
 
 ## Accuracy Calculation
 
-We compute your typing accuracy using the following JavaScript snippet:
-
-```javascript
-const corrects = total - errors;
-return Math.max(0, (corrects / total) * 100);
-```
+$$
+\text{Accuracy} = \max\left(0, \frac{\text{Total} - \text{Errors}}{\text{Total}} \times 100\right)
+$$
 
 **Explanation:**
 
 - **Total**: Total characters typed.
 - **Errors**: Number of mistakes made.
-- **Corrects**: The count of correct characters (total - errors).
 - The formula calculates the percentage of correctly typed characters, ensuring the accuracy never falls below 0%.
 
 ## Bot Detection Feature
