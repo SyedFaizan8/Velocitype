@@ -56,8 +56,6 @@ const Home = () => {
     if (error) {
       setLoadingScreen(true);
       restart();
-      const reloadTimeout = setTimeout(() => window.location.reload(), 1500);
-      return () => clearTimeout(reloadTimeout);
     }
   }, [error]);
 
@@ -145,7 +143,7 @@ const Home = () => {
       <p className='text-xl text-white'>Something went wrong please refresh the page...</p>
       <button
         tabIndex={-1}
-        className="block rounded px-8 py-2 hover:text-white mx-auto mt-10 text-slate-500 text-xl"
+        className="block rounded px-8 py-2 hover:text-white mx-auto mt-10 text-slate-500 text-5xl"
         onClick={() => window.location.reload()}
       >
         <TooltipIcon icon={<Refresh />} tooltipText="Refresh" />

@@ -19,10 +19,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         }
 
         const searchProfilePages: MetadataRoute.Sitemap = profileData.map(({ username, imageUrl }: profileDataType) => ({
-            url: `${baseUrl}/velocitype/user/${username}`,
+            url: `${baseUrl}/velocity/profile/${username}`,
             lastModified: new Date(),
             changedFrequency: 'weekly',
-            ...(imageUrl && { images: [imageUrl] })
+            images: [imageUrl ? imageUrl : `${baseUrl}/images/logo_blue.png`]
         }))
 
         return [
@@ -43,6 +43,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
                 url: `${baseUrl}/velocity/leaderboard`,
                 lastModified: new Date(),
                 changeFrequency: 'weekly',
+                images: [`${baseUrl}/images/logo_blue.png`]
             },
             ...searchProfilePages
         ]

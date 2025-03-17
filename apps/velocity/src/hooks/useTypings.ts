@@ -25,7 +25,7 @@ const useTypings = (enabled: boolean) => {
       keystrokeTimestamps.current.push(now);
       if (keystrokeTimestamps.current.length > 10) keystrokeTimestamps.current.shift()
 
-      if (keystrokeTimestamps.current.length >= 5) {
+      if (keystrokeTimestamps.current.length >= 3) {
         // array of time intervals between keystrokes
         const intervals =
           keystrokeTimestamps.current.slice(1).map((time, i) => time - keystrokeTimestamps.current[i]);

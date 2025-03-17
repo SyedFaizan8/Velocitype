@@ -50,7 +50,7 @@ const Footer = () => {
                             </Link>
                             {!isMobile ? <Link href="/velocity/privacy-policy" >
                                 <div className="flex  space-x-1 hover:text-slate-200 cursor-pointer">
-                                    <span className="pt-1  md:text-xs text-xs"><Privacy /></span>
+                                    <span className="pt-1 md:text-xs text-xs"><Privacy /></span>
                                     <span className="md:text-md text-sm">Privacy-Policy</span>
                                 </div>
                             </Link> : null}

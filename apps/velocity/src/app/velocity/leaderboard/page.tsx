@@ -40,9 +40,7 @@ const Page = () => {
     };
 
     useEffect(() => {
-        if (hasMore) {
-            fetchLeaderboard(currentPage);
-        }
+        if (hasMore) fetchLeaderboard(currentPage)
     }, [currentPage, hasMore]);
 
     useEffect(() => {
@@ -93,7 +91,7 @@ const Page = () => {
                                     onClick={() => onSubmit(user.username)}
                                     key={index}
                                     className={`md:py-2 flex text-left text-slate-100 ${(index + 1) % 2 !== 0 ? "bg-slate-500" : ""
-                                        } rounded-l-md`}
+                                        } rounded-md`}
                                 >
                                     <div className="p-1 flex cursor-pointer justify-center items-center w-2/12 md:w-1/12">
                                         {index === 0 ? (
