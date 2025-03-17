@@ -21,7 +21,7 @@ export const emailSchema = z.object({
 });
 
 export const bioSchema = z.object({
-    bio: z.string().nonempty('Bio is required').max(80, 'Bio max 80 characters')
+    bio: z.string().nonempty('Bio is required').max(40, 'Bio max 40 characters')
 });
 
 export const socialSchema = z.object({

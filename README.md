@@ -129,6 +129,26 @@ return Math.max(0, (corrects / total) * 100);
 - **Corrects**: The count of correct characters (total - errors).
 - The formula calculates the percentage of correctly typed characters, ensuring the accuracy never falls below 0%.
 
+## Bot Detection Feature
+
+This feature detects potential bot activity by analyzing the timing of keystrokes.
+
+### Formulas
+
+**Average Interval:**
+
+$$
+\text{Average Interval} = \frac{\sum_{i=1}^{n} \text{interval}_i}{n}
+$$
+
+**Variance:**
+
+$$
+\text{Variance} = \frac{\sum_{i=1}^{n} (\text{interval}_i - \text{Average Interval})^2}{n}
+$$
+
+If the variance is below a predefined threshold and the average interval is very short, the input is flagged as potentially automated.
+
 ## 🛠️ Local Setup (Critical Path)
 
 ### Prerequisites
