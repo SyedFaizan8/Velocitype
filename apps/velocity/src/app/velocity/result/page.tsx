@@ -15,6 +15,7 @@ import { toast } from "@/hooks/use-toast";
 import { Separator } from "@/components/ui/separator"
 import { encryptFrontend } from "@/utils/encryptFrontend";
 import TooltipIcon from "@/components/TooltipIcon";
+import { profileCache } from "@/utils/fetchProfile";
 
 const Page = () => {
     const { wpm, accuracy, raw, totalLetters, totalWords, errors, timer } = useAppSelector((state) => state.typing);
@@ -26,6 +27,7 @@ const Page = () => {
 
     const sendData = useCallback(async () => {
         try {
+            if (user && profileCache.has(user.username)) profileCache.delete(user.username);
 
             if (wpm !== 0) {
 

@@ -48,6 +48,7 @@ import { UsernameFormDataType, UserProfile, UserUpdateData } from "@/utils/types
 import { useAvailability } from "@/hooks/useAvalibility";
 import Link from "next/link";
 import { encryptFrontend } from "@/utils/encryptFrontend";
+import { profileCache } from "@/utils/fetchProfile";
 
 const Page = () => {
 
@@ -120,6 +121,8 @@ const Page = () => {
 
     const handleSubmitForm = async (url: string, data: UserUpdateData) => {
         try {
+            if (user && profileCache.has(user.username)) profileCache.delete(user.username);
+
             if (url === "username" && (usernameAvailability !== null && !usernameAvailability)) {
                 toast({
                     variant: "destructive",
@@ -232,6 +235,7 @@ const Page = () => {
 
     const removeDp = async () => {
         try {
+            if (user && profileCache.has(user.username)) profileCache.delete(user.username);
             await axios.post("/api/user/remove-dp", {}, { withCredentials: true });
             toast({
                 title: "Dp removed successfully",
@@ -255,6 +259,7 @@ const Page = () => {
 
     const handleLogout = async () => {
         try {
+            if (user && profileCache.has(user.username)) profileCache.delete(user.username);
             await axios.post("/api/logout", {}, { withCredentials: true });
             dispatch(logoutUser());
             router.push("/velocity/login");
@@ -271,6 +276,7 @@ const Page = () => {
 
     const resetAccount = async () => {
         try {
+            if (user && profileCache.has(user.username)) profileCache.delete(user.username);
             await axios.post("/api/user/reset", {}, { withCredentials: true });
             toast({
                 title: "Account status",
@@ -286,6 +292,7 @@ const Page = () => {
     }
     const deleteAccount = async () => {
         try {
+            if (user && profileCache.has(user.username)) profileCache.delete(user.username);
             await axios.post("/api/user/delete", {}, { withCredentials: true });
             toast({
                 title: "Account status",
