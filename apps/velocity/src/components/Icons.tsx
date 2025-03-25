@@ -16,7 +16,9 @@ import {
     FaGlobe as Site,
     FaLink as Link,
     FaEye as Show,
-    FaEyeSlash as Hide
+    FaEyeSlash as Hide,
+    FaCaretRight as Right,
+    FaCaretLeft as Left
 
 } from "react-icons/fa";
 import { HiSpeakerXMark as Mute, HiSpeakerWave as Speaker } from "react-icons/hi2";
@@ -49,5 +51,7 @@ export {
     Hide,
     Loading,
     Remove,
-    Privacy
+    Privacy,
+    Right,
+    Left
 };

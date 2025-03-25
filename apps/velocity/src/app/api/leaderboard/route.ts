@@ -1,14 +1,11 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { ApiResponse, ApiError } from "@/utils/apiResponse";
 import redis from "@/lib/redisClient";
 
-export async function GET(req: NextRequest) {
+export async function GET() {
     try {
-        const { searchParams } = new URL(req.url);
-        const page = parseInt(searchParams.get("page") || "1", 10);
-        const cacheKey = `leaderboard:page:${page}`;
-
+        const cacheKey = "leaderboard:data";
         const cachedData = await redis.json.get(cacheKey)
 
         if (cachedData) {
@@ -18,14 +15,12 @@ export async function GET(req: NextRequest) {
             );
         }
 
-        const take = 50;
-        const skip = (page - 1) * take;
+        const take = 500;
 
         const leaderboard = await prisma.leaderboard.findMany({
             orderBy: {
                 highest_wpm: "desc"
             },
-            skip,
             take,
             select: {
                 user: {
