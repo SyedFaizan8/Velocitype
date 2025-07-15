@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/toaster";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { PostHogProvider } from "@/components/PosthogProviders";
+import { baseUrl } from '@/utils/constants'
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -24,8 +25,8 @@ export const metadata: Metadata = {
   openGraph: {
     title: "VelociType – Speed Typing Challenge & Progress Tracker",
     description: "Unleash your typing potential with VelociType. Track your progress with quick 15-second tests, detailed performance graphs, and comprehensive stats including total typing hours, tests, characters, and words typed. Compete on the leaderboard and elevate your skills today.",
-    images: ["https://velocitype.syedfaizan.in/images/logo_blue.png"],
-    url: "https://velocitype.syedfaizan.in",
+    images: [`https://${baseUrl}/images/logo_blue.png`],
+    url: baseUrl,
     type: 'website',
     siteName: "VelociType",
     locale: 'en_US',
@@ -33,11 +34,11 @@ export const metadata: Metadata = {
   twitter: {
     title: "VelociType – Speed Typing Challenge & Progress Tracker",
     description: "Unleash your typing potential with VelociType. Track your progress with quick 15-second tests, detailed performance graphs, and comprehensive stats including total typing hours, tests, characters, and words typed. Compete on the leaderboard and elevate your skills today.",
-    images: ["https://velocitype.syedfaizan.in/images/logo_blue.png"],
+    images: [`https://${baseUrl}/images/logo_blue.png`],
     card: "summary_large_image",
     site: "@VelociType",
   },
-  metadataBase: new URL('https://velocitype.syedfaizan.in'),
+  metadataBase: new URL(baseUrl),
   alternates: {
     canonical: '/',
   },
