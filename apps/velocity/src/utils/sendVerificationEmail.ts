@@ -4,9 +4,9 @@ import ResetPasswordEmail from "@/emails/ResetPasswordEmail";
 export async function sendVerificationEmail(username: string, email: string, url: string) {
     try {
         const { data, error } = await resend.emails.send({
-            from: 'noreply@velocitype.syedfaizan.in',
+            from: 'noreply@velocitype.live',
             to: [email],
-            subject: 'Password Reset Request | VelociType',
+            subject: 'Password Reset Request | velocitype.live',
             react: ResetPasswordEmail({ resetUrl: url, name: username })
         });
 
