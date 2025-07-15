@@ -1,4 +1,4 @@
-<img src="https://velocitype.syedfaizan.in/images/logo_blue.png" alt="VelociType Logo" width="600" />
+<img src="https://www.velocitype.live/images/logo_blue.png" alt="VelociType Logo" width="600" />
 
 # VelociType: Speed Typing Analytics Platform 🦖⌨️
 
