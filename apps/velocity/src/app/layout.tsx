@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "VelociType – Speed Typing Challenge & Progress Tracker",
     description: "Unleash your typing potential with VelociType. Track your progress with quick 15-second tests, detailed performance graphs, and comprehensive stats including total typing hours, tests, characters, and words typed. Compete on the leaderboard and elevate your skills today.",
-    images: [`https://${baseUrl}/images/logo_blue.png`],
+    images: [`${baseUrl}/images/logo_blue.png`],
     url: baseUrl,
     type: 'website',
     siteName: "VelociType",
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
   twitter: {
     title: "VelociType – Speed Typing Challenge & Progress Tracker",
     description: "Unleash your typing potential with VelociType. Track your progress with quick 15-second tests, detailed performance graphs, and comprehensive stats including total typing hours, tests, characters, and words typed. Compete on the leaderboard and elevate your skills today.",
-    images: [`https://${baseUrl}/images/logo_blue.png`],
+    images: [`${baseUrl}/images/logo_blue.png`],
     card: "summary_large_image",
     site: "@VelociType",
   },
