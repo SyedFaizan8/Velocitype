@@ -13,7 +13,7 @@ const useEngine = (timer: number) => {
     const [state, setState] = useState<State>("start");
     const { timeLeft, startCountdown, resetCountdown } = useCountdown(timer);
     const { words, updateWords } = useWords();
-    const { cursor, typed, clearTyped, totalTyped, resetTotalTyped } = useTypings(state !== "finish");
+    const { cursor, typed, clearTyped, totalTyped, resetTotalTyped, isShift } = useTypings(state !== "finish");
     const dispatch = useAppDispatch();
 
     const [errors, setErrors] = useState(0);
@@ -66,7 +66,7 @@ const useEngine = (timer: number) => {
         }
     }, [clearTyped, areWordsFinished, updateWords, sumErrors]);
 
-    return { state, words, typed, errors, restart, timeLeft, totalTyped };
+    return { state, words, typed, errors, restart, timeLeft, totalTyped, isShift };
 };
 
 export default useEngine;

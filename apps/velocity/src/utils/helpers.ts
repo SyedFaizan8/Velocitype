@@ -22,8 +22,7 @@ export const calculateAccuracyPercentage = (errors: number, total: number): numb
 };
 
 export const calculateWPM = (totalTyped: number, errors: number, timer: number): number => {
-    const multiplier = timer === 15 ? 4 : 1;
-    return Math.max(0, Math.floor(((totalTyped - errors) / 5) * multiplier))
+    return Math.max(0, Math.floor(((totalTyped - errors) / 5) * (timer === 15 ? 4 : timer === 30 ? 2 : timer === 45 ? 1.333 : 1)));
 }
 
 export const formatPercentage = (percentage: number) => {

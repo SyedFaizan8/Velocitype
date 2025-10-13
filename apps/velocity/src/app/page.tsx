@@ -31,6 +31,7 @@ import {
 import { TURNSTILE_SITE_KEY } from '@/utils/constants';
 import { setError } from '@/store/positionSlice';
 import { Timer } from '@/types/customTypes';
+import Keyboard from '@/components/Keyboard';
 
 const Home = () => {
   const isMobile = useIsMobile();
@@ -39,7 +40,7 @@ const Home = () => {
   const [timer, setTimer] = useState<Timer>(15)
   const { user, loading, initialized } = useAppSelector(state => state.auth);
 
-  const { words, typed, timeLeft, errors, state, restart, totalTyped } = useEngine(timer);
+  const { words, typed, timeLeft, errors, state, restart, totalTyped, isShift } = useEngine(timer);
   const [isCapsLockOn, setIsCapsLockOn] = useState(false);
   const [open, setOpen] = useState<boolean>(false);
 
@@ -122,7 +123,7 @@ const Home = () => {
         setTypingStats({
           wpm: calculateWPM(totalTyped, errors, timer),
           accuracy: calculateAccuracyPercentage(errors, totalTyped),
-          raw: Math.floor((totalTyped / 5) * (timer === 15 ? 4 : timer === 30 ? 3 : timer === 45 ? 2 : 1)),
+          raw: Math.floor((totalTyped / 5) * (timer === 15 ? 4 : timer === 30 ? 2 : timer === 45 ? 1.333 : 1)),
           totalLetters: Math.max(0, totalTyped),
           totalWords: Math.round(totalTyped / 5),
           errors: errors,
@@ -180,14 +181,15 @@ const Home = () => {
         >
         </div>
       }
-      <div className="w-full md:px-10 px-6 h-[80vh] flex flex-col justify-center items-center relative">
-        {(state !== "run" && state !== "finish" && words) ? <div className="text-slate-400 bg-slate-900 px-6 py-2 rounded-lg text-lg space-x-6 absolute top-12">
-          <span>timer:</span>
-          <button className={`${timer === 15 ? "text-yellow-400" : null}`} onClick={() => setTimer(15)}>15</button>
-          <button className={`${timer === 30 ? "text-yellow-400" : null}`} onClick={() => setTimer(30)}>30</button>
-          <button className={`${timer === 45 ? "text-yellow-400" : null}`} onClick={() => setTimer(45)}>45</button>
-          <button className={`${timer === 60 ? "text-yellow-400" : null}`} onClick={() => setTimer(60)}>60</button>
-        </div> : null}
+      <div className="w-full md:px-4 px-6 h-[80vh] flex flex-col justify-center items-center relative">
+        {(state !== "run" && state !== "finish" && words) ?
+          <div className="text-slate-400 bg-slate-900 px-6 py-2 rounded-lg text-lg space-x-6 absolute top-0">
+            <span>timer:</span>
+            <button className={`${timer === 15 ? "text-yellow-400" : null}`} onClick={() => setTimer(15)}>15</button>
+            <button className={`${timer === 30 ? "text-yellow-400" : null}`} onClick={() => setTimer(30)}>30</button>
+            <button className={`${timer === 45 ? "text-yellow-400" : null}`} onClick={() => setTimer(45)}>45</button>
+            <button className={`${timer === 60 ? "text-yellow-400" : null}`} onClick={() => setTimer(60)}>60</button>
+          </div> : null}
         <div className="w-full flex justify-between items-center h-10">
           <h2 className="text-yellow-400 font-medium text-3xl">{state === "run" ? timeLeft : ""}</h2>
           <h2 className="text-yellow-400 font-medium text-xl">
@@ -211,10 +213,14 @@ const Home = () => {
             <Caret state={state} />
           </div>
         </div>
+
+        {/* Keyboard */}
+        <Keyboard isCapsOn={isCapsLockOn} isShiftOn={isShift} nextKey={words[typed.length]} />
+
         <button
           tabIndex={-1}
           ref={buttonRef}
-          className="block rounded px-8 py-2 hover:text-white mx-auto mt-10 text-slate-500 text-xl"
+          className="block rounded px-8 py-1 hover:text-white mx-auto mt-10 text-slate-500 text-xl"
           onClick={handleClick}
         >
           <TooltipIcon icon={<Refresh />} tooltipText="Restart" />
@@ -227,7 +233,7 @@ const Home = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="text-red-500 text-xl mt-2">
+            className="text-red-500 text-xl mt-1">
             Caps Lock is on!
           </motion.div>
         )}

@@ -10,6 +10,7 @@ import { MIN_INTERVAL_THRESHOLD, TYPING_VARIANCE_THRESHOLD } from "@/utils/const
 const useTypings = (enabled: boolean) => {
   const [cursor, setCursor] = useState(0);
   const [typed, setTyped] = useState<string>("");
+  const [isShift, setIsShift] = useState<boolean>(false);
   const totalTyped = useRef(0);
   const keystrokeTimestamps = useRef<number[]>([]);
   const sound = useSelector((state: RootState) => state.sound.sound);
@@ -18,6 +19,12 @@ const useTypings = (enabled: boolean) => {
 
   const keydownHandler = useCallback(
     ({ key, code }: KeyboardEvent) => {
+
+      if (key === 'Shift') {
+        setIsShift(true);
+        return;
+      }
+
       if (!enabled || !isKeyboardCodeAllowed(code)) return;
       if (error) return;
 
@@ -25,7 +32,7 @@ const useTypings = (enabled: boolean) => {
       keystrokeTimestamps.current.push(now);
       if (keystrokeTimestamps.current.length > 10) keystrokeTimestamps.current.shift()
 
-      if (keystrokeTimestamps.current.length >= 5) {
+      if (keystrokeTimestamps.current.length >= 8) {
         // array of time intervals between keystrokes
         const intervals =
           keystrokeTimestamps.current.slice(1).map((time, i) => time - keystrokeTimestamps.current[i]);
@@ -61,6 +68,15 @@ const useTypings = (enabled: boolean) => {
     [enabled, sound, error]
   );
 
+  const keyupHandler = useCallback(
+    ({ key }: KeyboardEvent) => {
+      if (key === 'Shift') {
+        setIsShift(false);
+      }
+    },
+    [enabled, sound, error]
+  );
+
   const clearTyped = useCallback(() => {
     setTyped("");
     setCursor(0);
@@ -73,8 +89,10 @@ const useTypings = (enabled: boolean) => {
 
   useEffect(() => {
     window.addEventListener("keydown", keydownHandler);
+    window.addEventListener("keyup", keyupHandler);
     return () => {
       window.removeEventListener("keydown", keydownHandler);
+      window.removeEventListener("keyup", keyupHandler);
     };
   }, [keydownHandler]);
 
@@ -83,7 +101,8 @@ const useTypings = (enabled: boolean) => {
     cursor,
     clearTyped,
     resetTotalTyped,
-    totalTyped: totalTyped.current
+    totalTyped: totalTyped.current,
+    isShift
   };
 };
 
