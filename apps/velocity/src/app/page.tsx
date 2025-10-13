@@ -30,12 +30,13 @@ import {
 } from "@/components/ui/alert-dialog"
 import { TURNSTILE_SITE_KEY } from '@/utils/constants';
 import { setError } from '@/store/positionSlice';
+import { Timer } from '@/types/customTypes';
 
 const Home = () => {
   const isMobile = useIsMobile();
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const [timer, setTimer] = useState<number>(15)
+  const [timer, setTimer] = useState<Timer>(15)
   const { user, loading, initialized } = useAppSelector(state => state.auth);
 
   const { words, typed, timeLeft, errors, state, restart, totalTyped } = useEngine(timer);
@@ -121,7 +122,7 @@ const Home = () => {
         setTypingStats({
           wpm: calculateWPM(totalTyped, errors, timer),
           accuracy: calculateAccuracyPercentage(errors, totalTyped),
-          raw: Math.floor((totalTyped / 5) * (timer === 15 ? 4 : 1)),
+          raw: Math.floor((totalTyped / 5) * (timer === 15 ? 4 : timer === 30 ? 3 : timer === 45 ? 2 : 1)),
           totalLetters: Math.max(0, totalTyped),
           totalWords: Math.round(totalTyped / 5),
           errors: errors,
@@ -183,6 +184,8 @@ const Home = () => {
         {(state !== "run" && state !== "finish" && words) ? <div className="text-slate-400 bg-slate-900 px-6 py-2 rounded-lg text-lg space-x-6 absolute top-12">
           <span>timer:</span>
           <button className={`${timer === 15 ? "text-yellow-400" : null}`} onClick={() => setTimer(15)}>15</button>
+          <button className={`${timer === 30 ? "text-yellow-400" : null}`} onClick={() => setTimer(30)}>30</button>
+          <button className={`${timer === 45 ? "text-yellow-400" : null}`} onClick={() => setTimer(45)}>45</button>
           <button className={`${timer === 60 ? "text-yellow-400" : null}`} onClick={() => setTimer(60)}>60</button>
         </div> : null}
         <div className="w-full flex justify-between items-center h-10">

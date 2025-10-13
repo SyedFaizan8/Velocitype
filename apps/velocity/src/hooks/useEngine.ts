@@ -7,8 +7,7 @@ import useWords from "./useWords";
 import useTypings from "./useTypings";
 import { useAppDispatch } from "@/store/reduxHooks";
 import { changePosition } from "@/store/positionSlice";
-
-export type State = "start" | "run" | "finish";
+import { State } from "@/types/customTypes";
 
 const useEngine = (timer: number) => {
     const [state, setState] = useState<State>("start");

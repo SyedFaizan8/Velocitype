@@ -1,5 +1,5 @@
+import { State } from "@/types/customTypes";
 import { motion } from "framer-motion";
-import { State } from "@/hooks/useEngine";
 
 const Caret = ({ state }: { state: State }) => {
 

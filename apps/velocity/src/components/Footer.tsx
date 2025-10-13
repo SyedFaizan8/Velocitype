@@ -5,8 +5,8 @@ import { Developer, Github, Mail, Privacy } from "./Icons";
 import { AnimatePresence, motion } from "framer-motion";
 import { useAppSelector } from "@/store/reduxHooks";
 import { useEffect, useState } from "react";
-import { State } from "@/hooks/useEngine"
 import useIsMobile from "@/hooks/useIsMobile";
+import { State } from "@/types/customTypes";
 
 const Footer = () => {
     const { position } = useAppSelector(state => state.position);

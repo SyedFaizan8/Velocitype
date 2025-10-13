@@ -1,3 +1,4 @@
+import { Timer } from "@/types/customTypes";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface TypingState {
@@ -7,7 +8,7 @@ interface TypingState {
     totalLetters: number;
     totalWords: number;
     errors: number;
-    timer: number;
+    timer: Timer;
 }
 
 const initialState: TypingState = {

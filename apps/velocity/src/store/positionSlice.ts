@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { State } from "@/hooks/useEngine"
+import { State } from "@/types/customTypes"
 
 interface PositionState {
     position: State | null;
