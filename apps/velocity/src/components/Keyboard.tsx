@@ -1,5 +1,5 @@
 import { State } from "@/types/customTypes";
-import { ReactNode, useState } from "react";
+import { ReactNode } from "react";
 
 interface FingerMapType {
     [key: string]: {

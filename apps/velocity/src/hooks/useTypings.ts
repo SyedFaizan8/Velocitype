@@ -73,9 +73,7 @@ const useTypings = (enabled: boolean) => {
       if (key === 'Shift') {
         setIsShift(false);
       }
-    },
-    [enabled, sound, error]
-  );
+    }, []);
 
   const clearTyped = useCallback(() => {
     setTyped("");
@@ -94,7 +92,7 @@ const useTypings = (enabled: boolean) => {
       window.removeEventListener("keydown", keydownHandler);
       window.removeEventListener("keyup", keyupHandler);
     };
-  }, [keydownHandler]);
+  }, [keydownHandler, keyupHandler]);
 
   return {
     typed,
