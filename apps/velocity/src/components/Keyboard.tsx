@@ -1,4 +1,5 @@
-import { ReactNode } from "react";
+import { State } from "@/types/customTypes";
+import { ReactNode, useState } from "react";
 
 interface FingerMapType {
     [key: string]: {
@@ -8,7 +9,7 @@ interface FingerMapType {
     };
 }
 
-const Keyboard = ({ isShiftOn, isCapsOn, nextKey }: { isShiftOn: boolean, isCapsOn: boolean, nextKey: string }) => {
+const Keyboard = ({ isShiftOn, isCapsOn, nextKey, timeLeft, state, livewpm }: { isShiftOn: boolean, isCapsOn: boolean, nextKey: string, timeLeft: number, state: State, livewpm: number }) => {
 
     // Finger mapping with TypeScript interface
     const fingerMap: FingerMapType = {
@@ -54,7 +55,7 @@ const Keyboard = ({ isShiftOn, isCapsOn, nextKey }: { isShiftOn: boolean, isCaps
         ',': { hand: 'right', finger: 'middle', color: 'bg-purple-400' },
         '.': { hand: 'right', finger: 'ring', color: 'bg-pink-400' },
         '?': { hand: 'right', finger: 'pinky', color: 'bg-indigo-400' },
-        ' ': { hand: 'both', finger: 'thumb', color: 'bg-teal-400' },
+        ' ': { hand: 'right', finger: 'thumb', color: 'bg-teal-400' },
         'backspace': { hand: 'right', finger: 'pinky', color: 'bg-indigo-400' },
         'shift': { hand: 'left', finger: 'pinky', color: 'bg-red-400' }
     };
@@ -114,49 +115,129 @@ const Keyboard = ({ isShiftOn, isCapsOn, nextKey }: { isShiftOn: boolean, isCaps
 
     const currentLayout: string[][] = isShiftOn || isCapsOn ? shiftLayout : normalLayout;
 
-    return (
-        <div className="bg-slate-900/90 p-2 rounded-xl shadow-2xl border border-slate-700/50">
-            {currentLayout.map((row: string[], rowIndex: number) => (
-                <div key={rowIndex} className="flex justify-center mb-2 last:mb-0">
-                    {row.map((key: string) => {
-                        const isSpecialKey: boolean = ['backspace', 'shift', 'space', 'tab', 'enter', 'caps'].includes(key);
-                        // const isActive: boolean = key === 'shift' && (isShiftOn || isCapsOn);
-                        const isNextKey: boolean = key.toLowerCase() === (nextKey === ' ' ? 'space' : nextKey);
-                        const fingerInfo = fingerMap[key.toLowerCase()] || fingerMap[' '];
+    // Finger display component
+    const FingerDisplay: React.FC = () => {
+        const fingers = ['pinky', 'ring', 'middle', 'index', 'thumb'] as const;
 
-                        return (
-                            <button
-                                key={key}
-                                className={`
-                                    ${getKeySize(key)}
-                                    h-6 md:h-8 mx-1 px-2 md:px-3 py-1 rounded-xl font-semibold transition-all duration-200 transform
-                                    ${isSpecialKey
-                                        ? 'bg-gradient-to-br from-slate-600 to-slate-700 text-slate-100 hover:from-slate-500 hover:to-slate-600 border border-slate-500/50'
-                                        : 'bg-gradient-to-br from-slate-700 to-slate-800 text-slate-200 hover:from-slate-600 hover:to-slate-700 border border-slate-600/50'
-                                    }
-                                    ${isNextKey ? `${fingerInfo.color} text-white border-2 border-white/50 shadow-xl scale-105 -translate-y-0.5` : ''}
-                                    shadow-lg group relative overflow-hidden
-                                `}
-                            >
-                                {/* Ripple effect */}
-                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
+        return (
+            <div className="flex justify-center items-center space-x-6 md:space-x-10 mb-2">
 
-                                {/* Key content */}
-                                <span className="relative z-10 flex items-center justify-center">
-                                    {getKeyDisplay(key)}
-                                </span>
-
-                                {/* Finger indicator dot */}
-                                {isNextKey && (
-                                    <div className="absolute top-1 right-1 w-2 h-2 bg-white rounded-full animate-pulse" />
-                                )}
-                            </button>
-                        );
-                    })}
+                {/* Left Hand */}
+                <div className="text-center">
+                    <div className="text-sm text-slate-300 mb-1">Left Hand</div>
+                    <div className="flex space-x-2">
+                        {fingers.map((finger) => {
+                            const isActive = fingerMap[nextKey]?.hand === 'left' && fingerMap[nextKey]?.finger === finger;
+                            return (
+                                <div key={finger} className="text-center">
+                                    <div
+                                        className={`w-10 h-8 rounded-lg transition-all duration-300 ${isActive
+                                            ? `${fingerMap[nextKey]?.color || 'bg-blue-400'} scale-110 shadow-lg`
+                                            : 'bg-slate-600'
+                                            }`}
+                                    />
+                                    <div className={`text-xs mt-1 ${isActive ? 'text-blue-300 font-semibold' : 'text-slate-400'}`}>
+                                        {finger}
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
                 </div>
-            ))}
-        </div>
+
+                {/* Right Hand */}
+                <div className="text-center">
+                    <div className="text-sm text-slate-300 mb-1">Right Hand</div>
+                    <div className="flex space-x-2">
+                        {[...fingers].reverse().map((finger) => {
+                            const isActive = fingerMap[nextKey]?.hand === 'right' && fingerMap[nextKey]?.finger === finger;
+                            return (
+                                <div key={finger} className="text-center">
+                                    <div
+                                        className={`w-10 h-8 rounded-lg transition-all duration-300
+                                            ${isActive ? `${fingerMap[nextKey]?.color || 'bg-blue-400'} scale-110 shadow-lg`
+                                                : 'bg-slate-600'
+                                            }`}
+                                    />
+                                    <div className={`text-xs mt-1 ${isActive ? 'text-blue-300 font-semibold' : 'text-slate-400'}`}>
+                                        {finger}
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
+    return (
+        <>
+            <div className='grid grid-cols-6 gap-2 text-center'>
+                <div className={`${state !== 'run' && 'invisible'} flex flex-col justify-end`}>
+                    <div className="text-center mb-1 bg-slate-900/80 border border-slate-700/50 rounded-xl p-4">
+                        <h3 className="text-xl font-semibold text-slate-200">Time Left</h3>
+                        <h2 className="text-yellow-400 font-medium text-3xl">{timeLeft}</h2>
+                    </div>
+                </div>
+                <div className="col-span-4 bg-slate-900/80 rounded-xl p-2 mb-1 border border-slate-700/50">
+                    <div className="text-center mb-1">
+                        <h3 className="text-lg font-semibold text-slate-200">Finger Position Guide</h3>
+                    </div>
+                    <FingerDisplay />
+                </div>
+                <div className={`${state !== 'run' && 'invisible'} flex flex-col justify-end`}>
+                    <div className="text-center mb-1 bg-slate-900/80 border border-slate-700/50 rounded-xl p-4">
+                        <h3 className="text-xl font-semibold text-slate-200">WPM</h3>
+                        <h2 className="text-yellow-400 font-medium text-3xl">{livewpm}</h2>
+                    </div>
+                </div>
+            </div>
+            <div className="bg-slate-900/90 p-2 rounded-xl shadow-2xl border border-slate-700/50">
+                {currentLayout.map((row: string[], rowIndex: number) => (
+                    <div key={rowIndex} className="flex justify-center mb-2 last:mb-0">
+                        {row.map((key: string) => {
+                            const isSpecialKey: boolean = ['backspace', 'shift', 'space', 'tab', 'enter', 'caps', ' '].includes(key);
+                            // const isActive: boolean = key === 'shift' && (isShiftOn || isCapsOn);
+                            const isNextKey: boolean = key.toLowerCase() === (nextKey === ' ' ? 'space' : nextKey);
+                            const fingerInfo = fingerMap[key.toLowerCase()] || fingerMap[' '];
+
+                            return (
+                                <button
+                                    key={key}
+                                    className={`
+                                    ${getKeySize(key)}
+                                    h-6 md:h-8 mx-1 px-2 md:px-3 py-1 rounded-xl font-semibold transition-all duration-200 transform cursor-default
+                                    ${isSpecialKey
+                                            ? `${isNextKey ? fingerInfo.color + ' text-black' : 'bg-gradient-to-br from-slate-600 to-slate-700 text-slate-100'} hover:from-slate-500 hover:to-slate-600 border border-slate-500/50`
+                                            : isNextKey ? `${fingerInfo.color} text-black border-2 border-white/50 shadow-xl scale-105 -translate-y-0.5` :
+                                                'bg-gradient-to-br from-slate-700 to-slate-800 text-slate-200 hover:from-slate-600 hover:to-slate-700 border border-slate-600/50'
+                                        }
+                                     shadow-lg group relative overflow-hidden
+                                    `}
+                                >
+                                    {/* Ripple effect */}
+                                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
+
+                                    {/* Key content */}
+                                    <span className="relative z-10 flex items-center justify-center">
+                                        {getKeyDisplay(key)}
+                                    </span>
+
+                                    {/* Finger indicator dot */}
+                                    {isNextKey && (
+                                        <div className="absolute top-1 right-1 w-2 h-2 bg-white rounded-full animate-pulse" />
+                                    )}
+                                </button>
+                            );
+                        })}
+                    </div>
+                ))}
+            </div>
+        </>
     )
 }
+
+
 
 export default Keyboard;

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 
 import axios from 'axios';
 import Turnstile from "react-turnstile";
@@ -47,6 +47,8 @@ const Home = () => {
   const [loadingScreen, setLoadingScreen] = useState<boolean>(false);
   const [message, setMessage] = useState<string>('');
   const { error } = useAppSelector(state => state.position)
+
+  const [keyboard, setKeyboard] = useState<boolean>(false);
 
   const buttonRef = useRef<HTMLButtonElement>(null);
   const handleClick = () => {
@@ -181,22 +183,56 @@ const Home = () => {
         >
         </div>
       }
-      <div className="w-full md:px-4 px-6 h-[80vh] flex flex-col justify-center items-center relative">
+      <div className="w-full md:px-4 px-6 h-[90vh] flex flex-col justify-center items-center relative">
+        <AnimatePresence>
+          {!keyboard && state === 'run' && (
+            <div className='flex justify-between w-full'>
+              <motion.div
+                initial={{ y: "-100%" }}
+                animate={{ y: 0 }}
+                transition={{
+                  type: "tween",
+                  duration: 0.25,
+                  ease: "easeOut"
+                }}
+              >
+                <div className="flex flex-col justify-end">
+                  <div className="text-center mb-1 bg-slate-900/80 border border-slate-700/50 rounded-xl p-4">
+                    <h3 className="text-xl font-semibold text-slate-200">Time Left</h3>
+                    <h2 className="text-yellow-400 font-medium text-3xl">{timeLeft}</h2>
+                  </div>
+                </div>
+              </motion.div>
+              <motion.div
+                initial={{ y: "-100%" }}
+                animate={{ y: 0 }}
+                transition={{
+                  type: "tween",
+                  duration: 0.25,
+                  ease: "easeOut"
+                }}
+              >
+                <div className="flex flex-col justify-end">
+                  <div className="text-center mb-1 bg-slate-900/80 border border-slate-700/50 rounded-xl p-4">
+                    <h3 className="text-xl font-semibold text-slate-200">WPM</h3>
+                    <h2 className="text-yellow-400 font-medium text-3xl">{liveWPM(totalTyped, timeLeft, timer)}</h2>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
+
         {(state !== "run" && state !== "finish" && words) ?
-          <div className="text-slate-400 bg-slate-900 px-6 py-2 rounded-lg text-lg space-x-6 absolute top-0">
+          <div className="text-slate-400 bg-slate-900 px-3 py-1 rounded-lg text-md space-x-4 absolute top-0 z-20">
             <span>timer:</span>
             <button className={`${timer === 15 ? "text-yellow-400" : null}`} onClick={() => setTimer(15)}>15</button>
             <button className={`${timer === 30 ? "text-yellow-400" : null}`} onClick={() => setTimer(30)}>30</button>
             <button className={`${timer === 45 ? "text-yellow-400" : null}`} onClick={() => setTimer(45)}>45</button>
             <button className={`${timer === 60 ? "text-yellow-400" : null}`} onClick={() => setTimer(60)}>60</button>
           </div> : null}
-        <div className="w-full flex justify-between items-center h-10">
-          <h2 className="text-yellow-400 font-medium text-3xl">{state === "run" ? timeLeft : ""}</h2>
-          <h2 className="text-yellow-400 font-medium text-xl">
-            {state === "run" ? <span className='text-slate-500'>{`wpm ${liveWPM(totalTyped, timeLeft, timer)}`}</span> : null}
-          </h2>
-        </div>
-        <div className="relative md:text-3xl text-lg leading-relaxed h-56">
+
+        <div className="relative md:text-3xl sm:text-xl text-lg leading-relaxed h-64 mt-20 ">
           <div className="text-slate-500">{words}</div>
           {/* User typed characters will be overlayed over the generated words */}
           <div className="absolute inset-0">
@@ -214,8 +250,42 @@ const Home = () => {
           </div>
         </div>
 
+        <label
+          className="inline-flex items-center cursor-pointer space-x-2 p-2 rounded-lg bg-slate-800 border border-slate-700 hover:bg-slate-750 transition-all duration-200 focus:outline-none mb-1"
+          onKeyDown={(e) => e.key === ' ' && e.preventDefault()}
+        >
+          <div className="flex items-center space-x-3">
+            <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+            <span className="text-sm font-medium text-slate-200">Virtual Keyboard</span>
+          </div>
+          <input
+            type="checkbox"
+            className="sr-only peer focus:outline-none focus:ring-0"
+            checked={keyboard}
+            onChange={() => setKeyboard(!keyboard)}
+          />
+          <div className="relative w-12 h-6 bg-slate-700 rounded-full transition-all duration-300 ease-in-out peer-checked:bg-emerald-500 after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all after:duration-300 after:ease-in-out peer-checked:after:translate-x-6 shadow-lg"></div>
+        </label>
+
         {/* Keyboard */}
-        <Keyboard isCapsOn={isCapsLockOn} isShiftOn={isShift} nextKey={words[typed.length]} />
+        <AnimatePresence>
+          {keyboard && (
+            <motion.div
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "100%" }}
+              transition={{
+                type: "tween",
+                duration: 0.25,
+                ease: "easeOut"
+              }}
+            >
+              <Keyboard isCapsOn={isCapsLockOn} isShiftOn={isShift} nextKey={words[typed.length]} timeLeft={timeLeft} state={state} livewpm={liveWPM(totalTyped, timeLeft, timer)} />
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         <button
           tabIndex={-1}
@@ -238,6 +308,7 @@ const Home = () => {
           </motion.div>
         )}
       </div>
+
       <AlertDialog open={open} onOpenChange={setOpen}>
         <AlertDialogContent className="bg-slate-800">
           <AlertDialogHeader>
@@ -260,9 +331,9 @@ const Home = () => {
         </AlertDialogContent>
       </AlertDialog>
       <div className='w-full hidden md:flex justify-center items-center space-x-1 text-md text-slate-500 '>
-        <span className="bg-slate-500 rounded-sm px-2 text-sm text-white">tab</span>
+        <span className="bg-slate-500 rounded-sm px-2 text-xs text-white">tab</span>
         <span>-</span>
-        <span>restart</span>
+        <span className='text-sm'>restart</span>
       </div>
     </div >
   )
