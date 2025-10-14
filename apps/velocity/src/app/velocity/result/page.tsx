@@ -75,7 +75,7 @@ const Page = () => {
                 })
             }
         }
-    }, [accuracy, totalLetters, totalWords, wpm, timer])
+    }, [accuracy, totalLetters, totalWords, wpm, timer, user])
 
     useEffect(() => {
         const handleSendData = async () => {

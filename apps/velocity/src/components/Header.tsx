@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Info, Keyboard, LeaderBoard, Mute, Settings, Speaker, User } from "./Icons";
 import { AnimatePresence, motion } from "framer-motion";
 import { useAppDispatch, useAppSelector } from "@/store/reduxHooks";
-import { changeSound } from "@/store/soundSlice"
+import { changeSound } from "@/store/settingsSlice"
 import TooltipIcon from "./TooltipIcon";
 import useIsMobile from "@/hooks/useIsMobile";
 import Image from "next/image";
@@ -13,7 +13,7 @@ import { Howler } from 'howler';
 import { bringDpUrlFromFileId } from "@/utils/addTranformation";
 
 const Header = () => {
-    const { sound } = useAppSelector(state => state.sound)
+    const { sound } = useAppSelector(state => state.setting)
     const { user, initialized } = useAppSelector(state => state.auth)
     const { position } = useAppSelector(state => state.position);
     const isMobile = useIsMobile();

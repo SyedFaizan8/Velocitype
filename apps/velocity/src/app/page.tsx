@@ -32,13 +32,17 @@ import { TURNSTILE_SITE_KEY } from '@/utils/constants';
 import { setError } from '@/store/positionSlice';
 import { Timer } from '@/types/customTypes';
 import Keyboard from '@/components/Keyboard';
+import { changekeyboard, changeTiming } from '@/store/settingsSlice';
 
 const Home = () => {
   const isMobile = useIsMobile();
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const [timer, setTimer] = useState<Timer>(15)
   const { user, loading, initialized } = useAppSelector(state => state.auth);
+
+  const { timing, keyboard: keyboardBool } = useAppSelector(state => state.setting)
+  const [timer, setTimer] = useState<Timer>(timing)
+  const [keyboard, setKeyboard] = useState<boolean>(keyboardBool);
 
   const { words, typed, timeLeft, errors, state, restart, totalTyped, isShift } = useEngine(timer);
   const [isCapsLockOn, setIsCapsLockOn] = useState(false);
@@ -48,7 +52,6 @@ const Home = () => {
   const [message, setMessage] = useState<string>('');
   const { error } = useAppSelector(state => state.position)
 
-  const [keyboard, setKeyboard] = useState<boolean>(false);
 
   const buttonRef = useRef<HTMLButtonElement>(null);
   const handleClick = () => {
@@ -136,6 +139,11 @@ const Home = () => {
       router.push("/velocity/result");
     }
   }, [state, dispatch, errors, router, totalTyped, timer]);
+
+  const keyboardUpdate = useCallback(() => {
+    dispatch(changekeyboard())
+    setKeyboard(!keyboard)
+  }, [keyboard, dispatch, changekeyboard])
 
   const progressPercentage = ((timer - timeLeft) / timer) * 100;
 
@@ -226,10 +234,10 @@ const Home = () => {
         {(state !== "run" && state !== "finish" && words) ?
           <div className="text-slate-400 bg-slate-900 px-3 py-1 rounded-lg text-md space-x-4 absolute top-0 z-20">
             <span>timer:</span>
-            <button className={`${timer === 15 ? "text-yellow-400" : null}`} onClick={() => setTimer(15)}>15</button>
-            <button className={`${timer === 30 ? "text-yellow-400" : null}`} onClick={() => setTimer(30)}>30</button>
-            <button className={`${timer === 45 ? "text-yellow-400" : null}`} onClick={() => setTimer(45)}>45</button>
-            <button className={`${timer === 60 ? "text-yellow-400" : null}`} onClick={() => setTimer(60)}>60</button>
+            <button className={`${timer === 15 ? "text-yellow-400" : null}`} onClick={() => { setTimer(15); dispatch(changeTiming(15)) }}>15</button>
+            <button className={`${timer === 30 ? "text-yellow-400" : null}`} onClick={() => { setTimer(30); dispatch(changeTiming(30)) }}>30</button>
+            <button className={`${timer === 45 ? "text-yellow-400" : null}`} onClick={() => { setTimer(45); dispatch(changeTiming(45)) }}>45</button>
+            <button className={`${timer === 60 ? "text-yellow-400" : null}`} onClick={() => { setTimer(60); dispatch(changeTiming(60)) }}>60</button>
           </div> : null}
 
         <div className="relative md:text-3xl sm:text-xl text-lg leading-relaxed h-64 mt-20 ">
@@ -264,7 +272,7 @@ const Home = () => {
             type="checkbox"
             className="sr-only peer focus:outline-none focus:ring-0"
             checked={keyboard}
-            onChange={() => setKeyboard(!keyboard)}
+            onChange={keyboardUpdate}
           />
           <div className="relative w-12 h-6 bg-slate-700 rounded-full transition-all duration-300 ease-in-out peer-checked:bg-emerald-500 after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all after:duration-300 after:ease-in-out peer-checked:after:translate-x-6 shadow-lg"></div>
         </label>

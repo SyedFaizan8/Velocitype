@@ -13,7 +13,7 @@ const useTypings = (enabled: boolean) => {
   const [isShift, setIsShift] = useState<boolean>(false);
   const totalTyped = useRef(0);
   const keystrokeTimestamps = useRef<number[]>([]);
-  const sound = useSelector((state: RootState) => state.sound.sound);
+  const { sound } = useSelector((state: RootState) => state.setting);
   const { error } = useAppSelector(state => state.position);
   const dispatch = useAppDispatch();
 
@@ -65,7 +65,7 @@ const useTypings = (enabled: boolean) => {
           if (code !== "Space") totalTyped.current += 1;
       }
     },
-    [enabled, sound, error]
+    [enabled, sound, error, dispatch]
   );
 
   const keyupHandler = useCallback(
