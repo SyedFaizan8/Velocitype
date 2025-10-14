@@ -58,7 +58,7 @@ export const resultSchema = z.object({
     accuracy: z.number(),
     totalChars: z.number(),
     totalWords: z.number(),
-    timer: z.union([z.literal(15), z.literal(60)]),
+    timer: z.union([z.literal(15), z.literal(30), z.literal(45), z.literal(60)]),
 })
 
 export const resetPassword = z.object({
