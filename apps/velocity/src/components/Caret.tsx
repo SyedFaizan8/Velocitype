@@ -1,7 +1,7 @@
 import { State } from "@/types/customTypes";
 import { motion } from "framer-motion";
 
-const Caret = ({ state }: { state: State }) => {
+const Caret = ({ state, keyboard }: { state: State, keyboard: boolean }) => {
 
   const isBlinking = state !== "run";
 
@@ -12,7 +12,7 @@ const Caret = ({ state }: { state: State }) => {
       animate={isBlinking ? { opacity: 0 } : {}}
       exit={isBlinking ? { opacity: 1 } : {}}
       transition={isBlinking ? { repeat: Infinity, duration: 0.8, ease: "easeInOut" } : {}}
-      className={`inline-block bg-yellow-500 w-[3px] md:h-7 h-5`}
+      className={`inline-block bg-yellow-500 w-[3px] ${!keyboard ? 'md:h-7' : 'md:h-5'} h-5`}
     />
   )
 };

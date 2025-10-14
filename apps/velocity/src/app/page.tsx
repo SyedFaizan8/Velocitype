@@ -240,7 +240,7 @@ const Home = () => {
             <button className={`${timer === 60 ? "text-yellow-400" : null}`} onClick={() => { setTimer(60); dispatch(changeTiming(60)) }}>60</button>
           </div> : null}
 
-        <div className="relative md:text-3xl sm:text-xl text-lg leading-relaxed h-64 mt-20 ">
+        <div className={`relative ${!keyboard ? "md:text-3xl" : "md:text-2xl"} sm:text-xl text-lg leading-relaxed h-64 mt-20 `}>
           <div className="text-slate-500">{words}</div>
           {/* User typed characters will be overlayed over the generated words */}
           <div className="absolute inset-0">
@@ -254,7 +254,7 @@ const Home = () => {
                 {words[index]}
               </span>
             ))}
-            <Caret state={state} />
+            <Caret state={state} keyboard={keyboard} />
           </div>
         </div>
 
