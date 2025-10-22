@@ -29,7 +29,7 @@ const Footer = () => {
                         exit={{ opacity: 0, y: 20 }}
                         transition={{ duration: 0.3, ease: "easeInOut" }}
                     >
-                        < div className="z-10 w-full md:flex text-slate-500 md:justify-start md:items-center bottom-0  md:relative md:space-x-4">
+                        < div className="z-10 w-full md:flex text-slate-500 md:justify-start md:items-center lg:bottom-0 md:bottom-4  md:relative lg:space-x-4 md:space-x-2 ">
                             <Link href="https://www.syedfaizan.in" target="_blank" rel="noopener noreferrer">
                                 <div className="flex  space-x-1 hover:text-slate-200 cursor-pointer">
                                     <span className="pt-1  md:text-sm text-xs"><Developer /></span>

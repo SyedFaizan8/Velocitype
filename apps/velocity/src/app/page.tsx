@@ -183,15 +183,14 @@ const Home = () => {
       />
       {timeLeft > 0 &&
         <div
-          className="h-1 bg-yellow-500  transition-all ease-linear duration-1000 fixed top-0 left-0 rounded-br-full"
+          className="lg:h-1 md:h-[2px] bg-yellow-500  transition-all ease-linear duration-1000 fixed top-0 left-0 rounded-br-full"
           style={{
-            width: `${progressPercentage}%`,
-            // background: "linear-gradient(to right, red, orange, yellow, green, blue, indigo, violet)"
+            width: `${progressPercentage}%`
           }}
         >
         </div>
       }
-      <div className="w-full md:px-4 px-6 h-[90vh] flex flex-col justify-center items-center relative">
+      <div className="w-full xl:px-10 lg:px-6 md:px-0 h-[90vh] flex flex-col justify-center items-center relative">
         <AnimatePresence>
           {!keyboard && state === 'run' && (
             <div className='flex justify-between w-full'>
@@ -205,9 +204,9 @@ const Home = () => {
                 }}
               >
                 <div className="flex flex-col justify-end">
-                  <div className="text-center mb-1 bg-slate-900/80 border border-slate-700/50 rounded-xl p-4">
-                    <h3 className="text-xl font-semibold text-slate-200">Time Left</h3>
-                    <h2 className="text-yellow-400 font-medium text-3xl">{timeLeft}</h2>
+                  <div className="text-center lg:mb-1 md:mb-0 bg-slate-900/80 border border-slate-700/50 rounded-xl lg:p-4 md:p-2">
+                    <h3 className="lg:text-xl md:text-sm font-semibold text-slate-200">Time Left</h3>
+                    <h2 className="lg:text-3xl md:text-xl text-yellow-400 font-medium ">{timeLeft}</h2>
                   </div>
                 </div>
               </motion.div>
@@ -221,9 +220,9 @@ const Home = () => {
                 }}
               >
                 <div className="flex flex-col justify-end">
-                  <div className="text-center mb-1 bg-slate-900/80 border border-slate-700/50 rounded-xl p-4">
-                    <h3 className="text-xl font-semibold text-slate-200">WPM</h3>
-                    <h2 className="text-yellow-400 font-medium text-3xl">{liveWPM(totalTyped, timeLeft, timer)}</h2>
+                  <div className="text-center lg:mb-1 md:mb-0 bg-slate-900/80 border border-slate-700/50 rounded-xl lg:p-4 md:p-2">
+                    <h3 className="lg:text-xl md:text-sm font-semibold text-slate-200">WPM</h3>
+                    <h2 className="lg:text-3xl md:text-xl text-yellow-400 font-medium">{liveWPM(totalTyped, timeLeft, timer)}</h2>
                   </div>
                 </div>
               </motion.div>
@@ -232,7 +231,7 @@ const Home = () => {
         </AnimatePresence>
 
         {(state !== "run" && state !== "finish" && words) ?
-          <div className="text-slate-400 bg-slate-900 px-3 py-1 rounded-lg text-md space-x-4 absolute top-0 z-20">
+          <div className="text-slate-400 bg-slate-900 px-3 py-1 rounded-lg xl:text-xl lg:text-sm md:text-xs lg:space-x-4 md:space-x-2 absolute top-0 z-20">
             <span>timer:</span>
             <button className={`${timer === 15 ? "text-yellow-400" : null}`} onClick={() => { setTimer(15); dispatch(changeTiming(15)) }}>15</button>
             <button className={`${timer === 30 ? "text-yellow-400" : null}`} onClick={() => { setTimer(30); dispatch(changeTiming(30)) }}>30</button>
@@ -240,7 +239,7 @@ const Home = () => {
             <button className={`${timer === 60 ? "text-yellow-400" : null}`} onClick={() => { setTimer(60); dispatch(changeTiming(60)) }}>60</button>
           </div> : null}
 
-        <div className={`relative ${!keyboard ? "md:text-3xl" : "md:text-2xl"} sm:text-xl text-lg leading-relaxed h-64 mt-20 `}>
+        <div className={`relative ${!keyboard ? "xl:text-4xl lg:text-3xl md:text-xl" : "xl:text-3xl lg:text-2xl md:text-md"} leading-relaxed h-64 mt-10`}>
           <div className="text-slate-500">{words}</div>
           {/* User typed characters will be overlayed over the generated words */}
           <div className="absolute inset-0">
@@ -259,23 +258,42 @@ const Home = () => {
         </div>
 
         <label
-          className="inline-flex items-center cursor-pointer space-x-2 p-2 rounded-lg bg-slate-800 border border-slate-700 hover:bg-slate-750 transition-all duration-200 focus:outline-none mb-1"
-          onKeyDown={(e) => e.key === ' ' && e.preventDefault()}
+          className="inline-flex items-center gap-2 cursor-pointer px-1 py-0.5 rounded-md transition-colors duration-150 focus:outline-none"
+          onKeyDown={(e) => e.key === " " && e.preventDefault()}
         >
-          <div className="flex items-center space-x-3">
-            <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          {/* icon + text */}
+          <div className="flex items-center gap-2">
+            <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5 lg:w-4 lg:h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
             </svg>
-            <span className="text-sm font-medium text-slate-200">Virtual Keyboard</span>
+            <span className="text-xs sm:text-sm font-medium text-slate-200 select-none">Virtual Keyboard</span>
           </div>
+
+          {/* accessible checkbox (controlled) */}
           <input
             type="checkbox"
-            className="sr-only peer focus:outline-none focus:ring-0"
+            className="sr-only"
             checked={keyboard}
             onChange={keyboardUpdate}
+            aria-checked={keyboard}
+            aria-label="Toggle virtual keyboard"
           />
-          <div className="relative w-12 h-6 bg-slate-700 rounded-full transition-all duration-300 ease-in-out peer-checked:bg-emerald-500 after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all after:duration-300 after:ease-in-out peer-checked:after:translate-x-6 shadow-lg"></div>
+
+          {/* track: ON = green, OFF = slate */}
+          <div
+            className={`flex items-center w-9 h-4 sm:w-10 sm:h-5 lg:w-12 lg:h-6 rounded-full px-1 transition-colors duration-200
+      ${keyboard ? "bg-emerald-500" : "bg-slate-700"}`}
+            aria-hidden="true"
+          >
+            {/* knob: checked=true -> moves to right (ml-auto). left->right indicates ON */}
+            <span
+              className={`block w-3 h-3 sm:w-3.5 sm:h-3.5 lg:w-4 lg:h-4 rounded-full transition-all duration-300 ease-in-out
+        ${keyboard ? "ml-auto bg-white shadow-md" : "ml-0 bg-white shadow"}`}
+              style={{ willChange: "margin, background-color" }}
+            />
+          </div>
         </label>
+
 
         {/* Keyboard */}
         <AnimatePresence>
@@ -298,11 +316,16 @@ const Home = () => {
         <button
           tabIndex={-1}
           ref={buttonRef}
-          className="block rounded px-8 py-1 hover:text-white mx-auto mt-10 text-slate-500 text-xl"
+          className="block rounded px-8 py-1 hover:text-white mx-auto  text-slate-500 text-xl"
           onClick={handleClick}
         >
           <TooltipIcon icon={<Refresh />} tooltipText="Restart" />
         </button>
+        <div className='w-full hidden md:flex justify-center items-center space-x-1 lg:text-md md:text-sm text-slate-500 '>
+          <span className="bg-slate-500 rounded-sm lg:px-2 md:px-[6px] text-xs text-white">tab</span>
+          <span>-</span>
+          <span className='lg:text-sm md:text-xs'>restart</span>
+        </div>
 
         {isCapsLockOn && (
           <motion.div
@@ -311,11 +334,12 @@ const Home = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="text-red-500 text-xl mt-1">
+            className="text-red-500 lg:text-xl md:text-xs lg:mt-1 md:mt-0">
             Caps Lock is on!
           </motion.div>
         )}
       </div>
+
 
       <AlertDialog open={open} onOpenChange={setOpen}>
         <AlertDialogContent className="bg-slate-800">
@@ -338,11 +362,7 @@ const Home = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-      <div className='w-full hidden md:flex justify-center items-center space-x-1 text-md text-slate-500 '>
-        <span className="bg-slate-500 rounded-sm px-2 text-xs text-white">tab</span>
-        <span>-</span>
-        <span className='text-sm'>restart</span>
-      </div>
+
     </div >
   )
 }

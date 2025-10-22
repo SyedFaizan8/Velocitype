@@ -51,10 +51,10 @@ const Header = () => {
         return (
             <div className="flex justify-between">
                 <Link href="/">
-                    <div className="text-slate-500 font-bold cursor-pointer md:text-3xl text-lg ">VelociType</div>
+                    <div className="text-slate-500 font-bold cursor-pointer xl:text-4xl lg:text-3xl md:text-2xl">VelociType</div>
                 </Link>
                 <div
-                    className={`hover:text-slate-200 cursor-pointer pt-2 md:text-2xl text-md ${sound ? "text-yellow-200" : "text-slate-500"}`}
+                    className={`hover:text-slate-200 cursor-pointer pt-2 lg:text-2xl md:text-md ${sound ? "text-yellow-200" : "text-slate-500"}`}
                     onClick={handleToggleSound}
                 >
                     {sound ? <Speaker /> : <Mute />}
@@ -63,11 +63,11 @@ const Header = () => {
         )
     } else if (!isMobile) {
         return (
-            <div className="z-10 relative w-full flex justify-between md:text-3xl text-lg text-slate-500 ">
-                <div className="flex md:space-x-5 space-x-3">
+            <div className="z-10 relative w-full flex justify-between xl:text-4xl lg:text-3xl md:text-2xl text-slate-500">
+                <div className="flex md:space-x-3 lg:space-x-5 xl:space-x-7">
                     <div>
                         <Link href="/">
-                            <div className="text-white font-bold cursor-pointer ">
+                            <div className="text-white font-bold cursor-pointer">
                                 VelociType
                             </div>
                         </Link>
@@ -79,24 +79,24 @@ const Header = () => {
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: 20 }}
                             transition={{ duration: 0.3, ease: "easeInOut" }}
-                            className="flex md:space-x-5 space-x-3">
+                            className="flex md:space-x-3 lg:space-x-5 xl:space-x-7">
                             <Link href="/">
-                                <div className="hover:text-slate-200 cursor-pointer pt-2 md:text-2xl text-md">
+                                <div className="hover:text-slate-200 cursor-pointer pt-2 md:text-xl lg:text-2xl xl:text-3xl">
                                     <TooltipIcon icon={<Keyboard />} tooltipText="home" />
                                 </div>
                             </Link>
                             <Link href="/velocity/information">
-                                <div className="hover:text-slate-200 cursor-pointer pt-2 md:text-xl text-sm">
+                                <div className="hover:text-slate-200 cursor-pointer pt-[6px] md:text-xl lg:text-2xl xl:text-3xl">
                                     <TooltipIcon icon={<Info />} tooltipText="information" />
                                 </div>
                             </Link>
                             <Link href="/velocity/leaderboard">
-                                <div className="hover:text-slate-200 cursor-pointer pt-2 md:text-2xl text-md">
+                                <div className="hover:text-slate-200 cursor-pointer pt-2 md:text-xl lg:text-2xl xl:text-3xl">
                                     <TooltipIcon icon={<LeaderBoard />} tooltipText="leaderboard" />
                                 </div>
                             </Link>
                             <Link href="/velocity/settings">
-                                <div className="hover:text-slate-200 cursor-pointer pt-2 md:text-2xl text-md">
+                                <div className="hover:text-slate-200 cursor-pointer pt-2 md:text-xl lg:text-2xl xl:text-3xl">
                                     <TooltipIcon icon={<Settings />} tooltipText="settings" />
                                 </div>
                             </Link>
@@ -110,9 +110,9 @@ const Header = () => {
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 20 }}
                         transition={{ duration: 0.5, ease: "easeInOut" }}
-                        className="flex space-x-5 px-2 md:pl-0">
+                        className="flex md:space-x-3 lg:space-x-5 xl:space-x-7 px-2 md:pl-0">
                         <div
-                            className={`hover:text-slate-200 cursor-pointer pt-2 md:text-2xl text-md ${sound ? "text-yellow-200" : "text-slate-500"}`}
+                            className={`hover:text-slate-200 cursor-pointer pt-2 md:text-xl lg:text-2xl xl:text-3xl ${sound ? "text-yellow-200" : "text-slate-500"}`}
                             onClick={() => { dispatch(changeSound()) }}
                         >
                             {sound ?
@@ -122,9 +122,9 @@ const Header = () => {
                         <Link href={`/velocity/user/${user ? user.username : ""}`}>
                             {imageUrl
                                 ? <div className="pt-1">
-                                    <Image className="rounded-full h-7 w-7  cursor-pointer" src={imageUrl} alt="user" height={100} width={100} />
+                                    <Image className="rounded-full h-7 w-7 cursor-pointer" src={imageUrl} alt="user" height={100} width={100} />
                                 </div>
-                                : <div className="hover:text-slate-200 cursor-pointer pt-2 md:text-2xl text-sm">
+                                : <div className="hover:text-slate-200 cursor-pointer pt-2 md:text-xl lg:text-2xl xl:text-3xl">
                                     <TooltipIcon icon={<User />} tooltipText="profile" />
                                 </div>
                             }

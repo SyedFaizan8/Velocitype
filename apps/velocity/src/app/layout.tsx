@@ -69,9 +69,9 @@ export default function RootLayout({
       >
         <PostHogProvider>
           <Providers>
-            <div className="bg-slate-800 text-slate-50 md:py-6 py-2 px-6 md:px-20 min-h-screen max-h-screen tracking-wider font-mono overflow-hidden">
+            <div className="bg-slate-800 text-slate-50 lg:py-6 md:py-3 lg:px-20 md:px-12 min-h-screen max-h-screen tracking-wider font-mono overflow-hidden">
               <Header />
-              <section className="w-full px-6 h-[85vh] flex flex-col justify-center items-center">
+              <section className="w-full lg:px-6 md:px-2 h-[85vh] flex flex-col justify-center items-center">
                 {children}
               </section>
               <Footer />
